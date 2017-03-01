@@ -59,7 +59,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>java org.antlr.v4.Tool "$(ProjectDir)Crawl.g4" -o  "$(ProjectDir)GeneratedParser" -Dlanguage=CSharp -package libcompiler.Parser -encoding utf8</PreBuildEvent>
+    <PreBuildEvent Condition=" '$(OS)' == 'Unix' ">java -jar /usr/local/lib/antlr-4.6-complete.jar "$(ProjectDir)Crawl.g4" -o  "$(ProjectDir)GeneratedParser" -Dlanguage=CSharp -package libcompiler.Parser -encoding utf8</PreBuildEvent>
+    <PreBuildEvent Condition=" '$(OS)' != 'Unix' ">java org.antlr.v4.Tool "$(ProjectDir)Crawl.g4" -o  "$(ProjectDir)GeneratedParser" -Dlanguage=CSharp -package libcompiler.Parser -encoding utf8</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
