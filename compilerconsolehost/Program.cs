@@ -22,7 +22,7 @@ namespace compilerconsolehost
                     ITokenStream tstream = new CommonTokenStream(ts);
                     CrawlParser parser = new CrawlParser(tstream);
 
-                    CrawlParser.ProgramContext rootContext = parser.program();
+                    CrawlParser.Translation_unitContext rootContext = parser.translation_unit();
 
 
                     Console.WriteLine(Unfuck(rootContext.ToStringTree(parser)));
