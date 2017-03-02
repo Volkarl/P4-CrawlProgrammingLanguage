@@ -1,8 +1,9 @@
-﻿grammar Crawl;
+grammar Crawl;
 
 tokens { INDENT, DEDENT }
 
 //Code to handle INDENT/DEDENT instead of curly braces. Complained when i tried to move it so now it is at the top of file
+//Acctual CFG starts on line 132
 
 @lexer::header { 
 using System.Collections.Generic; 
@@ -126,44 +127,90 @@ using libcompiler.ExtensionMethods;
     return base.CharIndex == 0 && base.Line == 1;
 	//TODO: MAKE SURE CHAR INDEX IS WHAT I THINK IT IS (char column)
   }
-} 
+}
 
-//The main matter (Most is going to be replaced)
-program					: statements;
-statements				: ( statement | NEWLINE ) *;
-statement				: flow_statement  | loop | declaration | assignment | return_statement | side_effect_stmt;
+//The acctual CFG. 
+//A translation unit is one source file for a program. First it contains imports of libraries, then the statements that make up the program
+translation_unit		: import_directives statements;  
 
-flow_statement			: if_selection;
+//////////////////////////////////////////////////////////////////////////////////
+//import_directive(s) is imports. Using from C# or import from python
+import_directives		: import_directive* ;
+import_directive		: IMPORT IDENTIFIER (ITEM_SEPERATOR IDENTIFIER)* END_OF_STATEMENT; 
+
+//////////////////////////////////////////////////////////////////////////////////
+//Statements make up the program. Functions/Classes, function calls and general computation
+statements				: ( if_selection | for_loop | while_loop | declaration | assignment | return_statement | side_effect_stmt | NEWLINE ) *;
+
+//////////////////////////////////////////////////////////////////////////////////
+//A side effect statement is a statement with a side effect. Aka a function call. 
+//A later part of the compiler needs to ensure it acctually ends with a call_expression
+//Could _maybe_ be done in the parser, but it requires a lot of lookahead.
+side_effect_stmt		: atom ( call_expression | subfield_expression | index_expression )+ END_OF_STATEMENT;
+
+//////////////////////////////////////////////////////////////////////////////////
+//Next group of statements are the flow control statements. Loops and if's
+//An if statement. Plausibly an else tacked on.
 if_selection			: IF expression INDENT statements DEDENT (ELSE INDENT statements DEDENT)?;
 
-side_effect_stmt		: atom ( call_expression | subfield_expression | index_expression )+ END_OF_STATEMENT;
-					
-return_statement		: RETURN expression END_OF_STATEMENT;
+//A for loop is in reality a foreach loop. Loops over a collection or range. Old school for loop is dead
+for_loop				: FOR type IDENTIFIER FOR_LOOP_SEPERATOR expression INDENT statements DEDENT;
 
-loop					: for_loop | while_loop;
-for_loop				: FOR expression INDENT statements DEDENT;
+//Plain and simple while loop. While expression is true, whatever
 while_loop				: WHILE expression INDENT statements DEDENT;
+
+//returns from a function. Optionally return a value
+return_statement		: RETURN expression? END_OF_STATEMENT;
 	
-declarations			: declaration* ;
+///////////////////////////////////////////////////////////////////////////////
+//Since we try and treat functions as any other type, we can't quite see if it is a function or variable definiton before we read it.
+//But this section deals with declearation of anything you can access at a later time
 declaration				: protection_level? (class_declaration | function_or_variable) ;
 
-class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? class_body;
-class_body				: INDENT declarations DEDENT;
-inheritances			: inheritance (ITEM_SEPEATOR inheritance)* ; // | /*EPSILON*/;
-inheritance				: IDENTIFIER;
+//The decleartion of a function, or the decleartion of one or more variables and plausibly initializing them to a value.
+//It is supposed to be read as 
+//the type, the name
+//  end of statement -> a variable of some type
+//  assignment symbol
+//	  function body  -> its a function;
+//    expression	 -> its a variable with a default value
+//      then read more identifiers, and give them a default value if said exists
+function_or_variable	: type IDENTIFIER (END_OF_STATEMENT | (ASSIGNMENT_SYMBOL (function_body | expression ( ITEM_SEPEATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT ) ) );
 
-function_or_variable	: type IDENTIFIER (END_OF_STATEMENT | (ASSIGNMENT_SYMBOL (function_body | expression ( ITEM_SEPEATOR expression )* END_OF_STATEMENT ) ) );
-
+//The body of a function. No great secrets hidden here
 function_body			: INDENT statements DEDENT;
 
+//Decleartion of a class. A class starts with 'class' (well, translated) then its name, 
+//then plasibly a list of things to inherit from. 
+class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? class_body;
+inheritances			: inheritance (ITEM_SEPEATOR inheritance)* ; // | /*EPSILON*/;
+inheritance				: IDENTIFIER;
+//The class body only allows decleartions, not the broader statements, we don't want to define wth happens with general computation in a class body
+class_body				: INDENT declaration* DEDENT;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//A few nuts and bolts that is also needed.
+
+//Save some value in a variable
 assignment				: IDENTIFIER ASSIGNMENT_SYMBOL expression END_OF_STATEMENT;
 
+//A type. As a function is a type with "return_type (argument types)" the real decleartion of type is "type (list of types)?" but that is left recursive
+//Antlr can maybe acctually deal with this, but we just rewrite it
+//Its a * and not a ? as a function can return a function, ad infinitum....
 type					: IDENTIFIER function_type*;
+//The tailing part if you define a function. ( argument type, optional name, repeat)
 function_type			: LPARANTHESIS type IDENTIFIER? ( ITEM_SEPEATOR type IDENTIFIER? ) *  RPARANTHESIS ;
 
-protection_level		: PUBLIC | PRIVATE | PROTECTED | PROTECTED_INTERNAL ;
+//Protection level. Just stolen from .NET, as we target CLR
+protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL ;
 
-//The expression circus
+//The expression circus. The reason there is a f*ton is to make sure it parses in the correct order.
+//As an example, in or_expression, it is an and_expression (OR... )*. 
+//This ensures that anything between OR is parsed independently (higher priorty, more grouped)
+//I don't think i can explain it better, you really need the revelation yourself.
+
+//A list of expressions (function calls ect)
 expression_list			: expression ( ITEM_SEPEATOR expression )* ;
 
 expression				: or_expression | range_expression;
@@ -194,42 +241,65 @@ subfield_expression		: DOT IDENTIFIER ;
 
 index_expression		: LBRACKETS	expression_list LBRACKETS ;
 
+//An atom is an atom, a part that cannot be broken in smaller parts
 atom					: IDENTIFIER
 						| literal
 						| LPARANTHESIS expression RPARANTHESIS ;
 
-comparison_symbol		: '>' | '>=' | '==' | '!=' | '<=' | '<' ;
+///////////////////////////////////////////////////////////////////////////////
 
-additive_symbol			: '+' | '-' ;
+//More nuts and bolts
+//Symbols used for different things. Should maybe be changed to tokens, but Antlr does magic and i don't.
+comparison_symbol		: '>' | '>=' | '==' | '!=' | '<=' | '<' ;
+additive_symbol			: PLUS | MINUS ;
 multiplicative_symbol	: '*' | '/' | '%' ;
 unary_symbol			: INVERT | '-' ;
 
-//All the literals
+//All the literals. Values
 literal					: boolean_literal 
 						| integer_literal
 						| real_literal
 						| string_literal;
-					
+
+//Boolean is true or false.
 boolean_literal			: TRUE | FALSE ;
+//An integer is a number...
 integer_literal			: NUMBER;
+//A real number is either a number containing a DOT or a number in scientific notion
 real_literal			: POINT_REAL | EXPONENT_REAL;
+//And finally, a string is a string...
 string_literal			: STRING_LITERAL ;
+
 
 POINT_REAL				: NUMBER? DOT NUMBER;
 EXPONENT_REAL			: ( NUMBER | POINT_REAL ) EXPONENT_END ;
 STRING_LITERAL			: '"' ( STRING_ESCAPE_SEQ | ~[\\\r\n"] )* '"' ;
+TRUE					: 'sandt' ;
+FALSE					: 'falsk' ;
 
+///////////////////////////////////////////////////////////////////////////////
+//Protection levels
+PUBLIC					: 'offentlig' ;
+PRIVATE					: 'privat' ;
+PROTECTED				: 'beskyttet' ;
+PROTECTED_INTERNAL		: 'beskyttet intern' ;
+INTERNAL				: 'intern' ;
 
-CLASS					: 'class';
-RETURN					: 'return';
-IF						: 'if';
-ELSE					: 'else';
-WHILE					: 'while';
+//keywords. refer to above to find out how they are used
+CLASS					: 'klasse';
+RETURN					: 'retuner';
+IF						: 'hvis';
+ELSE					: 'elers';
+WHILE					: 'mens';
 FOR						: 'for';
-FROM					: 'from' ;
-TO						: 'to';
-AND						: 'and' ;
-OR						: 'or' ;
+FROM					: 'fra' ;
+TO						: 'til';
+AND						: 'og' ;
+OR						: 'eller' ;
+IMPORT					: 'importer' ;
+
+//Symbols with meaning
+FOR_LOOP_SEPERATOR		: ':' ; //Probably temporary but i didn't feel like making 'i' a keyword
 ITEM_SEPEATOR			: ',' ;
 ASSIGNMENT_SYMBOL		: '=' ;
 END_OF_STATEMENT		: ';' ;
@@ -240,34 +310,35 @@ RBRACKETS				: ']'  {opened--;};
 INVERT					: 'not' ;
 DOT						: '.' ;
 EXPONENT				: '**' ;
-TRUE					: 'true' ;
-FALSE					: 'false' ;
-INHERITANCE_OPERATOR	:         ':';
+INHERITANCE_OPERATOR	: ':';
 MINUS					: '-' ;
 PLUS					: '+' ;
 
+///////////////////////////////////////////////////////////////////////////////
+//Finally some tokens that is more than just a specific string.
 
-PUBLIC					: 'public' ;
-PRIVATE					: 'private' ;
-PROTECTED				: 'protected' ;
-PROTECTED_INTERNAL		: 'protected internal' ;
- 
+//A comment starts with // and then anything not a line change. It is sent to the hidden channel, ignored by the parser
 COMMENT					: '//' ~( '\r' | '\n' )* -> channel(HIDDEN);
+//Whitespace is also ignored by the parser
 WS						: ( SPACES )+ -> channel(HIDDEN);
 
- fragment SPACES		: [ \t]+
- ;
-
+//A number...
 NUMBER					: DIGIT+ ;
+
+//An identifier. It can be used either as a type or a variable
+IDENTIFIER 				: STARTSYMBOL SYMBOL* ;
+
+//A fragment is a token that cannot be parsed, but can be used in other tokens
+fragment SPACES			: [ \t]+ ;
+
 fragment DIGIT 			: '0' .. '9' ;
 
 fragment STRING_ESCAPE_SEQ : '\\' . ;
 
 fragment EXPONENT_END	: ('e' |'E' ) (MINUS | PLUS)? NUMBER ;
 
-IDENTIFIER 				: STARTSYMBOL SYMBOL* ;
 
-
+//Code used to handle emitting DEDENT/INDENT after newlines. Newlines itself is hidden (ignored by the parser unless told not to)
 NEWLINE
  : ( {AtStartOfInput()}?   SPACES
    | ( '\r'? '\n' | '\r' ) SPACES?
@@ -305,9 +376,8 @@ NEWLINE
  ;
  
 
- 
 //Taken from https://github.com/antlr/grammars-v4/blob/master/python3/Python3.g4
-//allowed unicode symbols
+//A s*tload of symbols that python thinks are reasonable unicode symbols in identifiers
 
 fragment STARTSYMBOL 
  : '_'
