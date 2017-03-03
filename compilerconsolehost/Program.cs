@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime;
+using libcompiler;
 using libcompiler.Parser;
 
 namespace compilerconsolehost
@@ -24,13 +26,20 @@ namespace compilerconsolehost
 
                     CrawlParser.Translation_unitContext rootContext = parser.translation_unit();
 
-
-                    Console.WriteLine(Unfuck(rootContext.ToStringTree(parser)));
+                    
+                    //Console.WriteLine(Unfuck(rootContext.ToStringTree(parser)));
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
                 }
+
+                
+                CrawlSyntaxTree tree = CrawlSyntaxTree.ParseTree(new StreamReader(File.OpenRead(s)), s);
+                var t = new SyntaxTreePrinter();
+                t.Visit(tree.RootNode);
+                Console.WriteLine(t.BuildString.ToString());
+
             }
             Console.WriteLine("Finished parsing. Press enter to exit...");
             Console.ReadLine();

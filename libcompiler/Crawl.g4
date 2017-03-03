@@ -146,7 +146,7 @@ statements				: ( if_selection | for_loop | while_loop | declaration | assignmen
 //A side effect statement is a statement with a side effect. Aka a function call. 
 //A later part of the compiler needs to ensure it acctually ends with a call_expression
 //Could _maybe_ be done in the parser, but it requires a lot of lookahead.
-side_effect_stmt		: atom ( call_expression | subfield_expression | index_expression )+ END_OF_STATEMENT;
+side_effect_stmt		: postfix_expression END_OF_STATEMENT;
 
 //////////////////////////////////////////////////////////////////////////////////
 //Next group of statements are the flow control statements. Loops and if's
