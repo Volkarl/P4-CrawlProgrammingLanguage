@@ -105,7 +105,7 @@ using libcompiler.ExtensionMethods;
   //
   //  -- https://docs.python.org/3.1/reference/lexical_analysis.html#indentation
   
-  //TODO: UNFUCK. This is code from python, that belives tab = 8 spaces
+  //TODO: Fix it. This is code from python, that belives tab = 8 spaces
   static int GetIndentationCount(string spaces) {
     int count = 0;
     foreach (char ch in spaces) {
@@ -181,7 +181,7 @@ function_or_variable	: type IDENTIFIER (END_OF_STATEMENT | (ASSIGNMENT_SYMBOL (f
 function_body			: INDENT statements DEDENT;
 
 //Decleartion of a class. A class starts with 'class' (well, translated) then its name, 
-//then plasibly a list of things to inherit from. 
+//then plausibly a list of things to inherit from. 
 class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? class_body;
 inheritances			: inheritance (ITEM_SEPEATOR inheritance)* ; // | /*EPSILON*/;
 inheritance				: IDENTIFIER;
@@ -205,7 +205,7 @@ function_type			: LPARANTHESIS type IDENTIFIER? ( ITEM_SEPEATOR type IDENTIFIER?
 //Protection level. Just stolen from .NET, as we target CLR
 protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL ;
 
-//The expression circus. The reason there is a f*ton is to make sure it parses in the correct order.
+//The expression circus. The reason there is a lot is to make sure it parses in the correct order.
 //As an example, in or_expression, it is an and_expression (OR... )*. 
 //This ensures that anything between OR is parsed independently (higher priorty, more grouped)
 //I don't think i can explain it better, you really need the revelation yourself.
@@ -377,7 +377,7 @@ NEWLINE
  
 
 //Taken from https://github.com/antlr/grammars-v4/blob/master/python3/Python3.g4
-//A s*tload of symbols that python thinks are reasonable unicode symbols in identifiers
+//A lot of symbols that python thinks are reasonable unicode symbols in identifiers
 
 fragment STARTSYMBOL 
  : '_'
