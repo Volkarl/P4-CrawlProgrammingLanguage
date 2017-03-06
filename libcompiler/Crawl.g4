@@ -213,7 +213,7 @@ type					: IDENTIFIER function_type*;
 
 //The tailing part if you define a function. ( argument type, optional name, repeat)
 function_type			  : (LPARANTHESIS function_arguments?  RPARANTHESIS)+ ;
-function_arguments  : (type IDENTIFIER?) ( ITEM_SEPARATOR type IDENTIFIER? ) *
+function_arguments  : (type IDENTIFIER?) ( ITEM_SEPARATOR type IDENTIFIER? ) *;
 
 //Protection level. Just stolen from .NET, as we target CLR
 protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL ;
