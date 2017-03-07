@@ -1,0 +1,10 @@
+import Console;
+
+FabuPrint("Hej, verden !");
+
+offentlig intet(tekst meddelelse) FabuPrint=
+  Print("  -:-");
+  for tegn t fra meddelelse
+    Print(" ~ ");
+    Print(t);
+  Print(" ~ -:-  ");

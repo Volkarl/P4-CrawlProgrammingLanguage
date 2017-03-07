@@ -1,0 +1,97 @@
+import Console;
+
+offentlig klasse Helt
+  offentlig tekst Navn;
+  offentlig bool ErILive;
+  offentligt heltal Sytrke;
+  offentligt heltal Smidighed;
+  offentligt heltal Intellligens;
+  offentligt heltal Hygiejne;
+
+offentlig klasse Sted
+  offentlig tekst() Hændelse;
+  offentlig tekst[] MulighederNavne;
+  offentlig tekst()[] Muligheder;
+
+offentlig intet(Sted sted) PrintMuligheder =
+  PrintLinje("Du kan:");
+  for tekst t fra sted.Muligheder
+    Print(">>  ");
+    PrintLinje(t);
+
+offentlig intet(Sted sted) AflæsKommando =
+  tekst kommando = LæsLinje();
+  for heltal i fra sted.Muligheder.Antal
+    hvis kommando == sted.MulighederNavne
+      sted.Muligheder[i]();
+
+offentlig intet() Start =
+  PrintLinje("Velkommen!");
+  PrintMuligheder(StartSump);
+
+////////////////////////////////////////7
+offentlig Helt[] Helte;
+Helte[1]=Brian;
+Helte[2]=TrælsElver;
+Helte[3]=Bimli;
+
+offentlig Helt Brian;
+Brian.Navn = "Brian";
+Brian.ErILive = sandt;
+Brian.Styrke = 14;
+Brian.Smidighed = 3;
+Brian.Intellligens = 9;
+Brian.Hygiejne = 5;
+
+offentlig Helt TrælsElver;
+TrælsElver.Navn = "Ardryll Holahorn";
+TrælsElver.ErILive = sandt;
+TrælsElver.Styrke = 10;
+TrælsElver.Smidighed = 17;
+TrælsElver.Intellligens = 11;
+TrælsElver.Hygiejne = 99;
+
+offentlig Helt Bimli;
+Bimli.Navn = "Dærgen Bimli";
+Bimli.ErILive = sandt;
+Bimli.Styrke = 15;
+Bimli.Smidighed = 9;
+Bimli.Intelligens = 10;
+Bimli.Hygiejne = 5;
+
+
+
+/////////////////////////////////////////////////////////////
+//Steder
+offentligt Sted StartSump;
+StartSump.Hændelse = StSuHæn;
+StartSump.MulighederNavne[1] = "Rejs til blomstereng";
+StartSump.MulighederNavne[2] = "Rejs til borgruin";
+StartSump.MulighederNavne[3] = "Vent";
+StartSump.Muligheder[1] = StenSkred;
+StartSump.Muligheder[2] = StenSkred;
+StartSump.Muligheder[3] = Vent;
+
+offentligt Sted Blomstereng;
+Blomstereng.Hændelse = StenSkred;
+
+offentligt Sted Borgruin;
+Blomstereng.Borgruin = StenSkred;
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//Hændelser/Muligheder
+
+offentlig intet() StSuHæn =
+  for Helt h fra Helte
+    h.Hygiejne = h.Hygiejne - 2;
+  returner "I befinder Jer i startsumpen. Der lugter.";
+
+offentlig intet() Vent =
+  returner "Der sker ikke noget";
+
+offentlig intet() StenSkred =
+  for Helt h fra Helte
+    h.ErILive = falsk;
+  returner "Der sker stenskred. Alle dør.";
+

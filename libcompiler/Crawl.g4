@@ -105,7 +105,7 @@ using libcompiler.ExtensionMethods;
   //
   //  -- https://docs.python.org/3.1/reference/lexical_analysis.html#indentation
   
-  //TODO: UNFUCK. This is code from python, that belives tab = 8 spaces
+  //TODO: Fix it. This is code from python, that belives tab = 8 spaces
   static int GetIndentationCount(string spaces) {
     int count = 0;
     foreach (char ch in spaces) {
@@ -146,11 +146,11 @@ statements				: ( if_selection | for_loop | while_loop | declaration | assignmen
 //A side effect statement is a statement with a side effect. Aka a function call. 
 //A later part of the compiler needs to ensure it acctually ends with a call_expression
 //Could _maybe_ be done in the parser, but it requires a lot of lookahead.
-side_effect_stmt		: postfix_expression END_OF_STATEMENT;
+side_effect_stmt		: atom ( call_expression | subfield_expression | index_expression )* call_expression END_OF_STATEMENT;
 
 //////////////////////////////////////////////////////////////////////////////////
 //Next group of statements are the flow control statements. Loops and if's
-//An if statement. Plausibly an else tacked on.
+//An if statement. Possibly with an else tacked on.
 if_selection			: IF expression INDENT statements DEDENT (ELSE INDENT statements DEDENT)?;
 
 //A for loop is in reality a foreach loop. Loops over a collection or range. Old school for loop is dead
@@ -159,7 +159,7 @@ for_loop				: FOR type IDENTIFIER FOR_LOOP_SEPERATOR expression INDENT statement
 //Plain and simple while loop. While expression is true, whatever
 while_loop				: WHILE expression INDENT statements DEDENT;
 
-//returns from a function. Optionally return a value
+//Returns from a function. Optionally return a value
 return_statement		: RETURN expression? END_OF_STATEMENT;
 	
 ///////////////////////////////////////////////////////////////////////////////
@@ -167,7 +167,7 @@ return_statement		: RETURN expression? END_OF_STATEMENT;
 //But this section deals with declearation of anything you can access at a later time
 declaration				: protection_level? (class_declaration | function_or_variable) ;
 
-//The decleartion of a function, or the decleartion of one or more variables and plausibly initializing them to a value.
+//The decleartion of a function, or the decleartion of one or more variables and possibly initializing them to a value.
 //It is supposed to be read as 
 //the type, the name
 //  end of statement -> a variable of some type
@@ -175,15 +175,29 @@ declaration				: protection_level? (class_declaration | function_or_variable) ;
 //	  function body  -> its a function;
 //    expression	 -> its a variable with a default value
 //      then read more identifiers, and give them a default value if said exists
-function_or_variable	: type IDENTIFIER (END_OF_STATEMENT | (ASSIGNMENT_SYMBOL (function_body | expression ( ITEM_SEPEATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT ) ) );
+function_or_variable	: type(LBRACKET RBRACKET)* IDENTIFIER 
+                        (
+                          END_OF_STATEMENT
+                          | 
+                          (
+                            ASSIGNMENT_SYMBOL 
+                            (
+                              function_body 
+                              | 
+                              expression (ITEM_SEPARATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT 
+                            ) 
+                          ) 
+                          |
+                          (ITEM_SEPARATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT 
+                        );
 
 //The body of a function. No great secrets hidden here
 function_body			: INDENT statements DEDENT;
 
 //Decleartion of a class. A class starts with 'class' (well, translated) then its name, 
-//then plasibly a list of things to inherit from. 
+//then plausibly a list of things to inherit from. 
 class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? class_body;
-inheritances			: inheritance (ITEM_SEPEATOR inheritance)* ; // | /*EPSILON*/;
+inheritances			: inheritance (ITEM_SEPARATOR inheritance)* ;
 inheritance				: IDENTIFIER;
 //The class body only allows decleartions, not the broader statements, we don't want to define wth happens with general computation in a class body
 class_body				: INDENT declaration* DEDENT;
@@ -193,29 +207,31 @@ class_body				: INDENT declaration* DEDENT;
 //A few nuts and bolts that is also needed.
 
 //Save some value in a variable
-assignment				: IDENTIFIER ASSIGNMENT_SYMBOL expression END_OF_STATEMENT;
+assignment				: atom(subfield_expression | index_expression)* ASSIGNMENT_SYMBOL expression END_OF_STATEMENT;
 
-//A type. As a function is a type with "return_type (argument types)" the real decleartion of type is "type (list of types)?" but that is left recursive
+//A type. As a function is a type with "return_type (argument types)" the real decleartion of type is "type (list of types)?" but that is left recursive type : 
 //Antlr can maybe acctually deal with this, but we just rewrite it
 //Its a * and not a ? as a function can return a function, ad infinitum....
 type					: IDENTIFIER function_type*;
+
 //The tailing part if you define a function. ( argument type, optional name, repeat)
-function_type			: LPARANTHESIS type IDENTIFIER? ( ITEM_SEPEATOR type IDENTIFIER? ) *  RPARANTHESIS ;
+function_type			  : (LPARANTHESIS function_arguments?  RPARANTHESIS)+ ;
+function_arguments  : (type IDENTIFIER?) ( ITEM_SEPARATOR type IDENTIFIER? ) *;
 
 //Protection level. Just stolen from .NET, as we target CLR
 protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL ;
 
-//The expression circus. The reason there is a f*ton is to make sure it parses in the correct order.
+//The expression circus. The reason there is a lot is to make sure it parses in the correct order.
 //As an example, in or_expression, it is an and_expression (OR... )*. 
 //This ensures that anything between OR is parsed independently (higher priorty, more grouped)
 //I don't think i can explain it better, you really need the revelation yourself.
 
 //A list of expressions (function calls ect)
-expression_list			: expression ( ITEM_SEPEATOR expression )* ;
+expression_list			: expression ( ITEM_SEPARATOR expression )* ;
 
-expression				: or_expression | range_expression;
+expression				: range_expression;
 
-range_expression		: FROM expression TO expression ;
+range_expression		: or_expression (TO or_expression )?;
 
 or_expression			: and_expression ( OR and_expression )* ;
 
@@ -239,9 +255,9 @@ call_expression			: LPARANTHESIS expression_list? RPARANTHESIS ;
 
 subfield_expression		: DOT IDENTIFIER ;
 
-index_expression		: LBRACKETS	expression_list LBRACKETS ;
+index_expression		: LBRACKET	expression_list RBRACKET ;
 
-//An atom is an atom, a part that cannot be broken in smaller parts
+//An atom is an atom, a part that cannot be broken in smaller parts.
 atom					: IDENTIFIER
 						| literal
 						| LPARANTHESIS expression RPARANTHESIS ;
@@ -249,7 +265,7 @@ atom					: IDENTIFIER
 ///////////////////////////////////////////////////////////////////////////////
 
 //More nuts and bolts
-//Symbols used for different things. Should maybe be changed to tokens, but Antlr does magic and i don't.
+//Symbols used for different things. Should maybe be changed to tokens, but Antlr does magic and I don't.
 comparison_symbol		: '>' | '>=' | '==' | '!=' | '<=' | '<' ;
 additive_symbol			: PLUS | MINUS ;
 multiplicative_symbol	: '*' | '/' | '%' ;
@@ -279,7 +295,7 @@ FALSE					: 'falsk' ;
 
 ///////////////////////////////////////////////////////////////////////////////
 //Protection levels
-PUBLIC					: 'offentlig' ;
+PUBLIC					: 'offentlig' | 'offentligt' ;
 PRIVATE					: 'privat' ;
 PROTECTED				: 'beskyttet' ;
 PROTECTED_INTERNAL		: 'beskyttet intern' ;
@@ -287,26 +303,25 @@ INTERNAL				: 'intern' ;
 
 //keywords. refer to above to find out how they are used
 CLASS					: 'klasse';
-RETURN					: 'retuner';
+RETURN					: 'returner';
 IF						: 'hvis';
 ELSE					: 'elers';
 WHILE					: 'mens';
 FOR						: 'for';
-FROM					: 'fra' ;
 TO						: 'til';
 AND						: 'og' ;
 OR						: 'eller' ;
 IMPORT					: 'importer' ;
 
 //Symbols with meaning
-FOR_LOOP_SEPERATOR		: ':' ; //Probably temporary but i didn't feel like making 'i' a keyword
-ITEM_SEPEATOR			: ',' ;
+FOR_LOOP_SEPERATOR		: 'fra' ;
+ITEM_SEPARATOR			: ',' ;
 ASSIGNMENT_SYMBOL		: '=' ;
 END_OF_STATEMENT		: ';' ;
 LPARANTHESIS			: '(' {opened++;} ;
 RPARANTHESIS			: ')'  {opened--;};
-LBRACKETS				: '['  {opened++;};
-RBRACKETS				: ']'  {opened--;};
+LBRACKET				: '['  {opened++;};
+RBRACKET				: ']'  {opened--;};
 INVERT					: 'not' ;
 DOT						: '.' ;
 EXPONENT				: '**' ;
@@ -377,7 +392,7 @@ NEWLINE
  
 
 //Taken from https://github.com/antlr/grammars-v4/blob/master/python3/Python3.g4
-//A s*tload of symbols that python thinks are reasonable unicode symbols in identifiers
+//A lot of symbols that python thinks are reasonable unicode symbols in identifiers
 
 fragment STARTSYMBOL 
  : '_'
