@@ -146,7 +146,7 @@ statements				: ( if_selection | for_loop | while_loop | declaration | assignmen
 //A side effect statement is a statement with a side effect. Aka a function call. 
 //A later part of the compiler needs to ensure it acctually ends with a call_expression
 //Could _maybe_ be done in the parser, but it requires a lot of lookahead.
-side_effect_stmt		: atom ( call_expression | subfield_expression | index_expression )+ END_OF_STATEMENT;
+side_effect_stmt		: atom ( call_expression | subfield_expression | index_expression )* call_expression END_OF_STATEMENT;
 
 //////////////////////////////////////////////////////////////////////////////////
 //Next group of statements are the flow control statements. Loops and if's
@@ -175,16 +175,19 @@ declaration				: protection_level? (class_declaration | function_or_variable) ;
 //	  function body  -> its a function;
 //    expression	 -> its a variable with a default value
 //      then read more identifiers, and give them a default value if said exists
-function_or_variable	: type IDENTIFIER 
+function_or_variable	: type(LBRACKET RBRACKET)* IDENTIFIER 
                         (
-                          END_OF_STATEMENT | 
+                          END_OF_STATEMENT
+                          | 
                           (
                             ASSIGNMENT_SYMBOL 
                             (
-                              function_body | 
+                              function_body 
+                              | 
                               expression (ITEM_SEPARATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT 
                             ) 
-                          ) |
+                          ) 
+                          |
                           (ITEM_SEPARATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT 
                         );
 
@@ -204,7 +207,7 @@ class_body				: INDENT declaration* DEDENT;
 //A few nuts and bolts that is also needed.
 
 //Save some value in a variable
-assignment				: IDENTIFIER ASSIGNMENT_SYMBOL expression END_OF_STATEMENT;
+assignment				: atom(subfield_expression | index_expression)* ASSIGNMENT_SYMBOL expression END_OF_STATEMENT;
 
 //A type. As a function is a type with "return_type (argument types)" the real decleartion of type is "type (list of types)?" but that is left recursive type : 
 //Antlr can maybe acctually deal with this, but we just rewrite it
@@ -226,9 +229,9 @@ protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL
 //A list of expressions (function calls ect)
 expression_list			: expression ( ITEM_SEPARATOR expression )* ;
 
-expression				: or_expression | range_expression;
+expression				: range_expression;
 
-range_expression		: FROM expression TO expression ;
+range_expression		: or_expression (TO or_expression )?;
 
 or_expression			: and_expression ( OR and_expression )* ;
 
@@ -292,7 +295,7 @@ FALSE					: 'falsk' ;
 
 ///////////////////////////////////////////////////////////////////////////////
 //Protection levels
-PUBLIC					: 'offentlig' ;
+PUBLIC					: 'offentlig' | 'offentligt' ;
 PRIVATE					: 'privat' ;
 PROTECTED				: 'beskyttet' ;
 PROTECTED_INTERNAL		: 'beskyttet intern' ;
@@ -300,12 +303,11 @@ INTERNAL				: 'intern' ;
 
 //keywords. refer to above to find out how they are used
 CLASS					: 'klasse';
-RETURN					: 'retuner';
+RETURN					: 'returner';
 IF						: 'hvis';
 ELSE					: 'elers';
 WHILE					: 'mens';
 FOR						: 'for';
-FROM					: 'fra' ;
 TO						: 'til';
 AND						: 'og' ;
 OR						: 'eller' ;
