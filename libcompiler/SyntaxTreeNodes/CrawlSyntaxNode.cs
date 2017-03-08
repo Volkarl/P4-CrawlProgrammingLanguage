@@ -24,10 +24,15 @@ namespace libcompiler
 
             if (rule.RuleIndex == CrawlParser.RULE_atom)
             {
+
                 ITerminalNode tn = rule.GetChild(0) as ITerminalNode;
                 if (tn != null && tn.Symbol.Type == CrawlLexer.IDENTIFIER)
                 {
                     return new VariableNode(tn.GetText(), tn.SourceInterval);
+                }
+                else if (rule.ChildCount == 3)
+                {
+                    return ParseExpression((RuleContext) rule.GetChild(1));
                 }
             }
 
@@ -42,6 +47,10 @@ namespace libcompiler
                 case CrawlParser.RULE_comparison_expression:
                     return ParseBinary(rule);
                 case CrawlParser.RULE_additive_expression:
+                case CrawlParser.RULE_multiplicative_expression:
+                case CrawlParser.RULE_and_expression:
+                case CrawlParser.RULE_or_expression:
+                case CrawlParser.RULE_exponential_expression:
                     return ParseMultu(rule);
                 default:
                     throw new NotImplementedException();
@@ -53,11 +62,11 @@ namespace libcompiler
         {
             List<ExpressionNode> sources = new List<ExpressionNode>();
             sources.Add(ParseExpression((RuleContext)rule.GetChild(0)));
-            ExpressionType type = ParseMultiOp((RuleContext) rule.GetChild(1));
+            ExpressionType type = ParseMultiOp((ITerminalNode) rule.GetChild(1));
 
             for (int i = 1; i < rule.ChildCount; i+=2)
             {
-                ExpressionType newtype = ParseMultiOp((RuleContext) rule.GetChild(i));
+                ExpressionType newtype = ParseMultiOp((ITerminalNode) rule.GetChild(i));
                 if(newtype == type)
                     sources.Add(ParseExpression((RuleContext)rule.GetChild(i+1)));
                 else throw new NotImplementedException();
@@ -71,7 +80,7 @@ namespace libcompiler
             if (rule.ChildCount != 3) throw new NotImplementedException("SHOULD NOT HAPPEN");
 
             RuleContext lhs = (RuleContext)rule.GetChild(0);
-            RuleContext op = (RuleContext)rule.GetChild(1);
+            ITerminalNode op = (ITerminalNode)rule.GetChild(1);
             RuleContext rhs = (RuleContext)rule.GetChild(2);
 
             ExpressionNode lhsNode = ParseExpression(lhs);
@@ -91,7 +100,7 @@ namespace libcompiler
             {"<", ExpressionType.Less },
         };
 
-        private static ExpressionType ParseBinaryOp(RuleContext op)
+        private static ExpressionType ParseBinaryOp(ITerminalNode op)
         {
             ExpressionType et;
             if (BinaryTypeMap.TryGetValue(op.GetText(), out et))
@@ -102,10 +111,13 @@ namespace libcompiler
 
         private static readonly Dictionary<string, ExpressionType> MultiTypeMap = new Dictionary<string, ExpressionType>
         {
-            {"-", ExpressionType.Subtract }
+            {"-", ExpressionType.Subtract },
+            {"+", ExpressionType.Add },
+            {"*", ExpressionType.Multiply},
+            {"**", ExpressionType.Power }
         };
 
-        private static ExpressionType ParseMultiOp(RuleContext op)
+        private static ExpressionType ParseMultiOp(ITerminalNode op)
         {
             string textop = op.GetText();
             ExpressionType et;
@@ -754,7 +766,10 @@ namespace libcompiler
         LessEqual,
         Less,
         Index,
-        Subtract
+        Subtract,
+        Power,
+        Add,
+        Multiply
     }
 
     #region Declerations

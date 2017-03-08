@@ -192,7 +192,7 @@ declaration				: protection_level? (class_declaration | function_decleration | v
                         //);
 
 function_decleration	: type IDENTIFIER ASSIGNMENT_SYMBOL function_body;
-variable_declerations	: type variable_decl (ITEM_SEPERATOR variable_decl)* END_OF_STATEMENT;
+variable_declerations	: type variable_decl (ITEM_SEPARATOR variable_decl)* END_OF_STATEMENT;
 variable_decl			: IDENTIFIER (ASSIGNMENT_SYMBOL expression)? ;
 
 //The body of a function. No great secrets hidden here
@@ -245,11 +245,11 @@ or_expression			: and_expression ( OR and_expression )* ;
 
 and_expression			: comparison_expression ( AND comparison_expression )* ;
 
-comparison_expression	: additive_expression (comparison_symbol additive_expression) * ;  //?
+comparison_expression	: additive_expression (COMPARISON_SYMBOL additive_expression)? ;  //?
 
-additive_expression		: multiplicative_expression (additive_symbol multiplicative_expression )* ;
+additive_expression		: multiplicative_expression (ADDITIVE_SYMBOL multiplicative_expression )* ;
 
-multiplicative_expression: exponential_expression (multiplicative_symbol exponential_expression )* ;
+multiplicative_expression: exponential_expression (MULTIPLICATIVE_SYMBOL exponential_expression )* ;
 
 exponential_expression	: cast_expression (EXPONENT cast_expression)* ;
 
@@ -274,11 +274,12 @@ atom					: IDENTIFIER
 
 //More nuts and bolts
 //Symbols used for different things. Should maybe be changed to tokens, but Antlr does magic and I don't.
-comparison_symbol		: '>' | '>=' | '==' | '!=' | '<=' | '<' ;
-additive_symbol			: PLUS | MINUS ;
-multiplicative_symbol	: '*' | '/' | '%' ;
-unary_symbol			: INVERT | '-' ;
+COMPARISON_SYMBOL		: '>' | '>=' | '==' | '!=' | '<=' | '<' ;
+ADDITIVE_SYMBOL			: '+' |MINUS ;
+MULTIPLICATIVE_SYMBOL	: '*' | '/' | '%' ;
+unary_symbol			: INVERT | MINUS;
 
+MINUS					: '-' ;
 //All the literals. Values
 literal					: boolean_literal 
 						| integer_literal
@@ -334,8 +335,6 @@ INVERT					: 'not' ;
 DOT						: '.' ;
 EXPONENT				: '**' ;
 INHERITANCE_OPERATOR	: ':';
-MINUS					: '-' ;
-PLUS					: '+' ;
 
 ///////////////////////////////////////////////////////////////////////////////
 //Finally some tokens that is more than just a specific string.
@@ -358,7 +357,7 @@ fragment DIGIT 			: '0' .. '9' ;
 
 fragment STRING_ESCAPE_SEQ : '\\' . ;
 
-fragment EXPONENT_END	: ('e' |'E' ) (MINUS | PLUS)? NUMBER ;
+fragment EXPONENT_END	: ('e' |'E' ) (ADDITIVE_SYMBOL)? NUMBER ;
 
 
 //Code used to handle emitting DEDENT/INDENT after newlines. Newlines itself is hidden (ignored by the parser unless told not to)
