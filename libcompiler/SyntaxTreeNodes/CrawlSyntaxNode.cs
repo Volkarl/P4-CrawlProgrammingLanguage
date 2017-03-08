@@ -15,24 +15,275 @@ namespace libcompiler
         TODO
     }
 
-    public class Foo
+    public class ExpressionParser
     {
         public static ExpressionNode ParseExpression(RuleContext rule)
         {
+            if (rule.RuleIndex == CrawlParser.RULE_literal)
+                return ParseLiteral(rule);
+
+            if (rule.RuleIndex == CrawlParser.RULE_atom)
+            {
+                ITerminalNode tn = rule.GetChild(0) as ITerminalNode;
+                if (tn != null && tn.Symbol.Type == CrawlLexer.IDENTIFIER)
+                {
+                    return new VariableNode(tn.GetText(), tn.SourceInterval);
+                }
+            }
+
+            if(rule.ChildCount == 1)
+                return ParseExpression((RuleContext) rule.GetChild(0));
+
+
+            switch (rule.RuleIndex)
+            {
+                case CrawlParser.RULE_postfix_expression:
+                    return ParsePostfix(rule);
+                case CrawlParser.RULE_comparison_expression:
+                    return ParseBinary(rule);
+                case CrawlParser.RULE_additive_expression:
+                    return ParseMultu(rule);
+                default:
+                    throw new NotImplementedException();
+                    
+            }
+        }
+
+        private static ExpressionNode ParseMultu(RuleContext rule)
+        {
+            List<ExpressionNode> sources = new List<ExpressionNode>();
+            sources.Add(ParseExpression((RuleContext)rule.GetChild(0)));
+            ExpressionType type = ParseMultiOp((RuleContext) rule.GetChild(1));
+
+            for (int i = 1; i < rule.ChildCount; i+=2)
+            {
+                ExpressionType newtype = ParseMultiOp((RuleContext) rule.GetChild(i));
+                if(newtype == type)
+                    sources.Add(ParseExpression((RuleContext)rule.GetChild(i+1)));
+                else throw new NotImplementedException();
+            }
+           
+            return new MultiChildExpressionNode(type, sources);
+        }
+
+        private static ExpressionNode ParseBinary(RuleContext rule)
+        {
+            if (rule.ChildCount != 3) throw new NotImplementedException("SHOULD NOT HAPPEN");
+
+            RuleContext lhs = (RuleContext)rule.GetChild(0);
+            RuleContext op = (RuleContext)rule.GetChild(1);
+            RuleContext rhs = (RuleContext)rule.GetChild(2);
+
+            ExpressionNode lhsNode = ParseExpression(lhs);
+            ExpressionType type = ParseBinaryOp(op);
+            ExpressionNode rhsNode = ParseExpression(rhs);
+            
+            return new BinaryNode(type, lhsNode, rhsNode);
+        }
+
+        private static readonly Dictionary<string, ExpressionType> BinaryTypeMap = new Dictionary<string, ExpressionType>()
+        {
+            {">", ExpressionType.Greater },
+            {">=", ExpressionType.GreaterEqual },
+            {"==", ExpressionType.Equal },
+            {"!=", ExpressionType.NotEqual },
+            {"<=", ExpressionType.LessEqual },
+            {"<", ExpressionType.Less },
+        };
+
+        private static ExpressionType ParseBinaryOp(RuleContext op)
+        {
+            ExpressionType et;
+            if (BinaryTypeMap.TryGetValue(op.GetText(), out et))
+                return et;
+
             throw new NotImplementedException();
         }
 
+        private static readonly Dictionary<string, ExpressionType> MultiTypeMap = new Dictionary<string, ExpressionType>
+        {
+            {"-", ExpressionType.Subtract }
+        };
+
+        private static ExpressionType ParseMultiOp(RuleContext op)
+        {
+            string textop = op.GetText();
+            ExpressionType et;
+            if (MultiTypeMap.TryGetValue(op.GetText(), out et))
+                return et;
+
+            throw new NotImplementedException();
+        }
+
+        private static ExpressionNode ParsePostfix(RuleContext rule)
+        {
+            ExpressionNode node = ParseExpression((RuleContext) rule.GetChild(0));
+
+            for (int i = 1; i < rule.ChildCount; i++)
+            {
+                RuleContext post = (RuleContext)rule.GetChild(i);
+                if (post.RuleIndex == CrawlParser.RULE_call_expression)
+                {
+                    node = new TodoRenameCall(node, ParseCallTail(post), ExpressionType.Invocation);
+                }
+                else if (post.RuleIndex == CrawlParser.RULE_index_expression)
+                {
+                    node = new TodoRenameCall(node, ParseCallTail(post), ExpressionType.Index);
+                }
+                else if(post.RuleIndex == CrawlParser.RULE_subfield_expression)
+                {
+
+                    VariableNode sub = new VariableNode(post.GetChild(1).GetText(), post.GetChild(1).SourceInterval);
+                    node = new BinaryNode(ExpressionType.SubfieldAccess, node, sub);
+                }
+                else throw new NotImplementedException();
+
+            }
+
+            return node;
+        }
+
+        private static ExpressionNode ParseLiteral(RuleContext rule)
+        {
+            RuleContext realLiteral = (RuleContext) rule.GetChild(0);
+
+            LiteralNode.LiteralType type;
+            switch (realLiteral.RuleIndex)
+            {
+                case CrawlParser.RULE_string_literal:
+                    type = LiteralNode.LiteralType.String;
+                    break;
+                case CrawlParser.RULE_integer_literal:
+                    type = LiteralNode.LiteralType.Int;
+                    break;
+                case CrawlParser.RULE_boolean_literal:
+                    type = LiteralNode.LiteralType.Boolean;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return new LiteralNode(realLiteral.GetText(), type);
+
+        }
+
+        public static ExpressionNode ParseSideEffectStatement(RuleContext rule)
+        {
+            ITerminalNode eos = (ITerminalNode) rule.GetChild(2);
+            if(eos.Symbol.Type != CrawlLexer.END_OF_STATEMENT) throw new NotImplementedException();
+
+            RuleContext toCall = (RuleContext) rule.GetChild(0);
+            RuleContext invocation = (RuleContext) rule.GetChild(1);
+
+            List<ExpressionNode> args = ParseCallTail(invocation);
+            ExpressionNode target = ParseExpression(toCall);
+
+
+            return new TodoRenameCall(target, args, ExpressionType.Invocation);
+        }
+
+        public static List<ExpressionNode> ParseCallTail(RuleContext rule)
+        {
+            if (rule.ChildCount == 2)
+            {
+                return new List<ExpressionNode>();
+            }
+            else if(rule.ChildCount == 3)
+            {
+                RuleContext expList = (RuleContext) rule.GetChild(1);
+                return ParseExpressionList(expList);
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private static List<ExpressionNode> ParseExpressionList(RuleContext expList)
+        {
+            List<ExpressionNode> n = new List<ExpressionNode>(expList.ChildCount / 2);
+            for (int i = 0; i < expList.ChildCount; i += 2)
+            {
+                n.Add(ParseExpression((RuleContext) expList.GetChild(i)));
+
+                if (i + 1 != expList.ChildCount)
+                {
+                    ITerminalNode itemsep = (ITerminalNode) expList.GetChild(i);
+                    if(itemsep.Symbol.Type != CrawlLexer.ITEM_SEPARATOR) throw new NotImplementedException();
+                }
+            }
+
+            return n;
+        }
+    }
+
+    
+    public class Foo
+    {
         public static FlowNode ParseFlow(RuleContext rule)
         {
+            if (rule.RuleIndex == CrawlParser.RULE_for_loop)
+            {
+                return ParseFor(rule);
+            }
+            else if (rule.RuleIndex == CrawlParser.RULE_if_selection)
+            {
+                return ParseIf(rule);
+            }
             throw new NotImplementedException();
+        }
+
+        private static FlowNode ParseIf(RuleContext rule)
+        {
+            //IF expression INDENT statements DEDENT (ELSE INDENT statements DEDENT)?;
+            ExpressionNode expression = ExpressionParser.ParseExpression((RuleContext)rule.GetChild(1));
+            BlockNode trueBlock = ParseBlockNode((RuleContext) rule.GetChild(3));
+
+            if (rule.ChildCount == 5)
+            {
+                return new SelectiveFlowNode(SelectiveFlowNode.FlowType.If, expression, trueBlock, null);
+            }
+            else if(rule.ChildCount == 9)
+            {
+                BlockNode falseBlock = ParseBlockNode((RuleContext) rule.GetChild(7));
+                return new SelectiveFlowNode(SelectiveFlowNode.FlowType.IfElse, expression, trueBlock, falseBlock);
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private static FlowNode ParseFor(RuleContext rule)
+        {
+            //FOR type IDENTIFIER FOR_LOOP_SEPERATOR expression INDENT statements DEDENT
+            ITerminalNode forNode = (ITerminalNode)rule.GetChild(0);
+            CrawlParser.TypeContext typeNode = (CrawlParser.TypeContext) rule.GetChild(1);
+            ITerminalNode identifierNode = (ITerminalNode)rule.GetChild(2);
+            ITerminalNode serperatorNode = (ITerminalNode)rule.GetChild(3);
+            RuleContext expression = (RuleContext)rule.GetChild(4);
+            ITerminalNode indent = (ITerminalNode)rule.GetChild(5);
+            RuleContext blockCtx = (RuleContext)rule.GetChild(6);
+            ITerminalNode dedent = (ITerminalNode)rule.GetChild(7);
+
+            CrawlType type = ParseType(typeNode);
+            ExpressionNode iteratior = ExpressionParser.ParseExpression(expression);
+            BlockNode block = ParseBlockNode(blockCtx);
+
+            return new ForLoopNode(type, identifierNode.GetText(), iteratior, block, rule.SourceInterval);
         }
 
         public static DeclerationNode ParseDeclerationNode(RuleContext rule)
         {
             ProtectionLevel protectionLevel = ProtectionLevel.None;
-            protectionLevel = ParseProtectionLevel((CrawlParser.Protection_levelContext) rule.GetChild(0));
+            RuleContext declpart;
+            if (rule.GetChild(0) is CrawlParser.Protection_levelContext)
+            {
+                protectionLevel = ParseProtectionLevel((CrawlParser.Protection_levelContext) rule.GetChild(0));
 
-            RuleContext declpart = (RuleContext)rule.GetChild(1);
+                declpart = (RuleContext)rule.GetChild(1);
+            }
+            else
+            {
+                declpart = (RuleContext)rule.GetChild(0);
+            }
+
 
             if (declpart.RuleIndex == CrawlParser.RULE_class_declaration)
             {
@@ -92,6 +343,10 @@ namespace libcompiler
             if (variable.ChildCount == 1)
             {
                 return new SingleVariableDecleration(identifier.GetText(), variable.GetChild(0).SourceInterval);
+            }
+            else if (variable.ChildCount == 3)
+            {
+                return new SingleVariableDecleration(identifier.GetText(), variable.GetChild(0).SourceInterval, ExpressionParser.ParseExpression((RuleContext) variable.GetChild(2)));
             }
 
             throw new NotImplementedException();
@@ -154,19 +409,12 @@ namespace libcompiler
             }
             else throw new NotImplementedException("Probably broken");
 
-            
-                
-
-
-
             List<CrawlSyntaxNode> contents = 
                 meaningfullContent
                 .Cast<RuleContext>()
                 .Select(ParseStatement)
                 .ToList();
 
-
-            
             return new BlockNode();
         }
 
@@ -181,12 +429,52 @@ namespace libcompiler
             {
                 case CrawlParser.RULE_declaration:
                     return ParseDeclerationNode(rule);
+                case CrawlParser.RULE_side_effect_stmt:
+                    return ExpressionParser.ParseSideEffectStatement(rule);
+                case CrawlParser.RULE_for_loop:
+                case CrawlParser.RULE_if_selection:
+                    return ParseFlow(rule);
+                case CrawlParser.RULE_assignment:
+                    return ParseAssignment(rule);
+                case CrawlParser.RULE_return_statement:
+                    return ParseReturn(rule);
                 default:
                     throw new NotImplementedException();
             }
         }
 
+        private static CrawlSyntaxNode ParseReturn(RuleContext rule)
+        {
+            ExpressionNode retvalue = null;
+            if (rule.ChildCount == 3)
+            {
+                retvalue = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(1));
+            }
+            return new ReturnStatement(retvalue);
+        }
+
+        private static CrawlSyntaxNode ParseAssignment(RuleContext rule)
+        {
+
+            ExpressionNode target = ExpressionParser.ParseExpression((RuleContext)rule.GetChild(0));
+            if(rule.GetChild(1) is CrawlParser.Subfield_expressionContext)
+            {
+                CrawlParser.Subfield_expressionContext subfield = (CrawlParser.Subfield_expressionContext) rule.GetChild(1);
+
+                VariableNode sub = new VariableNode(subfield.GetChild(1).GetText(), subfield.GetChild(1).SourceInterval);
+                target = new BinaryNode(ExpressionType.SubfieldAccess, target, sub);
+            }
+            else if(rule.GetChild(1) is CrawlParser.Index_expressionContext)
+            {
+                target = new TodoRenameCall(target, ExpressionParser.ParseCallTail((RuleContext)rule.GetChild(1)), ExpressionType.Index);
+            }
+
+            ExpressionNode value = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(rule.ChildCount - 2));
+            return new AssignmentNode(target, value);
+        }
     }
+
+    
 
     public enum ProtectionLevel
     {
@@ -377,8 +665,97 @@ namespace libcompiler
     public abstract class FlowNode : CrawlSyntaxNode
     { }
 
+    internal class ForLoopNode : FlowNode
+    {
+        public ForLoopNode(CrawlType type, string inducedField, ExpressionNode iteratior, BlockNode block, Interval interval)
+        {
+            
+        }
+    }
+
+    public class SelectiveFlowNode : FlowNode
+    {
+        public SelectiveFlowNode(FlowType type, ExpressionNode check, BlockNode primary, BlockNode alternative)
+        { }
+
+        public enum FlowType
+        {
+            If,
+            IfElse,
+            While,
+        }
+    }
+
+    public class ReturnStatement : CrawlSyntaxNode
+    {
+        public ReturnStatement(ExpressionNode returnValue = null) { }
+    }
+
+    public class AssignmentNode : CrawlSyntaxNode
+    {
+        public AssignmentNode(ExpressionNode lhs, ExpressionNode rhs)
+        { }
+    }
+
     public abstract class ExpressionNode : CrawlSyntaxNode
     { }
+
+    public class LiteralNode : ExpressionNode
+    {
+        public LiteralNode(string value, LiteralType type)
+        {
+            
+        }
+
+        public enum LiteralType
+        {
+            String,
+            Int,
+            Float,
+            Boolean
+        }
+    }
+
+    public class TodoRenameCall : ExpressionNode
+    {
+        public TodoRenameCall(ExpressionNode target, List<ExpressionNode> arguments, ExpressionType type)
+        {
+            
+        }
+    }
+
+    public class MultiChildExpressionNode : ExpressionNode
+    {
+        public MultiChildExpressionNode(ExpressionType type, IEnumerable<ExpressionNode> children) { }
+    }
+
+    public class BinaryNode : ExpressionNode
+    {
+        public BinaryNode(ExpressionType type, ExpressionNode lhs, ExpressionNode rhs)
+        { }
+    }
+
+    public class VariableNode : ExpressionNode
+    {
+        public VariableNode(string variableName, Interval interval)
+        {
+
+        }
+    }
+
+    public enum ExpressionType
+    {
+        Invocation,
+        SubfieldAccess,
+        Greater,
+        GreaterEqual,
+        Equal,
+        NotEqual,
+        LessEqual,
+        Less,
+        Index,
+        Subtract
+    }
 
     #region Declerations
     public abstract class DeclerationNode : CrawlSyntaxNode

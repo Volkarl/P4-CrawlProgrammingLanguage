@@ -146,12 +146,12 @@ statements				: ( if_selection | for_loop | while_loop | declaration | assignmen
 //A side effect statement is a statement with a side effect. Aka a function call. 
 //A later part of the compiler needs to ensure it acctually ends with a call_expression
 //Could _maybe_ be done in the parser, but it requires a lot of lookahead.
-side_effect_stmt		: atom ( call_expression | subfield_expression | index_expression )* call_expression END_OF_STATEMENT;
+side_effect_stmt		: postfix_expression call_expression END_OF_STATEMENT;
 
 //////////////////////////////////////////////////////////////////////////////////
 //Next group of statements are the flow control statements. Loops and if's
 //An if statement. Possibly with an else tacked on.
-if_selection			: IF expression INDENT statements DEDENT (ELSE INDENT statements DEDENT)?;
+if_selection			: IF expression INDENT statements DEDENT (ELSE (INDENT statements DEDENT) | if_selection)?;
 
 //A for loop is in reality a foreach loop. Loops over a collection or range. Old school for loop is dead
 for_loop				: FOR type IDENTIFIER FOR_LOOP_SEPERATOR expression INDENT statements DEDENT;
@@ -211,7 +211,7 @@ class_body				: INDENT declaration* DEDENT;
 //A few nuts and bolts that is also needed.
 
 //Save some value in a variable
-assignment				: atom(subfield_expression | index_expression)* ASSIGNMENT_SYMBOL expression END_OF_STATEMENT;
+assignment				: (postfix_expression (subfield_expression | index_expression) | atom) ASSIGNMENT_SYMBOL expression END_OF_STATEMENT;
 
 //A type. As a function is a type with "return_type (argument types)" the real decleartion of type is "type (list of types)?" but that is left recursive type : 
 //Antlr can maybe acctually deal with this, but we just rewrite it
