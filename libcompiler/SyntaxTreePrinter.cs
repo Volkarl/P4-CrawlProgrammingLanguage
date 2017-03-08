@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace libcompiler
 {
+    //TODO: FIx
+    /*
     public class SyntaxTreePrinter : SyntaxTreeVistitor
     {
         public StringBuilder BuildString = new StringBuilder();
@@ -92,4 +94,5 @@ namespace libcompiler
             return base.VisitExpression(node);
         }
     }
+    */
 }

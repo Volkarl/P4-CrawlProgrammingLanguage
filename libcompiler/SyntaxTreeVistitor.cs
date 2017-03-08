@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace libcompiler
 {
+    //TODO: Fix
+    /*
     public abstract class SyntaxTreeVistitor
     {
         public virtual CrawlSyntaxNode Visit(CrawlSyntaxNode node)
@@ -26,14 +28,14 @@ namespace libcompiler
                 case NodeType.Call:
 				    return VisitCall((InvocationExpression) node);
                 case NodeType.Decleration:
-				    return VisitDecleration((DeclerationNode) node);
+				    return VisitDecleration((OldDeclerationNode) node);
                 
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        protected virtual CrawlSyntaxNode VisitDecleration(DeclerationNode node)
+        protected virtual CrawlSyntaxNode VisitDecleration(OldDeclerationNode node)
         {
             return node; //TODO: TYPE
         }
@@ -68,4 +70,5 @@ namespace libcompiler
             return new LiteralNode(node.Node);
         }
     }
+    */
 }

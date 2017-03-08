@@ -1,4 +1,4 @@
-import Console;
+importer Console;
 
 offentlig klasse Helt
   offentlig tekst Navn;
@@ -30,12 +30,10 @@ offentlig intet() Start =
   PrintMuligheder(StartSump);
 
 ////////////////////////////////////////7
-offentlig Helt[] Helte;
-Helte[1]=Brian;
-Helte[2]=TrælsElver;
-Helte[3]=Bimli;
+offentlig Helt[] Helte = Helt(3);
 
-offentlig Helt Brian;
+
+offentlig Helt Brian = Helt();
 Brian.Navn = "Brian";
 Brian.ErILive = sandt;
 Brian.Styrke = 14;
@@ -43,7 +41,7 @@ Brian.Smidighed = 3;
 Brian.Intellligens = 9;
 Brian.Hygiejne = 5;
 
-offentlig Helt TrælsElver;
+offentlig Helt TrælsElver = Helt();
 TrælsElver.Navn = "Ardryll Holahorn";
 TrælsElver.ErILive = sandt;
 TrælsElver.Styrke = 10;
@@ -51,7 +49,7 @@ TrælsElver.Smidighed = 17;
 TrælsElver.Intellligens = 11;
 TrælsElver.Hygiejne = 99;
 
-offentlig Helt Bimli;
+offentlig Helt Bimli = Helt();
 Bimli.Navn = "Dærgen Bimli";
 Bimli.ErILive = sandt;
 Bimli.Styrke = 15;
@@ -59,11 +57,13 @@ Bimli.Smidighed = 9;
 Bimli.Intelligens = 10;
 Bimli.Hygiejne = 5;
 
-
+Helte[1]=Brian;
+Helte[2]=TrælsElver;
+Helte[3]=Bimli;
 
 /////////////////////////////////////////////////////////////
 //Steder
-offentligt Sted StartSump;
+offentligt Sted StartSump = Sted;
 StartSump.Hændelse = StSuHæn;
 StartSump.MulighederNavne[1] = "Rejs til blomstereng";
 StartSump.MulighederNavne[2] = "Rejs til borgruin";
@@ -72,25 +72,25 @@ StartSump.Muligheder[1] = StenSkred;
 StartSump.Muligheder[2] = StenSkred;
 StartSump.Muligheder[3] = Vent;
 
-offentligt Sted Blomstereng;
+offentligt Sted Blomstereng = Sted();
 Blomstereng.Hændelse = StenSkred;
 
-offentligt Sted Borgruin;
+offentligt Sted Borgruin = Sted();
 Blomstereng.Borgruin = StenSkred;
 
 
 /////////////////////////////////////////////////////////////////////////////////
 //Hændelser/Muligheder
 
-offentlig intet() StSuHæn =
+offentlig tekst() StSuHæn =
   for Helt h fra Helte
     h.Hygiejne = h.Hygiejne - 2;
   returner "I befinder Jer i startsumpen. Der lugter.";
 
-offentlig intet() Vent =
+offentlig tekst() Vent =
   returner "Der sker ikke noget";
 
-offentlig intet() StenSkred =
+offentlig tekst() StenSkred =
   for Helt h fra Helte
     h.ErILive = falsk;
   returner "Der sker stenskred. Alle dør.";

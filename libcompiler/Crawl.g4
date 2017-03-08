@@ -136,7 +136,7 @@ translation_unit		: import_directives statements;
 //////////////////////////////////////////////////////////////////////////////////
 //import_directive(s) is imports. Using from C# or import from python
 import_directives		: import_directive* ;
-import_directive		: IMPORT IDENTIFIER (ITEM_SEPERATOR IDENTIFIER)* END_OF_STATEMENT; 
+import_directive		: IMPORT IDENTIFIER (ITEM_SEPARATOR IDENTIFIER)* END_OF_STATEMENT; 
 
 //////////////////////////////////////////////////////////////////////////////////
 //Statements make up the program. Functions/Classes, function calls and general computation
@@ -165,7 +165,7 @@ return_statement		: RETURN expression? END_OF_STATEMENT;
 ///////////////////////////////////////////////////////////////////////////////
 //Since we try and treat functions as any other type, we can't quite see if it is a function or variable definiton before we read it.
 //But this section deals with declearation of anything you can access at a later time
-declaration				: protection_level? (class_declaration | function_or_variable) ;
+declaration				: protection_level? (class_declaration | function_decleration | variable_declerations) ;
 
 //The decleartion of a function, or the decleartion of one or more variables and possibly initializing them to a value.
 //It is supposed to be read as 
@@ -175,21 +175,25 @@ declaration				: protection_level? (class_declaration | function_or_variable) ;
 //	  function body  -> its a function;
 //    expression	 -> its a variable with a default value
 //      then read more identifiers, and give them a default value if said exists
-function_or_variable	: type(LBRACKET RBRACKET)* IDENTIFIER 
-                        (
-                          END_OF_STATEMENT
-                          | 
-                          (
-                            ASSIGNMENT_SYMBOL 
-                            (
-                              function_body 
-                              | 
-                              expression (ITEM_SEPARATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT 
-                            ) 
-                          ) 
-                          |
-                          (ITEM_SEPARATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT 
-                        );
+//function_or_variable	: type IDENTIFIER 
+  //                      (
+    //                      END_OF_STATEMENT
+      //                    | 
+        //                  (
+          //                  ASSIGNMENT_SYMBOL 
+            //                (
+              //                function_body 
+                //              | 
+                  //            expression (ITEM_SEPARATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT 
+                    //        ) 
+                      //    ) 
+                        //  |
+                          //(ITEM_SEPARATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT 
+                        //);
+
+function_decleration	: type IDENTIFIER ASSIGNMENT_SYMBOL function_body;
+variable_declerations	: type variable_decl (ITEM_SEPERATOR variable_decl)* END_OF_STATEMENT;
+variable_decl			: IDENTIFIER (ASSIGNMENT_SYMBOL expression)? ;
 
 //The body of a function. No great secrets hidden here
 function_body			: INDENT statements DEDENT;
@@ -212,11 +216,15 @@ assignment				: atom(subfield_expression | index_expression)* ASSIGNMENT_SYMBOL 
 //A type. As a function is a type with "return_type (argument types)" the real decleartion of type is "type (list of types)?" but that is left recursive type : 
 //Antlr can maybe acctually deal with this, but we just rewrite it
 //Its a * and not a ? as a function can return a function, ad infinitum....
-type					: IDENTIFIER function_type*;
+
+type					: IDENTIFIER function_type? array_type?;
+
 
 //The tailing part if you define a function. ( argument type, optional name, repeat)
-function_type			  : (LPARANTHESIS function_arguments?  RPARANTHESIS)+ ;
-function_arguments  : (type IDENTIFIER?) ( ITEM_SEPARATOR type IDENTIFIER? ) *;
+//type_tail			:  | array_type ;
+array_type			: (LBRACKET ITEM_SEPARATOR* RBRACKET)+ ;
+function_type			: (LPARANTHESIS function_arguments?  RPARANTHESIS)+ ;
+function_arguments	: (type IDENTIFIER?) ( ITEM_SEPARATOR type IDENTIFIER? ) *;
 
 //Protection level. Just stolen from .NET, as we target CLR
 protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL ;
