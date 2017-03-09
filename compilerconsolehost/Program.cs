@@ -27,7 +27,7 @@ namespace compilerconsolehost
                     CrawlParser.Translation_unitContext rootContext = parser.translation_unit();
 
                     string dbgtxt = Unfuck(rootContext.ToStringTree(parser));
-                    Console.WriteLine(dbgtxt);
+                    //Console.WriteLine(dbgtxt);
                     File.WriteAllText("debug.txt", dbgtxt);
                 }
                 catch (Exception e)
@@ -37,9 +37,10 @@ namespace compilerconsolehost
 
                 
                 CrawlSyntaxTree tree = CrawlSyntaxTree.ParseTree(new StreamReader(File.OpenRead(s)), s);
-                //var t = new SyntaxTreePrinter();
-                //t.Visit(tree.RootNode);
-                //Console.WriteLine(t.BuildString.ToString());
+
+                var t = new SyntaxTreePrinter();
+                t.Visit(tree.RootNode);
+                Console.WriteLine(t.BuildString.ToString());
 
             }
             Console.WriteLine("Finished parsing. Press enter to exit...");

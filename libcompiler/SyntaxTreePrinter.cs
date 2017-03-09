@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using libcompiler.SyntaxTreeNodes;
 
 namespace libcompiler
 {
-    //TODO: FIx
-    /*
+    
     public class SyntaxTreePrinter : SyntaxTreeVistitor
     {
         public StringBuilder BuildString = new StringBuilder();
@@ -27,7 +27,7 @@ namespace libcompiler
             "                                                                                       ";
         private int indent = 0;
         private int Lenght = -1;
-        public override CrawlSyntaxNode Visit(CrawlSyntaxNode node)
+        public override void Visit(CrawlSyntaxNode node)
         {
 
             Indent();
@@ -36,9 +36,8 @@ namespace libcompiler
             BuildString.Append(node.ToString());
 
             
-            var v =  base.Visit(node);
+            base.Visit(node);
             Dedent();
-            return v;
         }
 
         private bool last = false;
@@ -69,10 +68,10 @@ namespace libcompiler
             last = false;
         }
 
-        protected override CrawlSyntaxNode VisitLiteral(LiteralNode node)
+        protected override void VisitLiteral(LiteralNode node)
         {
             SupressParens();
-            return base.VisitLiteral(node);
+            base.VisitLiteral(node);
         }
 
         private void SupressParens()
@@ -89,10 +88,29 @@ namespace libcompiler
             suppressCount++;
         }
 
-        protected override CrawlSyntaxNode VisitExpression(ExpressionNode node)
+        protected override void VisitVariableDecleration(VariableDeclerationNode node)
         {
-            return base.VisitExpression(node);
+            BuildString.Append(' ');
+            BuildString.Append(node.DeclerationType.Textdef);
+
+            if (node.Declerations.Count == 1)
+            {
+                SingleVariableDecleration decleration = node.Declerations.First();
+                BuildString.Append(' ');
+                BuildString.Append(decleration.Identifier);
+                if (decleration.DefaultValue != null)
+                    Visit(decleration.DefaultValue);
+            }
+
+            foreach (SingleVariableDecleration decleration in node.Declerations)
+            {
+                Indent();
+                BuildString.Append(decleration.Identifier);
+                
+                if(decleration.DefaultValue != null)
+                    Visit(decleration.DefaultValue);
+                Dedent();
+            }
         }
     }
-    */
 }
