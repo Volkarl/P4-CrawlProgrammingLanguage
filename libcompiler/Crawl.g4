@@ -200,7 +200,7 @@ function_body			: INDENT statements DEDENT;
 
 //Decleartion of a class. A class starts with 'class' (well, translated) then its name, 
 //then plausibly a list of things to inherit from. 
-class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? class_body;
+class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? ASSIGNMENT_SYMBOL class_body;
 inheritances			: inheritance (ITEM_SEPARATOR inheritance)* ;
 inheritance				: IDENTIFIER;
 //The class body only allows decleartions, not the broader statements, we don't want to define wth happens with general computation in a class body

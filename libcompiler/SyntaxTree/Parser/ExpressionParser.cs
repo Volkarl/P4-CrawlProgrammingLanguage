@@ -227,7 +227,7 @@ namespace libcompiler.SyntaxTree.Parser
 
                 if (i + 1 != expList.ChildCount)
                 {
-                    ITerminalNode itemsep = (ITerminalNode) expList.GetChild(i);
+                    ITerminalNode itemsep = (ITerminalNode) expList.GetChild(i+1);
                     if(itemsep.Symbol.Type != CrawlLexer.ITEM_SEPARATOR) throw new NotImplementedException("Strange stuff in expression list");
                 }
             }

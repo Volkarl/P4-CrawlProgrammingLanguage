@@ -165,8 +165,10 @@ namespace libcompiler.SyntaxTree.Parser
         {
             ITerminalNode tn1 = (ITerminalNode)classPart.GetChild(0);
             ITerminalNode tn2 = (ITerminalNode)classPart.GetChild(1);
-            RuleContext body = (RuleContext) classPart.GetChild(2);
+            RuleContext body = (RuleContext) classPart.GetChild(3);
 
+
+            if(classPart.ChildCount != 4) throw new NotImplementedException("No class inheritance");
             if(tn1.Symbol.Type != CrawlLexer.CLASS) throw new CrawlImpossibleStateException("Trying to parse a class that is not a class", interval);
 
             BlockNode bodyBlock = ParseBlockNode(body);
