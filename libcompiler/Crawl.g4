@@ -140,7 +140,7 @@ import_directive		: IMPORT IDENTIFIER (ITEM_SEPARATOR IDENTIFIER)* END_OF_STATEM
 
 //////////////////////////////////////////////////////////////////////////////////
 //Statements make up the program. Functions/Classes, function calls and general computation
-statements				: ( if_selection | for_loop | while_loop | declaration | assignment | return_statement | side_effect_stmt | NEWLINE ) *;
+statements				: ( if_selection | for_loop | while_loop | declaration | assignment | return_statement | side_effect_stmt | END_OF_STATEMENT | NEWLINE ) *;
 
 //////////////////////////////////////////////////////////////////////////////////
 //A side effect statement is a statement with a side effect. Aka a function call. 
@@ -151,7 +151,7 @@ side_effect_stmt		: postfix_expression call_expression END_OF_STATEMENT;
 //////////////////////////////////////////////////////////////////////////////////
 //Next group of statements are the flow control statements. Loops and if's
 //An if statement. Possibly with an else tacked on.
-if_selection			: IF expression INDENT statements DEDENT (ELSE (INDENT statements DEDENT) | if_selection)?;
+if_selection			: IF expression INDENT statements DEDENT (ELSE ((INDENT statements DEDENT) | if_selection))?;
 
 //A for loop is in reality a foreach loop. Loops over a collection or range. Old school for loop is dead
 for_loop				: FOR type IDENTIFIER FOR_LOOP_SEPERATOR expression INDENT statements DEDENT;
@@ -314,7 +314,7 @@ INTERNAL				: 'intern' ;
 CLASS					: 'klasse';
 RETURN					: 'returner';
 IF						: 'hvis';
-ELSE					: 'elers';
+ELSE					: 'ellers';
 WHILE					: 'mens';
 FOR						: 'for';
 TO						: 'til';

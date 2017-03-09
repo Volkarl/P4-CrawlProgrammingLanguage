@@ -17,5 +17,10 @@ namespace libcompiler.SyntaxTree.Nodes
             Identfier = name;
             BodyBlock = block;
         }
+
+        public override string ToString()
+        {
+            return $"decl {FunctionType.Textdef} {Identfier} =";
+        }
     }
 }

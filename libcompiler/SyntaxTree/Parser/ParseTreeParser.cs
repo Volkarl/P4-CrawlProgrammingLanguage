@@ -31,7 +31,20 @@ namespace libcompiler.SyntaxTree.Parser
             {
                 return ParseIf(rule);
             }
+            else if (rule.RuleIndex == CrawlParser.RULE_while_loop)
+            {
+                return ParseWhile(rule);
+            }
             throw new NotImplementedException("while loop not implemented");
+        }
+
+        private FlowNode ParseWhile(RuleContext rule)
+        {
+            ExpressionNode condition = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(1));
+            BlockNode block = ParseBlockNode((RuleContext) rule.GetChild(3));
+
+            return NodeFactory.WhileLoop(rule.SourceInterval, condition, block);
+            throw new NotImplementedException();
         }
 
         private FlowNode ParseIf(RuleContext rule)
@@ -40,13 +53,23 @@ namespace libcompiler.SyntaxTree.Parser
             ExpressionNode expression = ExpressionParser.ParseExpression((RuleContext)rule.GetChild(1));
             BlockNode trueBlock = ParseBlockNode((RuleContext) rule.GetChild(3));
 
+            //Pure if
             if (rule.ChildCount == 5)
             {
                 return NodeFactory.If(rule.SourceInterval, expression, trueBlock);
             }
+            //If Else
             else if(rule.ChildCount == 9)
             {
                 BlockNode falseBlock = ParseBlockNode((RuleContext) rule.GetChild(7));
+                return NodeFactory.IfElse(rule.SourceInterval, expression, trueBlock, falseBlock);
+            }
+            //Else if
+            else if (rule.ChildCount == 7)
+            {
+                RuleContext chain = (RuleContext) rule.GetChild(6);
+                List<CrawlSyntaxNode> blockContents = new List<CrawlSyntaxNode>(){ParseIf(chain)};
+                BlockNode falseBlock = NodeFactory.Block(chain.SourceInterval, blockContents);
                 return NodeFactory.IfElse(rule.SourceInterval, expression, trueBlock, falseBlock);
             }
 
@@ -221,8 +244,8 @@ namespace libcompiler.SyntaxTree.Parser
 
             IEnumerable<CrawlSyntaxNode> contents =
                 meaningfullContent
-                    .Cast<RuleContext>()
-                    .Select(ParseStatement);
+                    .OfType<RuleContext>() //FIXME! This can contain raw NEWLINE and END_OF_STATEMENT tokens which is TerminalNodeImpl not RuleContext. Not happy about discarding that trivia
+                    .Select(ParseStatement).ToList();
 
             return NodeFactory.Block(rule.SourceInterval, contents);
         }
@@ -242,6 +265,7 @@ namespace libcompiler.SyntaxTree.Parser
                     return ExpressionParser.ParseSideEffectStatement(rule);
                 case CrawlParser.RULE_for_loop:
                 case CrawlParser.RULE_if_selection:
+                case CrawlParser.RULE_while_loop:
                     return ParseFlow(rule);
                 case CrawlParser.RULE_assignment:
                     return ParseAssignment(rule);

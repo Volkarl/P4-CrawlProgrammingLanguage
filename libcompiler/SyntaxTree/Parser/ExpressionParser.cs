@@ -48,6 +48,7 @@ namespace libcompiler.SyntaxTree.Parser
                 case CrawlParser.RULE_postfix_expression:
                     return ParsePostfix(rule);
                 case CrawlParser.RULE_comparison_expression:
+                case CrawlParser.RULE_range_expression:
                     return ParseBinary(rule);
                 case CrawlParser.RULE_additive_expression:
                 case CrawlParser.RULE_multiplicative_expression:
@@ -110,7 +111,8 @@ namespace libcompiler.SyntaxTree.Parser
             {"==", ExpressionType.Equal },
             {"!=", ExpressionType.NotEqual },
             {"<=", ExpressionType.LessEqual },
-            {"<",  ExpressionType.Less }
+            {"<",  ExpressionType.Less },
+            {"til", ExpressionType.Range }
         };
 
         private static ExpressionType ParseBinaryOp(ITerminalNode op)
@@ -128,7 +130,9 @@ namespace libcompiler.SyntaxTree.Parser
             {"-", ExpressionType.Subtract },
             {"+", ExpressionType.Add },
             {"*", ExpressionType.Multiply},
-            {"**", ExpressionType.Power }
+            {"**", ExpressionType.Power },
+            {"eller", ExpressionType.ShortCircuitOr },
+            {"og", ExpressionType.ShortCircuitAnd}
         };
 
         private static ExpressionType ParseMultiOp(ITerminalNode op)

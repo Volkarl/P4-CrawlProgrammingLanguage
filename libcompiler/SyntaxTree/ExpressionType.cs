@@ -14,6 +14,9 @@
         Subtract,
         Power,
         Add,
-        Multiply
+        Multiply,
+        Range,
+        ShortCircuitOr,
+        ShortCircuitAnd
     }
 }

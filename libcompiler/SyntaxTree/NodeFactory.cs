@@ -132,5 +132,10 @@ namespace libcompiler.SyntaxTree
         {
             return new LiteralNode(_owner, interval, textRepresentation, LiteralNode.LiteralType.Real);
         }
+
+        public FlowNode WhileLoop(Interval interval, ExpressionNode condition, BlockNode block)
+        {
+            return new SelectiveFlowNode(SelectiveFlowNode.FlowType.While, condition, block, null, interval, _owner);
+        }
     }
 }

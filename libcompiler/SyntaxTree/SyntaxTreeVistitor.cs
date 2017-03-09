@@ -18,7 +18,8 @@ namespace libcompiler.SyntaxTree
                     VisitIf((SelectiveFlowNode) node);
                     break;
                 case NodeType.While:
-                    throw new NotImplementedException(); ;
+                    VisitWhile((SelectiveFlowNode) node);
+                    break;
                 case NodeType.Return:
                     VisitReturnStatement((ReturnStatement) node);
                     break;
@@ -64,6 +65,12 @@ namespace libcompiler.SyntaxTree
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        protected virtual void VisitWhile(SelectiveFlowNode node)
+        {
+            Visit(node.Check);
+            Visit(node.Primary);
         }
 
         protected virtual  void VisitMulti(MultiChildExpressionNode node)
