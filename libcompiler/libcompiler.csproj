@@ -67,6 +67,8 @@
     <Compile Include="SyntaxTree\Nodes\LiteralNode.cs" />
     <Compile Include="SyntaxTree\Nodes\MultiChildExpressionNode.cs" />
     <Compile Include="SyntaxTree\NodeFactory.cs" />
+    <Compile Include="CrawlImpossibleStateException.cs" />
+    <Compile Include="CrawlSyntaxException.cs" />
     <Compile Include="SyntaxTree\Parser\ExpressionParser.cs" />
     <Compile Include="SyntaxTree\Parser\ParseTreeParser.cs" />
     <Compile Include="SyntaxTree\ProtectionLevel.cs" />
