@@ -92,9 +92,18 @@ namespace libcompiler.SyntaxTreeNodes
             for (int i = 1; i < rule.ChildCount; i+=2)
             {
                 ExpressionType newtype = ParseMultiOp((ITerminalNode) rule.GetChild(i));
-                if(newtype == type)
-                    sources.Add(ParseExpression((RuleContext)rule.GetChild(i+1)));
-                else throw new NotImplementedException();
+                if (newtype == type)
+                    sources.Add(ParseExpression((RuleContext) rule.GetChild(i + 1)));
+                else
+                {
+                    //TODO: Actually calculate the interval
+                    //The expression contained multiple types of operations
+                    ExpressionNode newNode = NodeFactory.MultiExpression(Interval.Invalid, type, sources);
+                    sources.Clear();
+                    sources.Add(newNode);
+                    type = newtype;
+                    sources.Add(ParseExpression((RuleContext)rule.GetChild(i + 1)));
+                }
             }
 
             return NodeFactory.MultiExpression(rule.SourceInterval, type, sources);
@@ -370,7 +379,7 @@ namespace libcompiler.SyntaxTreeNodes
                 type,
                 classPart
                     .AsEdgeTrimmedIEnumerable()
-                    .Cast<CrawlParser.Variable_declContext>()
+                    .OfType<CrawlParser.Variable_declContext>()
                     .Select(ParseSingleVariable));
         }
 
@@ -690,7 +699,7 @@ namespace libcompiler.SyntaxTreeNodes
         }
     }
 
-    internal class ForLoopNode : FlowNode
+    public class ForLoopNode : FlowNode
     {
         public CrawlType InducedFieldType { get; }
         public string InducedFieldName { get; }
@@ -776,7 +785,6 @@ namespace libcompiler.SyntaxTreeNodes
     public abstract class ExpressionNode : CrawlSyntaxNode
     {
         protected ExpressionNode(CrawlSyntaxTree owningTree, Interval interval, NodeType type) : base(owningTree, type, interval) { }
-
     }
 
     public class LiteralNode : ExpressionNode
@@ -797,6 +805,11 @@ namespace libcompiler.SyntaxTreeNodes
             Float,
             Boolean,
             Real
+        }
+
+        public override string ToString()
+        {
+            return Value;
         }
     }
 
@@ -834,6 +847,11 @@ namespace libcompiler.SyntaxTreeNodes
             ExpressionType = type;
             Arguments = children.ToList().AsReadOnly();
         }
+
+        public override string ToString()
+        {
+            return ExpressionType.ToString();
+        }
     }
 
     public class BinaryNode : ExpressionNode
@@ -848,6 +866,11 @@ namespace libcompiler.SyntaxTreeNodes
             LeftHandSide = lhs;
             RightHandSide = rhs;
         }
+
+        public override string ToString()
+        {
+            return ExpressionType.ToString();
+        }
     }
 
     public class VariableNode : ExpressionNode
@@ -857,6 +880,11 @@ namespace libcompiler.SyntaxTreeNodes
         public VariableNode(CrawlSyntaxTree owningTree, string name, Interval interval) : base(owningTree, interval, NodeType.Variable)
         {
             Name = name;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 

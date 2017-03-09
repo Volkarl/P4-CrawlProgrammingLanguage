@@ -1,74 +1,183 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using libcompiler.SyntaxTreeNodes;
 
 namespace libcompiler
 {
-    //TODO: Fix
-    /*
     public abstract class SyntaxTreeVistitor
     {
-        public virtual CrawlSyntaxNode Visit(CrawlSyntaxNode node)
+        public virtual void Visit(CrawlSyntaxNode node)
         {
             //  s/\.([^:]*):/.$1:\n\t\t\t\t\treturn Visit$1(($1Node) node);/
             switch (node.Type)
             {
-                case NodeType.Literal:
-                    return VisitLiteral((LiteralNode) node);
-                case NodeType.CompilationUnit:
-                    return VisitCompilationUnit((CompiliationUnitNode) node);
-                case NodeType.Expression:
-				    return VisitExpression((ExpressionNode) node);
-                case NodeType.MemberAccess:
-				    return VisitMemberAccess((MemberAccessNode) node);
+                case NodeType.TODO:
+                    throw new NotImplementedException(); ;
+                case NodeType.Forloop:
+                    VisitForLoop((ForLoopNode) node);
+                    break;
+                case NodeType.If:
+                case NodeType.IfElse:
+                    VisitIf((SelectiveFlowNode) node);
+                    break;
+                case NodeType.While:
+                    throw new NotImplementedException(); ;
+                case NodeType.Return:
+                    VisitReturnStatement((ReturnStatement) node);
+                    break;
+                case NodeType.Assignment:
+                    VisitAssignment((AssignmentNode) node);
+                    break;
                 case NodeType.Index:
-				    return VisitIndex((IndexExpression) node);
                 case NodeType.Call:
-				    return VisitCall((InvocationExpression) node);
-                case NodeType.Decleration:
-				    return VisitDecleration((OldDeclerationNode) node);
-                
+                    VisitCall((TodoRenameCall) node);
+                    break;
+                case NodeType.MultiExpression:
+                    VisitMulti((MultiChildExpressionNode) node);
+                    break;
+                case NodeType.BinaryExpression:
+                    VisitBinary((BinaryNode) node);
+                    break;
+                case NodeType.Variable:
+                    VisitVariableNode((VariableNode) node);
+                    break;
+                case NodeType.ClassDecleration:
+                    VisitClassDecleration((ClassDeclerationNode) node);
+                    break;
+                case NodeType.VariableDecleration:
+                    VisitVariableDecleration((VariableDeclerationNode) node);
+                    break;
+                case NodeType.VariableDeclerationSingle:
+                    VisitVariableDeclerationSingle((SingleVariableDecleration) node);
+                    break;
+                case NodeType.FunctionDecleration:
+                    VisitFunctionDecleration((FunctionDeclerationNode) node);
+                    break;
+                case NodeType.Block:
+                    VisitBlock((BlockNode) node);
+                    break;
+                case NodeType.Import:
+                    throw new NotImplementedException();
+                case NodeType.CompilationUnit:
+                    VisitCompiliationUnit((CompiliationUnitNode) node);
+                    break;
+                case NodeType.Literal:
+                    VisitLiteral((LiteralNode) node);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        protected virtual CrawlSyntaxNode VisitDecleration(OldDeclerationNode node)
+        protected virtual  void VisitMulti(MultiChildExpressionNode node)
         {
-            return node; //TODO: TYPE
+            foreach (ExpressionNode argument in node.Arguments)
+            {
+                Visit(argument);
+            }
         }
 
-        protected virtual CrawlSyntaxNode VisitCall(InvocationExpression node)
+        protected virtual void VisitReturnStatement(ReturnStatement node)
         {
-            return new InvocationExpression((ValueNode) Visit(node.Method), node.Arguments.Select(Visit).Cast<ValueNode>().ToList());
+            if(node.ReturnValue != null) Visit(node.ReturnValue);
         }
 
-        protected virtual CrawlSyntaxNode VisitIndex(IndexExpression node)
+        protected virtual void VisitAssignment(AssignmentNode node)
         {
-            return new IndexExpression(node.Arguments.Select(Visit).Cast<ValueNode>().ToList());
+            Visit(node.LeftHandSide);
+            Visit(node.RightHandSide);
         }
 
-        protected virtual CrawlSyntaxNode VisitMemberAccess(MemberAccessNode node)
+        protected virtual void VisitIf(SelectiveFlowNode node)
         {
-            return new MemberAccessNode((ValueNode) Visit(node.Parent), node.Subfield);
+            Visit(node.Check);
+            Visit(node.Primary);
+            if(node.Alternative !=  null) Visit(node.Alternative);
         }
 
-        protected virtual CrawlSyntaxNode VisitExpression(ExpressionNode node)
+        protected virtual void VisitBinary(BinaryNode node)
         {
-            return new ExpressionNode(node.ExpressionType, node.Children.Select(Visit).ToList());
+            Visit(node.LeftHandSide);
+            Visit(node.RightHandSide);
         }
 
-        protected virtual CrawlSyntaxNode VisitCompilationUnit(CompiliationUnitNode node)
+        protected virtual void VisitForLoop(ForLoopNode node)
         {
-            return new CompiliationUnitNode(node.Children.Select(Visit).ToList());
+            Visit(node.Iteratior);
+            Visit(node.Block);
+            {
+                
+            }
         }
 
-        protected virtual CrawlSyntaxNode VisitLiteral(LiteralNode node)
+        protected virtual void VisitVariableNode(VariableNode node)
         {
-            return new LiteralNode(node.Node);
+            
+        }
+
+        protected virtual void VisitCall(TodoRenameCall node)
+        {
+            Visit(node.Target);
+
+            foreach (ExpressionNode expressionNode in node.Arguments)
+            {
+                Visit(expressionNode);
+            }
+        }
+
+        protected virtual void VisitFunctionDecleration(FunctionDeclerationNode node)
+        {
+            Visit(node.BodyBlock);
+        }
+
+        protected virtual void VisitVariableDeclerationSingle(SingleVariableDecleration node)
+        {
+            if(node.DefaultValue != null)
+                Visit(node.DefaultValue);
+        }
+
+        protected virtual void VisitVariableDecleration(VariableDeclerationNode node)
+        {
+            foreach (SingleVariableDecleration decleration in node.Declerations)
+            {
+                Visit(decleration);
+            }
+        }
+
+        protected virtual void VisitClassDecleration(ClassDeclerationNode node)
+        {
+            Visit(node.BodyBlock);
+        }
+
+        protected virtual void VisitLiteral(LiteralNode node)
+        {
+            
+        }
+
+        protected virtual void VisitCompiliationUnit(CompiliationUnitNode node)
+        {
+            foreach (ImportNode nodeImport in node.Imports)
+            {
+                Visit(nodeImport);
+            }
+
+            Visit(node.Code);
+        }
+
+        protected virtual void VisitBlock(BlockNode node)
+        {
+            foreach (CrawlSyntaxNode child in node.Children)
+            {
+                Visit(child);
+            }
         }
     }
-    */
+
+    public class FooVisitor : SyntaxTreeVistitor
+    { }
+    
 }
