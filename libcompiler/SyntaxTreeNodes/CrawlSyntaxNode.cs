@@ -247,7 +247,6 @@ namespace libcompiler.SyntaxTreeNodes
         }
     }
 
-    
     public class Foo
     {
         private readonly NodeFactory NodeFactory;
@@ -693,6 +692,11 @@ namespace libcompiler.SyntaxTreeNodes
 
     internal class ForLoopNode : FlowNode
     {
+        public CrawlType InducedFieldType { get; }
+        public string InducedFieldName { get; }
+        public ExpressionNode Iteratior { get; }
+        public BlockNode Block { get; }
+
         public ForLoopNode(
             CrawlType type, 
             string inducedField, 
@@ -705,14 +709,25 @@ namespace libcompiler.SyntaxTreeNodes
             NodeType.Forloop, 
             interval)
         {
-            
+            InducedFieldType = type;
+            InducedFieldName = inducedField;
+            Iteratior = iteratior;
+            Block = block;
         }
     }
 
     public class SelectiveFlowNode : FlowNode
     {
+        public ExpressionNode Check { get; }
+        public BlockNode Primary { get; }
+        public BlockNode Alternative { get; }
+
         public SelectiveFlowNode(FlowType type, ExpressionNode check, BlockNode primary, BlockNode alternative, Interval interval, CrawlSyntaxTree owningTree) : base(owningTree, MakeNodeType(type), interval)
-        { }
+        {
+            Check = check;
+            Primary = primary;
+            Alternative = alternative;
+        }
 
         private static NodeType MakeNodeType(FlowType type)
         {
@@ -739,13 +754,23 @@ namespace libcompiler.SyntaxTreeNodes
 
     public class ReturnStatement : CrawlSyntaxNode
     {
-        public ReturnStatement(CrawlSyntaxTree owningTree, Interval interval, ExpressionNode returnValue = null) : base(owningTree, NodeType.Return, interval) { }
+        public ExpressionNode ReturnValue { get; }
+        public ReturnStatement(CrawlSyntaxTree owningTree, Interval interval, ExpressionNode returnValue = null) : base(owningTree, NodeType.Return, interval)
+        {
+            ReturnValue = returnValue;
+        }
     }
 
     public class AssignmentNode : CrawlSyntaxNode
     {
-        public AssignmentNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionNode lhs, ExpressionNode rhs) : base(owningTree, NodeType.Assignment, interval)
-        { }
+        public ExpressionNode LeftHandSide { get; }
+        public ExpressionNode RightHandSide { get; }
+
+        public AssignmentNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionNode leftHandSide, ExpressionNode rightHandSide) : base(owningTree, NodeType.Assignment, interval)
+        {
+            LeftHandSide = leftHandSide;
+            RightHandSide = rightHandSide;
+        }
     }
 
     public abstract class ExpressionNode : CrawlSyntaxNode
@@ -756,9 +781,13 @@ namespace libcompiler.SyntaxTreeNodes
 
     public class LiteralNode : ExpressionNode
     {
+        public string Value { get; }
+        public LiteralType Type { get; }
+
         public LiteralNode(CrawlSyntaxTree owningTree, Interval interval, string value, LiteralType type) : base(owningTree, interval, NodeType.Literal)
         {
-            
+            Value = value;
+            Type = type;
         }
 
         public enum LiteralType
@@ -773,9 +802,13 @@ namespace libcompiler.SyntaxTreeNodes
 
     public class TodoRenameCall : ExpressionNode
     {
+        public ExpressionNode Target { get; }
+        public IReadOnlyCollection<ExpressionNode> Arguments { get; }
+
         public TodoRenameCall(CrawlSyntaxTree owningTree, Interval interval, ExpressionNode target, IEnumerable<ExpressionNode> arguments, ExpressionType type) : base(owningTree, interval, MakeNodeType(type))
         {
-            
+            Target = target;
+            Arguments = arguments.ToList().AsReadOnly();
         }
 
         private static NodeType MakeNodeType(ExpressionType type)
@@ -794,20 +827,36 @@ namespace libcompiler.SyntaxTreeNodes
 
     public class MultiChildExpressionNode : ExpressionNode
     {
-        public MultiChildExpressionNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionType type, IEnumerable<ExpressionNode> children): base(owningTree, interval, NodeType.MultiExpression) { }
+        public ExpressionType ExpressionType { get; }
+        public IReadOnlyCollection<ExpressionNode> Arguments { get; }
+        public MultiChildExpressionNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionType type, IEnumerable<ExpressionNode> children): base(owningTree, interval, NodeType.MultiExpression)
+        {
+            ExpressionType = type;
+            Arguments = children.ToList().AsReadOnly();
+        }
     }
 
     public class BinaryNode : ExpressionNode
     {
+        public ExpressionNode LeftHandSide { get; }
+        public ExpressionNode RightHandSide { get; }
+        public ExpressionType ExpressionType { get; }
+
         public BinaryNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionType type, ExpressionNode lhs, ExpressionNode rhs) : base(owningTree, interval, NodeType.BinaryExpression)
-        { }
+        {
+            ExpressionType = type;
+            LeftHandSide = lhs;
+            RightHandSide = rhs;
+        }
     }
 
     public class VariableNode : ExpressionNode
     {
-        public VariableNode(CrawlSyntaxTree owningTree, string variableName, Interval interval) : base(owningTree, interval, NodeType.Variable)
-        {
+        public string Name { get; }
 
+        public VariableNode(CrawlSyntaxTree owningTree, string name, Interval interval) : base(owningTree, interval, NodeType.Variable)
+        {
+            Name = name;
         }
     }
 
@@ -844,28 +893,31 @@ namespace libcompiler.SyntaxTreeNodes
 
     public class ClassDeclerationNode : DeclerationNode
     {
-        private BlockNode bodyBlock;
+        //TODO: List of constructors? Probably as extension method to not calculate unless required
+        public BlockNode BodyBlock { get; }
         public string Identifier { get; }
 
         public ClassDeclerationNode(CrawlSyntaxTree owningTree, ProtectionLevel protectionLevel, string name, BlockNode bodyBlock, Interval interval) : base(owningTree, interval, NodeType.ClassDecleration, protectionLevel)
         {
             Identifier = name;
-            this.bodyBlock = bodyBlock;
+            BodyBlock = bodyBlock;
         }
     }
 
     public class VariableDeclerationNode : DeclerationNode
     {
+        public CrawlType DeclerationType { get; }
         public List<SingleVariableDecleration> Declerations { get; }
 
         public VariableDeclerationNode(
             CrawlSyntaxTree owningTree, 
             ProtectionLevel protectionLevel, 
-            CrawlType type, 
+            CrawlType declerationType, 
             IEnumerable<SingleVariableDecleration> declerations, 
             Interval interval
         ) : base(owningTree, interval, NodeType.VariableDecleration, protectionLevel)
         {
+            DeclerationType = declerationType;
             Declerations = declerations.ToList();
         }
     }
@@ -886,9 +938,16 @@ namespace libcompiler.SyntaxTreeNodes
 
     public class FunctionDeclerationNode : DeclerationNode
     {
-        public FunctionDeclerationNode(CrawlSyntaxTree owningTree, CrawlType type, string name, Interval interval, BlockNode block, ProtectionLevel protectionLevel) : base(owningTree, interval, NodeType.FunctionDecleration, protectionLevel)
+        //TODO: do something about parameters
+        public CrawlType FunctionType { get; }
+        public string Identfier { get; }
+        public BlockNode BodyBlock { get; }
+
+        public FunctionDeclerationNode(CrawlSyntaxTree owningTree, CrawlType functionType, string name, Interval interval, BlockNode block, ProtectionLevel protectionLevel) : base(owningTree, interval, NodeType.FunctionDecleration, protectionLevel)
         {
-            
+            FunctionType = functionType;
+            Identfier = name;
+            BodyBlock = block;
         }
     }
 

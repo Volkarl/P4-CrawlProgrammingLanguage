@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Antlr4.Runtime;
 using libcompiler.Parser;
 using libcompiler.SyntaxTreeNodes;
@@ -15,12 +11,10 @@ namespace libcompiler
         public string CompilationUnitName { get; }
         public CrawlSyntaxNode RootNode { get; private set; }
 
-
         private CrawlSyntaxTree(CrawlParser.Translation_unitContext rootContext, string compilationUnitName)
         {
             CompilationUnitName = compilationUnitName;
             
-            List <CrawlSyntaxNode> Contents = new List<CrawlSyntaxNode>();
             CrawlParser.Import_directivesContext imports =
                 (CrawlParser.Import_directivesContext)rootContext.GetChild(0);
 
