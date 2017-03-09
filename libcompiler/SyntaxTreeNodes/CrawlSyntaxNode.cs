@@ -44,27 +44,30 @@ namespace libcompiler.SyntaxTreeNodes
 
         public ExpressionNode ParseExpression(RuleContext rule)
         {
+            //Literal value.
             if (rule.RuleIndex == CrawlParser.RULE_literal)
                 return ParseLiteral(rule);
 
             if (rule.RuleIndex == CrawlParser.RULE_atom)
             {
-
+                //Reference to variable by identifier.
                 ITerminalNode tn = rule.GetChild(0) as ITerminalNode;
                 if (tn != null && tn.Symbol.Type == CrawlLexer.IDENTIFIER)
                 {
                     return NodeFactory.VariableAccess(tn.SourceInterval, tn.GetText());
                 }
+                //Expression in parentheses. Parse only content, throw out parentheses.
                 else if (rule.ChildCount == 3)
                 {
                     return ParseExpression((RuleContext) rule.GetChild(1));
                 }
             }
 
+            //If this is just an intermedite node, proceed to the next one.
             if(rule.ChildCount == 1)
                 return ParseExpression((RuleContext) rule.GetChild(0));
 
-
+            //And lastly handle operators.
             switch (rule.RuleIndex)
             {
                 case CrawlParser.RULE_postfix_expression:
@@ -89,12 +92,13 @@ namespace libcompiler.SyntaxTreeNodes
             sources.Add(ParseExpression((RuleContext)rule.GetChild(0)));
             ExpressionType type = ParseMultiOp((ITerminalNode) rule.GetChild(1));
 
+            //Operations of same precedence may be chained together. Go through rest of the operator nodes.
             for (int i = 1; i < rule.ChildCount; i+=2)
             {
                 ExpressionType newtype = ParseMultiOp((ITerminalNode) rule.GetChild(i));
                 if(newtype == type)
                     sources.Add(ParseExpression((RuleContext)rule.GetChild(i+1)));
-                else throw new NotImplementedException();
+                else throw new NotImplementedException("Need to handle more than one type of operator in same node.");
             }
 
             return NodeFactory.MultiExpression(rule.SourceInterval, type, sources);
@@ -117,12 +121,12 @@ namespace libcompiler.SyntaxTreeNodes
 
         private static readonly Dictionary<string, ExpressionType> BinaryTypeMap = new Dictionary<string, ExpressionType>()
         {
-            {">", ExpressionType.Greater },
+            {">",  ExpressionType.Greater },
             {">=", ExpressionType.GreaterEqual },
             {"==", ExpressionType.Equal },
             {"!=", ExpressionType.NotEqual },
             {"<=", ExpressionType.LessEqual },
-            {"<", ExpressionType.Less },
+            {"<",  ExpressionType.Less }
         };
 
         private static ExpressionType ParseBinaryOp(ITerminalNode op)
@@ -141,7 +145,6 @@ namespace libcompiler.SyntaxTreeNodes
             {"*", ExpressionType.Multiply},
             {"**", ExpressionType.Power }
         };
-        
 
         private static ExpressionType ParseMultiOp(ITerminalNode op)
         {
