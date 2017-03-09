@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using libcompiler.SyntaxTreeNodes;
+using libcompiler.SyntaxTree;
+using libcompiler.SyntaxTree.Nodes;
 
 namespace libcompiler
 {

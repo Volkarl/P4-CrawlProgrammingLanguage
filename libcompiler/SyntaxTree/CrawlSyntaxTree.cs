@@ -2,9 +2,10 @@
 using System.IO;
 using Antlr4.Runtime;
 using libcompiler.Parser;
-using libcompiler.SyntaxTreeNodes;
+using libcompiler.SyntaxTree.Nodes;
+using libcompiler.SyntaxTree.Parser;
 
-namespace libcompiler
+namespace libcompiler.SyntaxTree
 {
     public class CrawlSyntaxTree
     {
@@ -23,7 +24,7 @@ namespace libcompiler
 
             
             NodeFactory factory = new NodeFactory(this);
-            BlockNode rootBlock = new Foo(this).ParseBlockNode(statements);
+            BlockNode rootBlock = new ParseTreeParser(this).ParseBlockNode(statements);
 
             
 

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using libcompiler.SyntaxTreeNodes;
+using libcompiler.SyntaxTree.Nodes;
 
-namespace libcompiler
+namespace libcompiler.SyntaxTree
 {
     public abstract class SyntaxTreeVistitor
     {
@@ -15,8 +10,6 @@ namespace libcompiler
             //  s/\.([^:]*):/.$1:\n\t\t\t\t\treturn Visit$1(($1Node) node);/
             switch (node.Type)
             {
-                case NodeType.TODO:
-                    throw new NotImplementedException(); ;
                 case NodeType.Forloop:
                     VisitForLoop((ForLoopNode) node);
                     break;
@@ -34,7 +27,7 @@ namespace libcompiler
                     break;
                 case NodeType.Index:
                 case NodeType.Call:
-                    VisitCall((TodoRenameCall) node);
+                    VisitCall((CallishNode) node);
                     break;
                 case NodeType.MultiExpression:
                     VisitMulti((MultiChildExpressionNode) node);
@@ -119,7 +112,7 @@ namespace libcompiler
             
         }
 
-        protected virtual void VisitCall(TodoRenameCall node)
+        protected virtual void VisitCall(CallishNode node)
         {
             Visit(node.Target);
 

@@ -42,15 +42,41 @@
   <ItemGroup>
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
     <Compile Include="SyntaxTreePrinter.cs" />
-    <Compile Include="SyntaxTreeNodes\CrawlSyntaxNode.cs" />
-    <Compile Include="CrawlSyntaxTree.cs" />
+    <Compile Include="SyntaxTree\Nodes\AssignmentNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\BinaryNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\CallishNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\CompiliationUnitNode.cs" />
+    <Compile Include="SyntaxTree\CrawlSyntaxNode.cs" />
+    <Compile Include="SyntaxTree\CrawlSyntaxTree.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
     <Compile Include="GeneratedParser\CrawlBaseListener.cs" />
     <Compile Include="GeneratedParser\CrawlLexer.cs" />
     <Compile Include="GeneratedParser\CrawlListener.cs" />
     <Compile Include="GeneratedParser\CrawlParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SyntaxTreeVistitor.cs" />
+    <Compile Include="CrawlType.cs" />
+    <Compile Include="SyntaxTree\Nodes\DeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\ExpressionNode.cs" />
+    <Compile Include="SyntaxTree\ExpressionType.cs" />
+    <Compile Include="SyntaxTree\Nodes\FlowNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\ForLoopNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\FunctionDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\ImportNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\LiteralNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\MultiChildExpressionNode.cs" />
+    <Compile Include="SyntaxTree\NodeFactory.cs" />
+    <Compile Include="SyntaxTree\Parser\ExpressionParser.cs" />
+    <Compile Include="SyntaxTree\Parser\ParseTreeParser.cs" />
+    <Compile Include="SyntaxTree\ProtectionLevel.cs" />
+    <Compile Include="SyntaxTree\Nodes\ReturnStatement.cs" />
+    <Compile Include="SyntaxTree\Nodes\SelectiveFlowNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\SingleVariableDecleration.cs" />
+    <Compile Include="SyntaxTree\SyntaxTreeVistitor.cs" />
+    <Compile Include="SyntaxTree\NodeType.cs" />
+    <Compile Include="SyntaxTree\Nodes\VariableDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\VariableNode.cs" />
     <Compile Include="TraceListners.cs" />
   </ItemGroup>
   <ItemGroup>

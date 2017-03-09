@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Antlr4.Runtime;
 using libcompiler;
 using libcompiler.Parser;
+using libcompiler.SyntaxTree;
 
 namespace compilerconsolehost
 {
@@ -28,7 +29,7 @@ namespace compilerconsolehost
 
                     string dbgtxt = Unfuck(rootContext.ToStringTree(parser));
                     //Console.WriteLine(dbgtxt);
-                    File.WriteAllText("debug.txt", dbgtxt);
+                    //File.WriteAllText("debug.txt", dbgtxt);
                 }
                 catch (Exception e)
                 {
