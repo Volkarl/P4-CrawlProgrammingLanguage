@@ -1,23 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using libcompiler.ExtensionMethods;
 using libcompiler.Parser;
 
-namespace libcompiler
+namespace libcompiler.SyntaxTreeNodes
 {
     public enum NodeType
     {
-        TODO
+        TODO,
+        Forloop,
+        If,
+        IfElse,
+        While,
+        Return,
+        Assignment,
+        Call,
+        Index,
+        MultiExpression,
+        BinaryExpression,
+        Variable,
+        ClassDecleration,
+        VariableDecleration,
+        VariableDeclerationSingle,
+        FunctionDecleration,
+        Block,
+        Import,
+        CompilationUnit,
+        Literal
     }
 
     public class ExpressionParser
     {
-        public static ExpressionNode ParseExpression(RuleContext rule)
+        private readonly NodeFactory NodeFactory;
+
+        public ExpressionParser(NodeFactory nodeFactory)
+        {
+            NodeFactory = nodeFactory;
+        }
+
+        public ExpressionNode ParseExpression(RuleContext rule)
         {
             if (rule.RuleIndex == CrawlParser.RULE_literal)
                 return ParseLiteral(rule);
@@ -28,7 +53,7 @@ namespace libcompiler
                 ITerminalNode tn = rule.GetChild(0) as ITerminalNode;
                 if (tn != null && tn.Symbol.Type == CrawlLexer.IDENTIFIER)
                 {
-                    return new VariableNode(tn.GetText(), tn.SourceInterval);
+                    return NodeFactory.VariableAccess(tn.SourceInterval, tn.GetText());
                 }
                 else if (rule.ChildCount == 3)
                 {
@@ -58,7 +83,7 @@ namespace libcompiler
             }
         }
 
-        private static ExpressionNode ParseMultu(RuleContext rule)
+        private ExpressionNode ParseMultu(RuleContext rule)
         {
             List<ExpressionNode> sources = new List<ExpressionNode>();
             sources.Add(ParseExpression((RuleContext)rule.GetChild(0)));
@@ -71,11 +96,11 @@ namespace libcompiler
                     sources.Add(ParseExpression((RuleContext)rule.GetChild(i+1)));
                 else throw new NotImplementedException();
             }
-           
-            return new MultiChildExpressionNode(type, sources);
+
+            return NodeFactory.MultiExpression(rule.SourceInterval, type, sources);
         }
 
-        private static ExpressionNode ParseBinary(RuleContext rule)
+        private ExpressionNode ParseBinary(RuleContext rule)
         {
             if (rule.ChildCount != 3) throw new NotImplementedException("SHOULD NOT HAPPEN");
 
@@ -87,7 +112,7 @@ namespace libcompiler
             ExpressionType type = ParseBinaryOp(op);
             ExpressionNode rhsNode = ParseExpression(rhs);
             
-            return new BinaryNode(type, lhsNode, rhsNode);
+            return NodeFactory.BinaryExpression(rule.SourceInterval, type, lhsNode, rhsNode);
         }
 
         private static readonly Dictionary<string, ExpressionType> BinaryTypeMap = new Dictionary<string, ExpressionType>()
@@ -116,6 +141,7 @@ namespace libcompiler
             {"*", ExpressionType.Multiply},
             {"**", ExpressionType.Power }
         };
+        
 
         private static ExpressionType ParseMultiOp(ITerminalNode op)
         {
@@ -127,7 +153,7 @@ namespace libcompiler
             throw new NotImplementedException();
         }
 
-        private static ExpressionNode ParsePostfix(RuleContext rule)
+        private ExpressionNode ParsePostfix(RuleContext rule)
         {
             ExpressionNode node = ParseExpression((RuleContext) rule.GetChild(0));
 
@@ -136,17 +162,16 @@ namespace libcompiler
                 RuleContext post = (RuleContext)rule.GetChild(i);
                 if (post.RuleIndex == CrawlParser.RULE_call_expression)
                 {
-                    node = new TodoRenameCall(node, ParseCallTail(post), ExpressionType.Invocation);
+                    node = NodeFactory.Call(post.SourceInterval, node, ParseCallTail(post));
                 }
                 else if (post.RuleIndex == CrawlParser.RULE_index_expression)
                 {
-                    node = new TodoRenameCall(node, ParseCallTail(post), ExpressionType.Index);
+                    node = NodeFactory.Index(post.SourceInterval, node, ParseCallTail(post));
                 }
                 else if(post.RuleIndex == CrawlParser.RULE_subfield_expression)
                 {
-
-                    VariableNode sub = new VariableNode(post.GetChild(1).GetText(), post.GetChild(1).SourceInterval);
-                    node = new BinaryNode(ExpressionType.SubfieldAccess, node, sub);
+                    VariableNode sub = NodeFactory.VariableAccess(post.GetChild(1).SourceInterval, post.GetChild(1).GetText());
+                    node = NodeFactory.MemberAccess(post.SourceInterval, node, sub);
                 }
                 else throw new NotImplementedException();
 
@@ -155,31 +180,27 @@ namespace libcompiler
             return node;
         }
 
-        private static ExpressionNode ParseLiteral(RuleContext rule)
+        private ExpressionNode ParseLiteral(RuleContext rule)
         {
             RuleContext realLiteral = (RuleContext) rule.GetChild(0);
 
-            LiteralNode.LiteralType type;
             switch (realLiteral.RuleIndex)
             {
                 case CrawlParser.RULE_string_literal:
-                    type = LiteralNode.LiteralType.String;
-                    break;
+                    return NodeFactory.StringConstant(realLiteral.SourceInterval, realLiteral.GetText());
                 case CrawlParser.RULE_integer_literal:
-                    type = LiteralNode.LiteralType.Int;
-                    break;
+                    return NodeFactory.IntegerConstant(realLiteral.SourceInterval, realLiteral.GetText());
                 case CrawlParser.RULE_boolean_literal:
-                    type = LiteralNode.LiteralType.Boolean;
-                    break;
+                    return NodeFactory.BooleanConstant(realLiteral.SourceInterval, realLiteral.GetText());
+                case CrawlParser.RULE_real_literal:
+                    return NodeFactory.RealConstant(realLiteral.SourceInterval, realLiteral.GetText());
                 default:
                     throw new NotImplementedException();
             }
 
-            return new LiteralNode(realLiteral.GetText(), type);
-
         }
 
-        public static ExpressionNode ParseSideEffectStatement(RuleContext rule)
+        public ExpressionNode ParseSideEffectStatement(RuleContext rule)
         {
             ITerminalNode eos = (ITerminalNode) rule.GetChild(2);
             if(eos.Symbol.Type != CrawlLexer.END_OF_STATEMENT) throw new NotImplementedException();
@@ -190,11 +211,10 @@ namespace libcompiler
             List<ExpressionNode> args = ParseCallTail(invocation);
             ExpressionNode target = ParseExpression(toCall);
 
-
-            return new TodoRenameCall(target, args, ExpressionType.Invocation);
+            return NodeFactory.Call(rule.SourceInterval, target, args);
         }
 
-        public static List<ExpressionNode> ParseCallTail(RuleContext rule)
+        public List<ExpressionNode> ParseCallTail(RuleContext rule)
         {
             if (rule.ChildCount == 2)
             {
@@ -209,7 +229,7 @@ namespace libcompiler
             throw new NotImplementedException();
         }
 
-        private static List<ExpressionNode> ParseExpressionList(RuleContext expList)
+        private List<ExpressionNode> ParseExpressionList(RuleContext expList)
         {
             List<ExpressionNode> n = new List<ExpressionNode>(expList.ChildCount / 2);
             for (int i = 0; i < expList.ChildCount; i += 2)
@@ -230,7 +250,16 @@ namespace libcompiler
     
     public class Foo
     {
-        public static FlowNode ParseFlow(RuleContext rule)
+        private readonly NodeFactory NodeFactory;
+        private readonly ExpressionParser ExpressionParser;
+
+        public Foo(CrawlSyntaxTree tree)
+        {
+            NodeFactory = new NodeFactory(tree);
+            ExpressionParser = new ExpressionParser(NodeFactory);
+        }
+
+        public FlowNode ParseFlow(RuleContext rule)
         {
             if (rule.RuleIndex == CrawlParser.RULE_for_loop)
             {
@@ -243,7 +272,7 @@ namespace libcompiler
             throw new NotImplementedException();
         }
 
-        private static FlowNode ParseIf(RuleContext rule)
+        private FlowNode ParseIf(RuleContext rule)
         {
             //IF expression INDENT statements DEDENT (ELSE INDENT statements DEDENT)?;
             ExpressionNode expression = ExpressionParser.ParseExpression((RuleContext)rule.GetChild(1));
@@ -251,18 +280,18 @@ namespace libcompiler
 
             if (rule.ChildCount == 5)
             {
-                return new SelectiveFlowNode(SelectiveFlowNode.FlowType.If, expression, trueBlock, null);
+                return NodeFactory.If(rule.SourceInterval, expression, trueBlock);
             }
             else if(rule.ChildCount == 9)
             {
                 BlockNode falseBlock = ParseBlockNode((RuleContext) rule.GetChild(7));
-                return new SelectiveFlowNode(SelectiveFlowNode.FlowType.IfElse, expression, trueBlock, falseBlock);
+                return NodeFactory.IfElse(rule.SourceInterval, expression, trueBlock, falseBlock);
             }
 
             throw new NotImplementedException();
         }
 
-        private static FlowNode ParseFor(RuleContext rule)
+        private FlowNode ParseFor(RuleContext rule)
         {
             //FOR type IDENTIFIER FOR_LOOP_SEPERATOR expression INDENT statements DEDENT
             ITerminalNode forNode = (ITerminalNode)rule.GetChild(0);
@@ -278,10 +307,10 @@ namespace libcompiler
             ExpressionNode iteratior = ExpressionParser.ParseExpression(expression);
             BlockNode block = ParseBlockNode(blockCtx);
 
-            return new ForLoopNode(type, identifierNode.GetText(), iteratior, block, rule.SourceInterval);
+            return NodeFactory.Forloop(rule.SourceInterval, type, identifierNode.GetText(), iteratior, block);
         }
 
-        public static DeclerationNode ParseDeclerationNode(RuleContext rule)
+        public DeclerationNode ParseDeclerationNode(RuleContext rule)
         {
             ProtectionLevel protectionLevel = ProtectionLevel.None;
             RuleContext declpart;
@@ -316,7 +345,7 @@ namespace libcompiler
         #region DeclerationSubs
 
 
-        private static DeclerationNode ParseFunctionDecleration(RuleContext classPart, ProtectionLevel protectionLevel, Interval interval)
+        private DeclerationNode ParseFunctionDecleration(RuleContext classPart, ProtectionLevel protectionLevel, Interval interval)
         {
             CrawlType type = ParseType((CrawlParser.TypeContext) classPart.GetChild(0));
             ITerminalNode identifier = (ITerminalNode) classPart.GetChild(1);
@@ -326,46 +355,46 @@ namespace libcompiler
             if (identifier.Symbol.Type != CrawlLexer.IDENTIFIER) throw new NotImplementedException();
             if (assignment.Symbol.Type != CrawlLexer.ASSIGNMENT_SYMBOL) throw new NotImplementedException();
 
-            return new FunctionDeclerationNode(type, identifier.GetText(), interval, ParseBlockNode(body));
+            return NodeFactory.Function(interval, protectionLevel, type, identifier.GetText(), ParseBlockNode(body));
         }
 
-        private static DeclerationNode ParseVariableDecleration(RuleContext classPart, ProtectionLevel protectionLevel, Interval interval)
+        private DeclerationNode ParseVariableDecleration(RuleContext classPart, ProtectionLevel protectionLevel, Interval interval)
         {
             ITerminalNode eos =  classPart.LastChild() as ITerminalNode;
             if(eos == null || eos.Symbol.Type != CrawlLexer.END_OF_STATEMENT) throw new NotImplementedException("Something strange happened");
 
             CrawlType type = ParseType((CrawlParser.TypeContext) classPart.GetChild(0));
 
-            return new VariableDeclerationNode(
-                protectionLevel, 
+            return NodeFactory.VariableDecleration(
+                interval,
+                protectionLevel,
                 type,
                 classPart
                     .AsEdgeTrimmedIEnumerable()
                     .Cast<CrawlParser.Variable_declContext>()
-                    .Select(ParseSingleVariable),
-                interval);
-            
+                    .Select(ParseSingleVariable));
         }
 
-        private static SingleVariableDecleration ParseSingleVariable(CrawlParser.Variable_declContext variable)
+        private SingleVariableDecleration ParseSingleVariable(CrawlParser.Variable_declContext variable)
         {
             ITerminalNode identifier = (ITerminalNode) variable.GetChild(0);
             if(identifier.Symbol.Type != CrawlLexer.IDENTIFIER) throw new NotImplementedException();
 
             if (variable.ChildCount == 1)
             {
-                return new SingleVariableDecleration(identifier.GetText(), variable.GetChild(0).SourceInterval);
+                return NodeFactory.SingleVariable(variable.SourceInterval, identifier.GetText());
             }
             else if (variable.ChildCount == 3)
             {
-                return new SingleVariableDecleration(identifier.GetText(), variable.GetChild(0).SourceInterval, ExpressionParser.ParseExpression((RuleContext) variable.GetChild(2)));
+                return NodeFactory.SingleVariable(variable.SourceInterval, identifier.GetText(),
+                    ExpressionParser.ParseExpression((RuleContext) variable.GetChild(2)));
             }
 
             throw new NotImplementedException();
         }
 
 
-        private static DeclerationNode ParseClassDecleration(RuleContext classPart, ProtectionLevel protectionLevel, Interval interval)
+        private DeclerationNode ParseClassDecleration(RuleContext classPart, ProtectionLevel protectionLevel, Interval interval)
         {
             ITerminalNode tn1 = (ITerminalNode)classPart.GetChild(0);
             ITerminalNode tn2 = (ITerminalNode)classPart.GetChild(1);
@@ -376,12 +405,12 @@ namespace libcompiler
             BlockNode bodyBlock = ParseBlockNode(body);
             string name = tn2.GetText();
 
-            return new ClassDeclerationNode(protectionLevel, name, bodyBlock, interval);
+            return NodeFactory.ClassDecleration(interval, protectionLevel, name, bodyBlock);
         }
 
         #endregion
 
-        private static CrawlType ParseType(CrawlParser.TypeContext type)
+        private CrawlType ParseType(CrawlParser.TypeContext type)
         {
             return new CrawlType(type.GetText());
         }
@@ -407,7 +436,7 @@ namespace libcompiler
             }   
         }
 
-        public static BlockNode ParseBlockNode(RuleContext rule)
+        public BlockNode ParseBlockNode(RuleContext rule)
         {
             System.Collections.IEnumerable meaningfullContent;
 
@@ -421,21 +450,20 @@ namespace libcompiler
             }
             else throw new NotImplementedException("Probably broken");
 
-            List<CrawlSyntaxNode> contents = 
+            IEnumerable<CrawlSyntaxNode> contents =
                 meaningfullContent
-                .Cast<RuleContext>()
-                .Select(ParseStatement)
-                .ToList();
+                    .Cast<RuleContext>()
+                    .Select(ParseStatement);
 
-            return new BlockNode();
+            return NodeFactory.Block(rule.SourceInterval, contents);
         }
 
-        public static ImportNode ParseImportNode(RuleContext rule)
+        public ImportNode ParseImportNode(RuleContext rule)
         {
             throw new NotImplementedException();
         }
 
-        public static CrawlSyntaxNode ParseStatement(RuleContext rule)
+        public CrawlSyntaxNode ParseStatement(RuleContext rule)
         {
             switch (rule.RuleIndex)
             {
@@ -455,17 +483,21 @@ namespace libcompiler
             }
         }
 
-        private static CrawlSyntaxNode ParseReturn(RuleContext rule)
+        private CrawlSyntaxNode ParseReturn(RuleContext rule)
         {
-            ExpressionNode retvalue = null;
+            
             if (rule.ChildCount == 3)
             {
-                retvalue = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(1));
+                ExpressionNode retvalue = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(1));
+                return NodeFactory.Return(rule.SourceInterval, retvalue);
             }
-            return new ReturnStatement(retvalue);
+            else
+            {
+                return NodeFactory.Return(rule.SourceInterval);
+            }
         }
 
-        private static CrawlSyntaxNode ParseAssignment(RuleContext rule)
+        private CrawlSyntaxNode ParseAssignment(RuleContext rule)
         {
 
             ExpressionNode target = ExpressionParser.ParseExpression((RuleContext)rule.GetChild(0));
@@ -473,20 +505,150 @@ namespace libcompiler
             {
                 CrawlParser.Subfield_expressionContext subfield = (CrawlParser.Subfield_expressionContext) rule.GetChild(1);
 
-                VariableNode sub = new VariableNode(subfield.GetChild(1).GetText(), subfield.GetChild(1).SourceInterval);
-                target = new BinaryNode(ExpressionType.SubfieldAccess, target, sub);
+                VariableNode sub = NodeFactory.VariableAccess(subfield.GetChild(1).SourceInterval, subfield.GetChild(1).GetText());
+                target = NodeFactory.MemberAccess(subfield.SourceInterval, target, sub);
             }
             else if(rule.GetChild(1) is CrawlParser.Index_expressionContext)
             {
-                target = new TodoRenameCall(target, ExpressionParser.ParseCallTail((RuleContext)rule.GetChild(1)), ExpressionType.Index);
+                RuleContext idx = (RuleContext) rule.GetChild(1);
+                target = NodeFactory.Index(idx.SourceInterval, target, ExpressionParser.ParseCallTail(idx));
             }
 
             ExpressionNode value = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(rule.ChildCount - 2));
-            return new AssignmentNode(target, value);
+            return NodeFactory.Assignment(rule.SourceInterval, target, value);
         }
     }
 
-    
+    public class NodeFactory
+    {
+        private readonly CrawlSyntaxTree _owner;
+
+        public NodeFactory(CrawlSyntaxTree owner)
+        {
+            _owner = owner;
+        }
+
+
+        public FlowNode If(Interval interval, ExpressionNode conditon, BlockNode trueBlock)
+        {
+            return new SelectiveFlowNode(SelectiveFlowNode.FlowType.If, conditon, trueBlock, null, interval, _owner);
+        }
+
+        public FlowNode IfElse(Interval interval, ExpressionNode conditon, BlockNode trueBlock, BlockNode falseBlock)
+        {
+            return new SelectiveFlowNode(SelectiveFlowNode.FlowType.IfElse, conditon, trueBlock, falseBlock, interval, _owner);
+        }
+
+        public FlowNode Forloop(Interval interval, CrawlType inducedVariableTyoe, string inducedVariableName, ExpressionNode iteratior, BlockNode block)
+        {
+            return new ForLoopNode(inducedVariableTyoe, inducedVariableName, iteratior, block, interval, _owner);
+        }
+
+        public DeclerationNode Function(Interval interval, ProtectionLevel protectionLevel, CrawlType functionType, string identifier, BlockNode block)
+        {
+            return new FunctionDeclerationNode(_owner, functionType, identifier, interval, block, protectionLevel);
+        }
+
+        public SingleVariableDecleration SingleVariable(Interval interval, string name)
+        {
+            return new SingleVariableDecleration(_owner, name,interval, null);
+        }
+
+        public SingleVariableDecleration SingleVariable(Interval interval, string name, ExpressionNode value)
+        {
+            return new SingleVariableDecleration(_owner, name, interval, value);
+        }
+
+        public DeclerationNode VariableDecleration(Interval interval, ProtectionLevel protectionLevel, CrawlType type, IEnumerable<SingleVariableDecleration> declerations)
+        {
+            return new VariableDeclerationNode(_owner, protectionLevel, type, declerations, interval);
+        }
+
+        public DeclerationNode ClassDecleration(Interval interval, ProtectionLevel protectionLevel, string name, BlockNode bodyBlock)
+        {
+            return new ClassDeclerationNode(_owner, protectionLevel, name, bodyBlock, interval);
+        }
+
+        public BlockNode Block(Interval interval, IEnumerable<CrawlSyntaxNode> contents)
+        {
+            return new BlockNode(_owner, interval, contents);
+        }
+
+        public CrawlSyntaxNode Return(Interval interval, ExpressionNode returnValue)
+        {
+            return  new ReturnStatement(_owner, interval, returnValue);
+        }
+
+        public CrawlSyntaxNode Return(Interval interval)
+        {
+            return new ReturnStatement(_owner, interval, null);
+        }
+
+        public VariableNode VariableAccess(Interval interval, string name)
+        {
+            return new VariableNode(_owner, name, interval);
+        }
+
+        public ExpressionNode MemberAccess(Interval interval, ExpressionNode target, VariableNode sub)
+        {
+            return new BinaryNode(_owner, interval, ExpressionType.SubfieldAccess, target, sub);
+        }
+
+        public ExpressionNode Index(Interval interval, ExpressionNode target, IEnumerable<ExpressionNode> arguments)
+        {
+            return new TodoRenameCall(_owner, interval, target, arguments, ExpressionType.Index);
+        }
+
+        public ExpressionNode Call(Interval interval, ExpressionNode target, IEnumerable<ExpressionNode> arguments)
+        {
+            return new TodoRenameCall(_owner, interval, target, arguments, ExpressionType.Invocation);
+        }
+
+        public CrawlSyntaxNode Assignment(Interval interval, ExpressionNode target, ExpressionNode value)
+        {
+            //This could be an BinaryNode, with one exception.
+            //ExpressionNodes has a value, assignment is void type
+            return new AssignmentNode(_owner, interval, target, value);
+        }
+
+        public CrawlSyntaxNode CompilationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
+        {
+            return new CompiliationUnitNode(_owner, interval, rootCode, importNodes);
+        }
+
+        //TODO: Also expose this as individual methods
+        public ExpressionNode MultiExpression(Interval interval, ExpressionType type, IEnumerable<ExpressionNode> sources)
+        {
+            return new MultiChildExpressionNode(_owner, interval, type, sources);
+        }
+
+        //TODO: Also expose this as individual methods
+        //TODO: Automatically catch invalid ExpressionTypes for this and delegate to relevant target
+        public ExpressionNode BinaryExpression(Interval interval, ExpressionType type, ExpressionNode leftHandSide, ExpressionNode rightHandSide)
+        {
+            return new BinaryNode(_owner, interval, type, leftHandSide, rightHandSide);
+        }
+
+        public ExpressionNode StringConstant(Interval interval, string textRepresentation)
+        {
+            return new LiteralNode(_owner, interval, textRepresentation, LiteralNode.LiteralType.String);
+        }
+
+        public ExpressionNode IntegerConstant(Interval interval, string textRepresentation)
+        {
+            return new LiteralNode(_owner, interval, textRepresentation, LiteralNode.LiteralType.Int);
+        }
+
+        public ExpressionNode BooleanConstant(Interval interval, string textRepresentation)
+        {
+            return new LiteralNode(_owner, interval, textRepresentation, LiteralNode.LiteralType.Boolean);
+        }
+
+        public ExpressionNode RealConstant(Interval interval, string textRepresentation)
+        {
+            return new LiteralNode(_owner, interval, textRepresentation, LiteralNode.LiteralType.Real);
+        }
+    }
 
     public enum ProtectionLevel
     {
@@ -510,176 +672,38 @@ namespace libcompiler
 
     public abstract class CrawlSyntaxNode
     {
+        public CrawlSyntaxTree OwningTree { get; }
         public NodeType Type { get; }
+        public Interval CodeInterval { get; }
 
-        protected CrawlSyntaxNode(NodeType type = NodeType.TODO)
+        protected CrawlSyntaxNode(CrawlSyntaxTree owningTree, NodeType type, Interval codeInterval)
         {
+            OwningTree = owningTree;
             Type = type;
+            CodeInterval = codeInterval;
         }
-
-        public static CompiliationUnitNode Parse(CrawlParser.Translation_unitContext rootContext, CrawlSyntaxTree tree)
-        {
-            List<CrawlSyntaxNode> Contents = new List<CrawlSyntaxNode>();
-            CrawlParser.Import_directivesContext imports =
-                (CrawlParser.Import_directivesContext) rootContext.GetChild(0);
-
-            CrawlParser.StatementsContext statements = 
-                (CrawlParser.StatementsContext)rootContext.GetChild(1);
-
-
-            BlockNode rootBlock = Foo.ParseBlockNode(statements);
-
-            return new CompiliationUnitNode(Contents);
-            
-        }
-
-        /*
-
-        private static CrawlSyntaxNode ParseSideEffect(RuleContext child)
-        {
-            return ParsePostfixExpression(child.GetChild(0));
-        }
-
-        private static IEnumerable<OldDeclerationNode> ParseDecleration(CrawlParser.DeclarationContext child)
-        {
-            
-
-            RuleContext lastChild = (RuleContext)child.GetChild(child.ChildCount - 1);
-            CrawlParser.Function_or_variableContext fov = lastChild as CrawlParser.Function_or_variableContext;
-            if (fov != null)
-                return ParseFunctionOrVariable(fov);
-
-            CrawlParser.Class_declarationContext classDeclaration = lastChild as CrawlParser.Class_declarationContext;
-            if (classDeclaration != null)
-                return ParseClass(classDeclaration);
-
-            throw new NotImplementedException();
-        }
-
-        private static IEnumerable<OldDeclerationNode> ParseClass(CrawlParser.Class_declarationContext classDeclaration)
-        {
-            string name = classDeclaration.GetChild(1).GetText();
-
-            if(classDeclaration.ChildCount != 3) throw new NotImplementedException("Inheritance");
-            CrawlParser.Class_bodyContext body = (CrawlParser.Class_bodyContext)classDeclaration.LastChild();
-
-            throw new NotImplementedException();
-            
-        }
-
-        private static readonly Dictionary<string, ExpressionType> _expressionTypeMap = new Dictionary <string, ExpressionType>()
-        {
-            {"+", ExpressionType.Add},
-            {"-", ExpressionType.Subtract},
-            {"*", ExpressionType.Multiply },
-            {"**", ExpressionType.Power}
-        };
-
-        private static IEnumerable<OldDeclerationNode> ParseFunctionOrVariable(CrawlParser.Function_or_variableContext fov)
-        {
-            
-            if(fov.ChildCount == 2) //Just decl
-            { throw new NotImplementedException();}
-            else if (fov.GetChild(3) is CrawlParser.ExpressionContext)
-            {
-                if(fov.ChildCount != 5)
-                { throw new NotImplementedException();} //Multiple children
-
-                yield return
-                    new VariableDefaultValueNode(
-                        ParseExpression(fov.GetChild(3)),
-                        fov.GetChild(0).ToString(), 
-                        fov.GetChild(1).ToString());
-            }
-            else
-            { throw new NotImplementedException(); }
-        }
-
-        private static ValueNode ParseExpression(IParseTree expression)
-        {
-            if (expression.ChildCount == 0)
-            {
-                ITerminalNode node = (ITerminalNode) expression;
-                return new LiteralNode(node);
-                
-            }
-            if (expression.ChildCount == 1)
-                return ParseExpression(expression.GetChild(0));
-            else if (expression.LastChild() is CrawlParser.Postfix_expressionContext)
-            {
-                return ParsePostfixExpression(expression);
-            }
-            else if (expression is CrawlParser.AtomContext)
-            {
-                return ParseAtom(expression);
-            }
-            else
-            {
-                string symbol = expression.GetChild(1).GetText();
-                ExpressionNode node = new ExpressionNode(_expressionTypeMap[symbol]);
-                for (int i = 0; i < expression.ChildCount; i+=2)
-                {
-                    node.Children.Add(ParseExpression(expression.GetChild(i)));
-                }
-                return node;
-                
-            }
-        }
-
-        private static ValueNode ParseAtom(IParseTree expression)
-        {
-            if (expression.ChildCount == 3)
-            {
-                return ParseExpression(expression.GetChild(1));
-            }
-            throw new NotImplementedException();
-        }
-
-        private static ValueNode ParsePostfixExpression(IParseTree expression, int doNotUse = 0)
-        {
-            RuleContext lastChild = (RuleContext)expression.GetChild(expression.ChildCount - (1 + doNotUse));
-            ValueNode lhs;
-            if (expression.ChildCount == 2)
-                lhs = ParseExpression(expression.GetChild(0));
-            else
-                lhs = ParsePostfixExpression(expression, doNotUse + 1);
-
-            if (lastChild.RuleIndex == CrawlParser.RULE_call_expression)
-            {
-                return new InvocationExpression(lhs, ParseExpressionList(lastChild.GetChild(1) as CrawlParser.Expression_listContext));
-            }
-            else if (lastChild.RuleIndex == CrawlParser.RULE_subfield_expression)
-            {
-                throw new NotImplementedException();
-            }
-            else if(lastChild.RuleIndex == CrawlParser.RULE_index_expression)
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                throw new Exception("No idea what happened");
-            }
-        }
-
-        private static List<ValueNode> ParseExpressionList(CrawlParser.Expression_listContext list)
-        {
-            List<ValueNode> res = new List<ValueNode>();
-            foreach (IParseTree child in list.children)
-            {
-                res.Add(ParseExpression(child));
-            }
-            return res;
-        }
-        */
     }
 
     public abstract class FlowNode : CrawlSyntaxNode
-    { }
+    {
+        protected FlowNode(CrawlSyntaxTree owningTree, NodeType type, Interval interval) : base(owningTree, type, interval)
+        {
+        }
+    }
 
     internal class ForLoopNode : FlowNode
     {
-        public ForLoopNode(CrawlType type, string inducedField, ExpressionNode iteratior, BlockNode block, Interval interval)
+        public ForLoopNode(
+            CrawlType type, 
+            string inducedField, 
+            ExpressionNode iteratior, 
+            BlockNode block, 
+            Interval interval, 
+            CrawlSyntaxTree owningTree) 
+        : base(
+            owningTree, 
+            NodeType.Forloop, 
+            interval)
         {
             
         }
@@ -687,8 +711,23 @@ namespace libcompiler
 
     public class SelectiveFlowNode : FlowNode
     {
-        public SelectiveFlowNode(FlowType type, ExpressionNode check, BlockNode primary, BlockNode alternative)
+        public SelectiveFlowNode(FlowType type, ExpressionNode check, BlockNode primary, BlockNode alternative, Interval interval, CrawlSyntaxTree owningTree) : base(owningTree, MakeNodeType(type), interval)
         { }
+
+        private static NodeType MakeNodeType(FlowType type)
+        {
+            switch (type)
+            {
+                case FlowType.If:
+                    return NodeType.If;
+                case FlowType.IfElse:
+                    return NodeType.IfElse;
+                case FlowType.While:
+                    return NodeType.While;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
 
         public enum FlowType
         {
@@ -700,21 +739,24 @@ namespace libcompiler
 
     public class ReturnStatement : CrawlSyntaxNode
     {
-        public ReturnStatement(ExpressionNode returnValue = null) { }
+        public ReturnStatement(CrawlSyntaxTree owningTree, Interval interval, ExpressionNode returnValue = null) : base(owningTree, NodeType.Return, interval) { }
     }
 
     public class AssignmentNode : CrawlSyntaxNode
     {
-        public AssignmentNode(ExpressionNode lhs, ExpressionNode rhs)
+        public AssignmentNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionNode lhs, ExpressionNode rhs) : base(owningTree, NodeType.Assignment, interval)
         { }
     }
 
     public abstract class ExpressionNode : CrawlSyntaxNode
-    { }
+    {
+        protected ExpressionNode(CrawlSyntaxTree owningTree, Interval interval, NodeType type) : base(owningTree, type, interval) { }
+
+    }
 
     public class LiteralNode : ExpressionNode
     {
-        public LiteralNode(string value, LiteralType type)
+        public LiteralNode(CrawlSyntaxTree owningTree, Interval interval, string value, LiteralType type) : base(owningTree, interval, NodeType.Literal)
         {
             
         }
@@ -724,32 +766,46 @@ namespace libcompiler
             String,
             Int,
             Float,
-            Boolean
+            Boolean,
+            Real
         }
     }
 
     public class TodoRenameCall : ExpressionNode
     {
-        public TodoRenameCall(ExpressionNode target, List<ExpressionNode> arguments, ExpressionType type)
+        public TodoRenameCall(CrawlSyntaxTree owningTree, Interval interval, ExpressionNode target, IEnumerable<ExpressionNode> arguments, ExpressionType type) : base(owningTree, interval, MakeNodeType(type))
         {
             
+        }
+
+        private static NodeType MakeNodeType(ExpressionType type)
+        {
+            switch (type)
+            {
+                case ExpressionType.Index:
+                    return NodeType.Index;
+                case ExpressionType.Invocation:
+                    return NodeType.Call;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
         }
     }
 
     public class MultiChildExpressionNode : ExpressionNode
     {
-        public MultiChildExpressionNode(ExpressionType type, IEnumerable<ExpressionNode> children) { }
+        public MultiChildExpressionNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionType type, IEnumerable<ExpressionNode> children): base(owningTree, interval, NodeType.MultiExpression) { }
     }
 
     public class BinaryNode : ExpressionNode
     {
-        public BinaryNode(ExpressionType type, ExpressionNode lhs, ExpressionNode rhs)
+        public BinaryNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionType type, ExpressionNode lhs, ExpressionNode rhs) : base(owningTree, interval, NodeType.BinaryExpression)
         { }
     }
 
     public class VariableNode : ExpressionNode
     {
-        public VariableNode(string variableName, Interval interval)
+        public VariableNode(CrawlSyntaxTree owningTree, string variableName, Interval interval) : base(owningTree, interval, NodeType.Variable)
         {
 
         }
@@ -773,22 +829,28 @@ namespace libcompiler
     }
 
     #region Declerations
+
     public abstract class DeclerationNode : CrawlSyntaxNode
-    { }
+    {
+        public ProtectionLevel ProtectionLevel { get; }
+
+        protected DeclerationNode(CrawlSyntaxTree owningTree, Interval interval, NodeType type,
+            ProtectionLevel protectionLevel) : base(owningTree, type, interval)
+        {
+            ProtectionLevel = protectionLevel;
+        }
+
+    }
 
     public class ClassDeclerationNode : DeclerationNode
     {
         private BlockNode bodyBlock;
-        private Interval interval;
-        private string name;
-        private ProtectionLevel protectionLevel;
+        public string Identifier { get; }
 
-        public ClassDeclerationNode(ProtectionLevel protectionLevel, string name, BlockNode bodyBlock, Interval interval)
+        public ClassDeclerationNode(CrawlSyntaxTree owningTree, ProtectionLevel protectionLevel, string name, BlockNode bodyBlock, Interval interval) : base(owningTree, interval, NodeType.ClassDecleration, protectionLevel)
         {
-            this.protectionLevel = protectionLevel;
-            this.name = name;
+            Identifier = name;
             this.bodyBlock = bodyBlock;
-            this.interval = interval;
         }
     }
 
@@ -797,11 +859,12 @@ namespace libcompiler
         public List<SingleVariableDecleration> Declerations { get; }
 
         public VariableDeclerationNode(
+            CrawlSyntaxTree owningTree, 
             ProtectionLevel protectionLevel, 
             CrawlType type, 
             IEnumerable<SingleVariableDecleration> declerations, 
             Interval interval
-        )
+        ) : base(owningTree, interval, NodeType.VariableDecleration, protectionLevel)
         {
             Declerations = declerations.ToList();
         }
@@ -809,13 +872,13 @@ namespace libcompiler
 
     public class SingleVariableDecleration : CrawlSyntaxNode
     {
-        public string Name { get; }
+        public string Identifier { get; }
         public Interval Interval { get; }
         public ExpressionNode DefaultValue { get; }
-
-        public SingleVariableDecleration(string name, Interval interval, ExpressionNode defaultValue = null)
+         
+        public SingleVariableDecleration(CrawlSyntaxTree owningTree, string name, Interval interval, ExpressionNode defaultValue = null) : base(owningTree, NodeType.VariableDeclerationSingle, interval)
         {
-            Name = name;
+            Identifier = name;
             Interval = interval;
             DefaultValue = defaultValue;
         }
@@ -823,7 +886,7 @@ namespace libcompiler
 
     public class FunctionDeclerationNode : DeclerationNode
     {
-        public FunctionDeclerationNode(CrawlType type, string name, Interval interval, BlockNode block)
+        public FunctionDeclerationNode(CrawlSyntaxTree owningTree, CrawlType type, string name, Interval interval, BlockNode block, ProtectionLevel protectionLevel) : base(owningTree, interval, NodeType.FunctionDecleration, protectionLevel)
         {
             
         }
@@ -833,192 +896,37 @@ namespace libcompiler
 
     public class BlockNode : CrawlSyntaxNode
     {
-        
+        //TODO: Probably some kind of (generated) Scope information here
+        public IReadOnlyCollection<CrawlSyntaxNode> Children { get; }
 
+        public BlockNode(CrawlSyntaxTree owningTree, Interval interval, IEnumerable<CrawlSyntaxNode> children)
+            : base(owningTree, NodeType.Block, interval)
+        {
+            Children = children.ToList().AsReadOnly();
+        }
     }
 
-    public abstract class ImportNode : CrawlSyntaxNode
-    { }
+    public  class ImportNode : CrawlSyntaxNode
+    {
+        public string Module { get; }
 
-    
+        public ImportNode(CrawlSyntaxTree owningTree, Interval interval, string module) : base(owningTree, NodeType.Import, interval)
+        {
+            Module = module;
+        }
+    }
 
     public class CompiliationUnitNode : CrawlSyntaxNode
     {
-        private List<CrawlSyntaxNode> list;
-
         //This should plausibly be 2 lists. 1 of All declarations (functions/classes/namespaces) and 1 of statements;
         //And maybe even a third, imports;
-        public CompiliationUnitNode(List<CrawlSyntaxNode> children) : base(NodeType.TODO)
+        public CompiliationUnitNode(CrawlSyntaxTree owningTree, Interval interval, BlockNode codeChildren, IEnumerable<ImportNode> imports ) : base(owningTree, NodeType.CompilationUnit, interval)
         {
-            Children = children;
+            Code = codeChildren;
+            Imports = imports.ToList().AsReadOnly();
         }
 
-        public List<CrawlSyntaxNode> Children { get; } = new List<CrawlSyntaxNode>();
+        public IReadOnlyCollection<ImportNode> Imports;
+        public BlockNode Code { get; } 
     }
-
-
-
-    /*
-
-    public enum NodeType
-    {
-        Literal,
-        CompilationUnit,
-        Expression,
-        MemberAccess,
-        Index,
-        Call,
-        Decleration,
-        ClassDecleration
-    }
-    
-    public class BlockNode : CrawlSyntaxNode
-    {
-        public BlockNode(NodeType type, IEnumerable<CrawlSyntaxNode> children) : base(type)
-        {
-        }
-    }
-
-    public abstract class ValueNode : CrawlSyntaxNode
-    {
-        protected ValueNode(NodeType type) : base(type)
-        {
-        }
-    }
-
-    public class ClassDecleration : DeclerationNode
-    {
-        public ClassDecleration(string name, IEnumerable<DeclerationNode> contents) : base(NodeType.ClassDecleration)
-        {
-        }
-    }
-
-    public class LiteralNode : ValueNode
-    {
-        public override string ToString()
-        {
-            return Node.GetText();
-        }
-
-        public ITerminalNode Node { get; }
-
-        public LiteralNode(ITerminalNode node) : base(NodeType.Literal)
-        {
-            Node = node;
-        }
-    }
-
-    
-
-    public class ExpressionNode : ValueNode
-    {
-        public ExpressionNode(ExpressionType expressionType) : base(NodeType.Expression)
-        {
-            ExpressionType = expressionType;
-        }
-
-        public ExpressionNode(ExpressionType expressionType, List<CrawlSyntaxNode> children) : this(expressionType)
-        {
-            Children = children;
-        }
-
-        public override string ToString()
-        {
-            return ExpressionType.ToString();
-        }
-
-        public List<CrawlSyntaxNode> Children { get; } = new List<CrawlSyntaxNode>();
-        public ExpressionType ExpressionType { get; }
-    }
-
-    public class MemberAccessNode : ValueNode
-    {
-        public MemberAccessNode(ValueNode parent, string subfield) : base(NodeType.MemberAccess)
-        {
-            Subfield = subfield;
-            Parent = parent;
-        }
-
-        public string Subfield { get; }
-        public ValueNode Parent { get; }
-    }
-
-    public class IndexExpression : ValueNode
-    {
-        public IndexExpression(List<ValueNode> arguments) : base(NodeType.Index)
-        {
-            Arguments = arguments;
-        }
-
-        public List<ValueNode> Arguments { get; }
-    }
-
-    public class InvocationExpression : ValueNode  //Not sure if valueNode or ExpressionNode?
-    {
-        public InvocationExpression(ValueNode method, List<ValueNode> arguments) : base(NodeType.Call)
-        {
-            Method = method;
-            Arguments = arguments;
-        }
-
-        public List<ValueNode> Arguments { get; }
-        
-        public ValueNode Method { get; }
-    }
-
-    public enum ExpressionType
-    {
-        Add,
-        Subtract,
-        Power,
-        Multiply
-    }
-
-    public abstract class DeclerationNode : CrawlSyntaxNode
-    {
-        protected DeclerationNode(NodeType type) : base(type)
-        {
-        }
-    }
-
-    public class OldDeclerationNode : CrawlSyntaxNode
-    {
-        public OldDeclerationNode(string type, string identifier) : base(NodeType.Decleration)
-        {
-            Type = type;
-            Identifier = identifier;
-        }
-
-        public string Type { get; }
-        public string Identifier { get; }
-    }
-
-    public class VariableDefaultValueNode : OldDeclerationNode
-    {
-        //TODO: Needs to set NodeType or do something with this and DeclerationNode
-        public VariableDefaultValueNode(ValueNode defaultValue, string type, string identifier) : base(type, identifier)
-        {
-            DefaultValue = defaultValue;
-        }
-
-        private ValueNode DefaultValue { get; }
-    }
-    
-    public class CompiliationUnitNode : CrawlSyntaxNode
-    { }
-
-    public class CompiliationUnitNode : CrawlSyntaxNode
-    { }
-
-    public class CompiliationUnitNode : CrawlSyntaxNode
-    { }
-
-    public class CompiliationUnitNode : CrawlSyntaxNode
-    { }
-
-    public class CompiliationUnitNode : CrawlSyntaxNode
-    { }
-
-    */
-
 }

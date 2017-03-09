@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime;
 using libcompiler.Parser;
+using libcompiler.SyntaxTreeNodes;
 
 namespace libcompiler
 {
@@ -18,7 +19,21 @@ namespace libcompiler
         private CrawlSyntaxTree(CrawlParser.Translation_unitContext rootContext, string compilationUnitName)
         {
             CompilationUnitName = compilationUnitName;
-            RootNode = CrawlSyntaxNode.Parse(rootContext, this);
+            
+            List <CrawlSyntaxNode> Contents = new List<CrawlSyntaxNode>();
+            CrawlParser.Import_directivesContext imports =
+                (CrawlParser.Import_directivesContext)rootContext.GetChild(0);
+
+            CrawlParser.StatementsContext statements =
+                (CrawlParser.StatementsContext)rootContext.GetChild(1);
+
+            
+            NodeFactory factory = new NodeFactory(this);
+            BlockNode rootBlock = new Foo(this).ParseBlockNode(statements);
+
+            
+
+            RootNode = factory.CompilationUnit(rootContext.SourceInterval, new List<ImportNode>(), rootBlock);
         }
 
         public static CrawlSyntaxTree ParseTree(TextReader tr, string compilationUnitName)
