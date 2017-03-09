@@ -1,6 +1,6 @@
 ﻿using Antlr4.Runtime.Misc;
 
-namespace libcompiler.SyntaxTree
+namespace libcompiler.SyntaxTree.Nodes
 {
     public abstract class CrawlSyntaxNode
     {

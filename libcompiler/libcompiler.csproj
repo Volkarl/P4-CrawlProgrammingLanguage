@@ -48,7 +48,7 @@
     <Compile Include="SyntaxTree\Nodes\CallishNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CompiliationUnitNode.cs" />
-    <Compile Include="SyntaxTree\CrawlSyntaxNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\CrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxTree.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
     <Compile Include="GeneratedParser\CrawlBaseListener.cs" />
