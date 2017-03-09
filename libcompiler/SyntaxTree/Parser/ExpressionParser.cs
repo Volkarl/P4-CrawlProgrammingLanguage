@@ -56,7 +56,7 @@ namespace libcompiler.SyntaxTree.Parser
                 case CrawlParser.RULE_exponential_expression:
                     return ParseMultu(rule);
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException("Some expression type is not handled");
                     
             }
         }
@@ -90,7 +90,7 @@ namespace libcompiler.SyntaxTree.Parser
 
         private ExpressionNode ParseBinary(RuleContext rule)
         {
-            if (rule.ChildCount != 3) throw new NotImplementedException("SHOULD NOT HAPPEN");
+            if (rule.ChildCount != 3) throw new CrawlImpossibleStateException("SHOULD NOT HAPPEN", rule.SourceInterval);
 
             RuleContext lhs = (RuleContext)rule.GetChild(0);
             ITerminalNode op = (ITerminalNode)rule.GetChild(1);
@@ -115,11 +115,12 @@ namespace libcompiler.SyntaxTree.Parser
 
         private static ExpressionType ParseBinaryOp(ITerminalNode op)
         {
+            string textop = op.GetText();
             ExpressionType et;
-            if (BinaryTypeMap.TryGetValue(op.GetText(), out et))
+            if (BinaryTypeMap.TryGetValue(textop, out et))
                 return et;
 
-            throw new NotImplementedException();
+            throw new NotImplementedException($"There is no known binary {nameof(ExpressionType)} for {textop}");
         }
 
         private static readonly Dictionary<string, ExpressionType> MultiTypeMap = new Dictionary<string, ExpressionType>
@@ -134,10 +135,10 @@ namespace libcompiler.SyntaxTree.Parser
         {
             string textop = op.GetText();
             ExpressionType et;
-            if (MultiTypeMap.TryGetValue(op.GetText(), out et))
+            if (MultiTypeMap.TryGetValue(textop, out et))
                 return et;
 
-            throw new NotImplementedException();
+            throw new NotImplementedException($"There is no known multiop {nameof(ExpressionType)} for {textop}");
         }
 
         private ExpressionNode ParsePostfix(RuleContext rule)
@@ -160,7 +161,7 @@ namespace libcompiler.SyntaxTree.Parser
                     VariableNode sub = NodeFactory.VariableAccess(post.GetChild(1).SourceInterval, post.GetChild(1).GetText());
                     node = NodeFactory.MemberAccess(post.SourceInterval, node, sub);
                 }
-                else throw new NotImplementedException();
+                else throw new NotImplementedException("Strange postfix expression");
 
             }
 
@@ -182,7 +183,7 @@ namespace libcompiler.SyntaxTree.Parser
                 case CrawlParser.RULE_real_literal:
                     return NodeFactory.RealConstant(realLiteral.SourceInterval, realLiteral.GetText());
                 default:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException("Strange literal type");
             }
 
         }
@@ -190,7 +191,8 @@ namespace libcompiler.SyntaxTree.Parser
         public ExpressionNode ParseSideEffectStatement(RuleContext rule)
         {
             ITerminalNode eos = (ITerminalNode) rule.GetChild(2);
-            if(eos.Symbol.Type != CrawlLexer.END_OF_STATEMENT) throw new NotImplementedException();
+            if(eos.Symbol.Type != CrawlLexer.END_OF_STATEMENT)
+                throw new CrawlImpossibleStateException($"Method call not ending {nameof(CrawlLexer.END_OF_STATEMENT)}", rule.SourceInterval);
 
             RuleContext toCall = (RuleContext) rule.GetChild(0);
             RuleContext invocation = (RuleContext) rule.GetChild(1);
@@ -213,7 +215,7 @@ namespace libcompiler.SyntaxTree.Parser
                 return ParseExpressionList(expList);
             }
 
-            throw new NotImplementedException();
+            throw new NotImplementedException("Not sure when this could happen....");
         }
 
         private List<ExpressionNode> ParseExpressionList(RuleContext expList)
@@ -226,7 +228,7 @@ namespace libcompiler.SyntaxTree.Parser
                 if (i + 1 != expList.ChildCount)
                 {
                     ITerminalNode itemsep = (ITerminalNode) expList.GetChild(i);
-                    if(itemsep.Symbol.Type != CrawlLexer.ITEM_SEPARATOR) throw new NotImplementedException();
+                    if(itemsep.Symbol.Type != CrawlLexer.ITEM_SEPARATOR) throw new NotImplementedException("Strange stuff in expression list");
                 }
             }
 

@@ -31,7 +31,7 @@ namespace libcompiler.SyntaxTree.Parser
             {
                 return ParseIf(rule);
             }
-            throw new NotImplementedException();
+            throw new NotImplementedException("while loop not implemented");
         }
 
         private FlowNode ParseIf(RuleContext rule)
@@ -50,7 +50,7 @@ namespace libcompiler.SyntaxTree.Parser
                 return NodeFactory.IfElse(rule.SourceInterval, expression, trueBlock, falseBlock);
             }
 
-            throw new NotImplementedException();
+            throw new NotImplementedException("if statement with strange argument counts (this is probably else if)");
         }
 
         private FlowNode ParseFor(RuleContext rule)
@@ -101,7 +101,7 @@ namespace libcompiler.SyntaxTree.Parser
                 return ParseVariableDecleration(declpart, protectionLevel, rule.SourceInterval);
             }
             
-            throw new NotImplementedException();
+            throw new NotImplementedException("unknown decleration type");
         }
 
         #region DeclerationSubs
@@ -114,14 +114,17 @@ namespace libcompiler.SyntaxTree.Parser
             ITerminalNode assignment = (ITerminalNode) classPart.GetChild(2);
             RuleContext body = (RuleContext) classPart.GetChild(3).GetChild(1);
 
-            if (identifier.Symbol.Type != CrawlLexer.IDENTIFIER) throw new NotImplementedException();
-            if (assignment.Symbol.Type != CrawlLexer.ASSIGNMENT_SYMBOL) throw new NotImplementedException();
+            //Not sure if this can ever happen, but if it happens something went really wrong
+            if (identifier.Symbol.Type != CrawlLexer.IDENTIFIER) throw new CrawlImpossibleStateException("Unexpected symbol", interval);
+            if (assignment.Symbol.Type != CrawlLexer.ASSIGNMENT_SYMBOL) throw new CrawlImpossibleStateException("Unexpected symbol", interval);
 
             return NodeFactory.Function(interval, protectionLevel, type, identifier.GetText(), ParseBlockNode(body));
         }
 
         private DeclerationNode ParseVariableDecleration(RuleContext classPart, ProtectionLevel protectionLevel, Interval interval)
         {
+            //This is the whole variable decleration. First the type, then individual variables of that type, with an optional initialization value
+            //Each individual identifier is parsed in ParseSingleVariable
             ITerminalNode eos =  classPart.LastChild() as ITerminalNode;
             if(eos == null || eos.Symbol.Type != CrawlLexer.END_OF_STATEMENT) throw new NotImplementedException("Something strange happened");
 
@@ -142,17 +145,19 @@ namespace libcompiler.SyntaxTree.Parser
             ITerminalNode identifier = (ITerminalNode) variable.GetChild(0);
             if(identifier.Symbol.Type != CrawlLexer.IDENTIFIER) throw new NotImplementedException();
 
+            //unitialized
             if (variable.ChildCount == 1)
             {
                 return NodeFactory.SingleVariable(variable.SourceInterval, identifier.GetText());
             }
+            //initialized
             else if (variable.ChildCount == 3)
             {
                 return NodeFactory.SingleVariable(variable.SourceInterval, identifier.GetText(),
                     ExpressionParser.ParseExpression((RuleContext) variable.GetChild(2)));
             }
 
-            throw new NotImplementedException();
+            throw new NotImplementedException("Variable declared in strange way");
         }
 
 
@@ -162,7 +167,7 @@ namespace libcompiler.SyntaxTree.Parser
             ITerminalNode tn2 = (ITerminalNode)classPart.GetChild(1);
             RuleContext body = (RuleContext) classPart.GetChild(2);
 
-            if(tn1.Symbol.Type != CrawlLexer.CLASS) throw new NotImplementedException(); //TODO: WTFSYNTAXEXCEPTION with INTEVAL
+            if(tn1.Symbol.Type != CrawlLexer.CLASS) throw new CrawlImpossibleStateException("Trying to parse a class that is not a class", interval);
 
             BlockNode bodyBlock = ParseBlockNode(body);
             string name = tn2.GetText();
@@ -194,7 +199,7 @@ namespace libcompiler.SyntaxTree.Parser
                 case CrawlLexer.PROTECTED_INTERNAL:
                     return ProtectionLevel.ProtectedInternal;
                 default:
-                    throw new NotImplementedException("This should never happen");
+                    throw new CrawlImpossibleStateException("Unknown protection level", protectionLevel.SourceInterval);
             }   
         }
 

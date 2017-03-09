@@ -81,8 +81,8 @@ namespace libcompiler.SyntaxTree
 
         protected virtual void VisitAssignment(AssignmentNode node)
         {
-            Visit(node.LeftHandSide);
-            Visit(node.RightHandSide);
+            Visit(node.Target);
+            Visit(node.Value);
         }
 
         protected virtual void VisitIf(SelectiveFlowNode node)
