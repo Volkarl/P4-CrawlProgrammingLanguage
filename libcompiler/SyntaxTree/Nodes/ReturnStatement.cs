@@ -4,12 +4,12 @@ namespace libcompiler.SyntaxTree.Nodes
 {
     public class ReturnStatement : CrawlSyntaxNode
     {
-        public ExpressionNode ReturnValue { get; }
+        private ExpressionNode _retval;
+        public ExpressionNode ReturnValue => GetRed(ref _retval, 0);
 
-        public ReturnStatement(CrawlSyntaxTree owningTree, Interval interval, ExpressionNode returnValue = null)
-            : base(owningTree, NodeType.Return, interval)
+        public ReturnStatement(CrawlSyntaxNode parrent, Internal.ReturnStatement self, int slot) : base(parrent, self, slot)
         {
-            ReturnValue = returnValue;
+            
         }
     }
 }

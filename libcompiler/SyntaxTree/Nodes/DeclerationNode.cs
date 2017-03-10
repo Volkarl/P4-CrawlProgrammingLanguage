@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
+using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
@@ -6,10 +7,10 @@ namespace libcompiler.SyntaxTree.Nodes
     {
         public ProtectionLevel ProtectionLevel { get; }
 
-        protected DeclerationNode(CrawlSyntaxTree owningTree, Interval interval, NodeType type,
-            ProtectionLevel protectionLevel) : base(owningTree, type, interval)
+        protected DeclerationNode(CrawlSyntaxNode parrent, GreenNode self, int slot) : base(parrent, self, slot)
         {
-            ProtectionLevel = protectionLevel;
+            Internal.DeclerationNode decl = ((Internal.DeclerationNode) self);
+            ProtectionLevel = decl.ProtectionLevel;
         }
 
     }

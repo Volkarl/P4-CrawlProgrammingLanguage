@@ -20,6 +20,9 @@ namespace libcompiler.SyntaxTree
         Block,
         Import,
         CompilationUnit,
-        Literal
+        Literal,
+        NodeList,
+        Token,
+        Type
     }
 }

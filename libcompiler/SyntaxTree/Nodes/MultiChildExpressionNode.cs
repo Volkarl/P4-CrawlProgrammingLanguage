@@ -6,14 +6,12 @@ namespace libcompiler.SyntaxTree.Nodes
 {
     public class MultiChildExpressionNode : ExpressionNode
     {
-        public ExpressionType ExpressionType { get; }
-        public IReadOnlyCollection<ExpressionNode> Arguments { get; }
+        private ListNode<ExpressionNode> _args;
+        public ListNode<ExpressionNode> Arguments => GetRed(ref _args, 0);
 
-        public MultiChildExpressionNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionType type,
-            IEnumerable<ExpressionNode> children) : base(owningTree, interval, NodeType.MultiExpression)
+        public MultiChildExpressionNode(CrawlSyntaxNode parrent, Internal.MultiChildExpressionNode self, int slot) : base(parrent, self, slot)
         {
-            ExpressionType = type;
-            Arguments = children.ToList().AsReadOnly();
+            
         }
 
         public override string ToString()

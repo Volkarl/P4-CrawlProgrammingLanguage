@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using libcompiler.SyntaxTree.Nodes;
 
 namespace libcompiler.SyntaxTree
@@ -62,8 +63,19 @@ namespace libcompiler.SyntaxTree
                 case NodeType.Literal:
                     VisitLiteral((LiteralNode) node);
                     break;
+                case NodeType.NodeList:
+                    VisitList((IEnumerable<CrawlSyntaxNode>) node);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void VisitList(IEnumerable<CrawlSyntaxNode> node) 
+        {
+            foreach (CrawlSyntaxNode val in node)
+            {
+                Visit(val);
             }
         }
 
@@ -170,7 +182,7 @@ namespace libcompiler.SyntaxTree
 
         protected virtual void VisitBlock(BlockNode node)
         {
-            foreach (CrawlSyntaxNode child in node.Children)
+            foreach (CrawlSyntaxNode child in node)
             {
                 Visit(child);
             }

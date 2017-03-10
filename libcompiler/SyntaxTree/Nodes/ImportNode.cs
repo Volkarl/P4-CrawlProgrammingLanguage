@@ -6,10 +6,9 @@ namespace libcompiler.SyntaxTree.Nodes
     {
         public string Module { get; }
 
-        public ImportNode(CrawlSyntaxTree owningTree, Interval interval, string module)
-            : base(owningTree, NodeType.Import, interval)
+        public ImportNode(CrawlSyntaxNode parrent, Internal.ImportNode self, int slot) : base(parrent, self, slot)
         {
-            Module = module;
+            Module = self.Module;
         }
     }
 }

@@ -2,33 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime.Misc;
+using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
     public class CallishNode : ExpressionNode
     {
-        public ExpressionNode Target { get; }
-        public IReadOnlyCollection<ExpressionNode> Arguments { get; }
+        private ExpressionNode _target;
+        private ListNode<ExpressionNode> _arguments;
 
-        public CallishNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionNode target,
-            IEnumerable<ExpressionNode> arguments, ExpressionType type)
-            : base(owningTree, interval, MakeNodeType(type))
-        {
-            Target = target;
-            Arguments = arguments.ToList().AsReadOnly();
-        }
 
-        private static NodeType MakeNodeType(ExpressionType type)
+        public ExpressionNode Target => GetRed(ref _target, 0);
+        public ListNode<ExpressionNode> Arguments => GetRed(ref _arguments, 1);
+
+
+        public CallishNode(CrawlSyntaxNode parrent, Internal.ExpressionNode self, int slot) : base(parrent, self, slot)
         {
-            switch (type)
-            {
-                case ExpressionType.Index:
-                    return NodeType.Index;
-                case ExpressionType.Invocation:
-                    return NodeType.Call;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+            
         }
     }
 }

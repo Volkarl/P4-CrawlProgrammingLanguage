@@ -3,7 +3,10 @@ using System.IO;
 using Antlr4.Runtime;
 using libcompiler.Parser;
 using libcompiler.SyntaxTree.Nodes;
+using libcompiler.SyntaxTree.Nodes.Internal;
 using libcompiler.SyntaxTree.Parser;
+using BlockNode = libcompiler.SyntaxTree.Nodes.BlockNode;
+using ImportNode = libcompiler.SyntaxTree.Nodes.ImportNode;
 
 namespace libcompiler.SyntaxTree
 {
@@ -11,6 +14,7 @@ namespace libcompiler.SyntaxTree
     {
         public string CompilationUnitName { get; }
         public CrawlSyntaxNode RootNode { get; private set; }
+        
 
         private CrawlSyntaxTree(CrawlParser.Translation_unitContext rootContext, string compilationUnitName)
         {
@@ -30,6 +34,14 @@ namespace libcompiler.SyntaxTree
 
             RootNode = factory.CompilationUnit(rootContext.SourceInterval, new List<ImportNode>(), rootBlock);
         }
+
+        private CrawlSyntaxTree(GreenNode root, string name)
+        {
+            CompilationUnitName = name;
+            RootNode = root.CreateRed(null, 0);
+        }
+
+        internal static CrawlSyntaxTree FromGreen(GreenNode root, string name) => new CrawlSyntaxTree(root, name);
 
         public static CrawlSyntaxTree ParseTree(TextReader tr, string compilationUnitName)
         {

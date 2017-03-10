@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
+using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
@@ -6,10 +7,9 @@ namespace libcompiler.SyntaxTree.Nodes
     {
         public string Name { get; }
 
-        public VariableNode(CrawlSyntaxTree owningTree, string name, Interval interval)
-            : base(owningTree, interval, NodeType.Variable)
+        public VariableNode(CrawlSyntaxNode parrent, Internal.VariableNode self, int slot) : base(parrent, self, slot)
         {
-            Name = name;
+            Name = self.Name;
         }
 
         public override string ToString()

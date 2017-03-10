@@ -1,19 +1,20 @@
 ﻿using Antlr4.Runtime.Misc;
+using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
     public class BinaryNode : ExpressionNode
     {
-        public ExpressionNode LeftHandSide { get; }
-        public ExpressionNode RightHandSide { get; }
-        public ExpressionType ExpressionType { get; }
+        private ExpressionNode _lhs;
+        private ExpressionNode _rhs;
 
-        public BinaryNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionType type, ExpressionNode lhs,
-            ExpressionNode rhs) : base(owningTree, interval, NodeType.BinaryExpression)
+        public ExpressionNode LeftHandSide => GetRed(ref _lhs, 0);
+        public ExpressionNode RightHandSide => GetRed(ref _rhs, 1);
+
+        public BinaryNode(CrawlSyntaxNode parrent, Internal.ExpressionNode self, int slot)
+            : base(parrent, self, slot)
         {
-            ExpressionType = type;
-            LeftHandSide = lhs;
-            RightHandSide = rhs;
+            
         }
 
         public override string ToString()

@@ -1,19 +1,20 @@
 ﻿using Antlr4.Runtime.Misc;
+using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
     public class SingleVariableDecleration : CrawlSyntaxNode
     {
-        public string Identifier { get; }
-        public Interval Interval { get; }
-        public ExpressionNode DefaultValue { get; }
+        private VariableNode _id;
+        private ExpressionNode _default;
 
-        public SingleVariableDecleration(CrawlSyntaxTree owningTree, string name, Interval interval,
-            ExpressionNode defaultValue = null) : base(owningTree, NodeType.VariableDeclerationSingle, interval)
+
+        public VariableNode Identifier => GetRed(ref _id, 0);
+        public ExpressionNode DefaultValue => GetRed(ref _default, 1);
+
+        public SingleVariableDecleration(CrawlSyntaxNode parrent, GreenNode self, int slot) : base(parrent, self, slot)
         {
-            Identifier = name;
-            Interval = interval;
-            DefaultValue = defaultValue;
+            
         }
     }
 }

@@ -1,26 +1,15 @@
-using Antlr4.Runtime.Misc;
-
 namespace libcompiler.SyntaxTree.Nodes
 {
     public class LiteralNode : ExpressionNode
     {
         public string Value { get; }
-        public LiteralType Type { get; }
+        public LiteralType LiteralType { get; }
 
-        public LiteralNode(CrawlSyntaxTree owningTree, Interval interval, string value, LiteralType type)
-            : base(owningTree, interval, NodeType.Literal)
+        public LiteralNode(CrawlSyntaxNode parrent, Internal.LiteralNode self, int slot) : base(parrent, self, slot)
+        
         {
-            Value = value;
-            Type = type;
-        }
-
-        public enum LiteralType
-        {
-            String,
-            Int,
-            Float,
-            Boolean,
-            Real
+            Value = self.Value;
+            LiteralType = self.LiteralType;
         }
 
         public override string ToString()

@@ -5,16 +5,17 @@ namespace libcompiler.SyntaxTree.Nodes
 {
     public class SelectiveFlowNode : FlowNode
     {
-        public ExpressionNode Check { get; }
-        public BlockNode Primary { get; }
-        public BlockNode Alternative { get; }
+        private ExpressionNode _check;
+        private BlockNode _1;
+        private BlockNode _2;
 
-        public SelectiveFlowNode(FlowType type, ExpressionNode check, BlockNode primary, BlockNode alternative,
-            Interval interval, CrawlSyntaxTree owningTree) : base(owningTree, MakeNodeType(type), interval)
+        public ExpressionNode Check => GetRed(ref _check, 0);
+        public BlockNode Primary => GetRed(ref _1, 1);
+        public BlockNode Alternative => GetRed(ref _2, 2);
+
+        public SelectiveFlowNode(CrawlSyntaxNode parrent, Internal.SelectiveFlowNode self, int slot) : base(parrent, self, slot)
         {
-            Check = check;
-            Primary = primary;
-            Alternative = alternative;
+            
         }
 
         private static NodeType MakeNodeType(FlowType type)

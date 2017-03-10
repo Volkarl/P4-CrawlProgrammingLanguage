@@ -89,17 +89,16 @@ namespace libcompiler
         protected override void VisitVariableDecleration(VariableDeclerationNode node)
         {
             BuildString.Append(' ');
-            BuildString.Append(node.DeclerationType.Textdef);
+            BuildString.Append(node.DeclerationType.ExportedType.Textdef);
 
-            if (node.Declerations.Count == 1)
+            if (node.Declerations.ChildCount == 1)
             {
                 SingleVariableDecleration decleration = node.Declerations.First();
                 BuildString.Append(' ');
                 BuildString.Append(decleration.Identifier);
                 if (decleration.DefaultValue != null)
                     Visit(decleration.DefaultValue);
-            }
-
+            } else 
             foreach (SingleVariableDecleration decleration in node.Declerations)
             {
                 Indent();

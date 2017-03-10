@@ -1,24 +1,26 @@
 using Antlr4.Runtime.Misc;
+using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
     public class AssignmentNode : CrawlSyntaxNode
     {
+        private ExpressionNode _target;
+        private ExpressionNode _value;
+
         /// <summary>
         /// The target of the assignment
         /// </summary>
-        public ExpressionNode Target { get; }
+        public ExpressionNode Target => GetRed(ref _target, 0);
 
         /// <summary>
         /// The value
         /// </summary>
-        public ExpressionNode Value { get; }
+        public ExpressionNode Value => GetRed(ref _value, 1);
 
-        public AssignmentNode(CrawlSyntaxTree owningTree, Interval interval, ExpressionNode target,
-            ExpressionNode value) : base(owningTree, NodeType.Assignment, interval)
+        public AssignmentNode(CrawlSyntaxNode parrent, GreenNode self, int slot) : base(parrent, self, slot)
         {
-            Target = target;
-            Value = value;
+
         }
     }
 }

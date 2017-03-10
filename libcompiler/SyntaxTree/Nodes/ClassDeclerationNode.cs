@@ -1,19 +1,23 @@
 ﻿using Antlr4.Runtime.Misc;
+using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
     public class ClassDeclerationNode : DeclerationNode
     {
-        //TODO: List of constructors? Probably as extension method to not calculate unless required
-        public BlockNode BodyBlock { get; }
-        public string Identifier { get; }
+        private TokenNode _identifier;
+        private BlockNode _body;
 
-        public ClassDeclerationNode(CrawlSyntaxTree owningTree, ProtectionLevel protectionLevel, string name,
-            BlockNode bodyBlock, Interval interval)
-            : base(owningTree, interval, NodeType.ClassDecleration, protectionLevel)
+        //TODO: List of constructors? Probably as extension method to not calculate unless required
+
+        public TokenNode Identifier => GetRed(ref _identifier, 0);
+        public BlockNode BodyBlock => GetRed(ref _body, 1);
+        
+
+        public ClassDeclerationNode(CrawlSyntaxNode parrent, GreenNode self, int slot) : base(parrent, self, slot)
+           
         {
-            Identifier = name;
-            BodyBlock = bodyBlock;
+            
         }
     }
 }

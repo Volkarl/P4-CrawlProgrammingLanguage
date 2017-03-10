@@ -2,6 +2,7 @@
 {
     public enum ExpressionType
     {
+        None = 0,
         Invocation,
         SubfieldAccess,
         Greater,
@@ -17,6 +18,8 @@
         Multiply,
         Range,
         ShortCircuitOr,
-        ShortCircuitAnd
+        ShortCircuitAnd,
+        Constant,
+        Variable
     }
 }

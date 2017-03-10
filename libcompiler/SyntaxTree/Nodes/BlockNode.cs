@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime.Misc;
+using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
-    public class BlockNode : CrawlSyntaxNode
+    public class BlockNode : ListNode<CrawlSyntaxNode>
     {
         //TODO: Probably some kind of (generated) Scope information here
-        public IReadOnlyCollection<CrawlSyntaxNode> Children { get; }
-
-        public BlockNode(CrawlSyntaxTree owningTree, Interval interval, IEnumerable<CrawlSyntaxNode> children)
-            : base(owningTree, NodeType.Block, interval)
+        
+        public BlockNode(CrawlSyntaxNode parrent, GreenNode self, int slot)
+            : base(parrent, self, slot)
         {
-            Children = children.ToList().AsReadOnly();
         }
     }
 }
