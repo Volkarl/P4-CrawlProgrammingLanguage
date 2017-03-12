@@ -43,5 +43,9 @@ namespace libcompiler.SyntaxTree.Nodes
         }
 
         int IReadOnlyCollection<T>.Count => _childNodes.Length;
+        public override CrawlSyntaxNode GetChild(int index)
+        {
+            return this[index];
+        }
     }
 }

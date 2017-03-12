@@ -27,18 +27,25 @@ namespace libcompiler.SyntaxTree
                 (CrawlParser.StatementsContext)rootContext.GetChild(1);
 
             
-            NodeFactory factory = new NodeFactory(this);
             BlockNode rootBlock = new ParseTreeParser(this).ParseBlockNode(statements);
 
             
 
-            RootNode = factory.CompilationUnit(rootContext.SourceInterval, new List<ImportNode>(), rootBlock);
+            RootNode = NodeFactory.CompilationUnit(rootContext.SourceInterval, new List<ImportNode>(), rootBlock);
         }
 
         private CrawlSyntaxTree(GreenNode root, string name)
         {
             CompilationUnitName = name;
-            RootNode = root.CreateRed(null, 0);
+            RootNode = root.CreateRed(new Internal.SyntaxNodeTreeInjector(this, root, 0), 0);
+
+
+        }
+
+        internal CrawlSyntaxTree(CrawlSyntaxNode node, string name)
+        {
+            RootNode = node;
+            CompilationUnitName = name;
         }
 
         internal static CrawlSyntaxTree FromGreen(GreenNode root, string name) => new CrawlSyntaxTree(root, name);

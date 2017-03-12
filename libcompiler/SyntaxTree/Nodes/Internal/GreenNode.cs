@@ -22,5 +22,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             Type = type;
             Interval = interval;
         }
+
+        internal abstract GreenNode WithReplacedChild(GreenNode newChild, int index);
     }
 }

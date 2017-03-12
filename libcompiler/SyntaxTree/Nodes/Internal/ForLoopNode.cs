@@ -1,4 +1,6 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using System;
+using System.Net.Http.Headers;
+using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
@@ -37,6 +39,21 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parrent, int slot)
         {
             return new Nodes.ForLoopNode(parrent, this, slot);
+        }
+
+        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        {
+            switch (index)
+            {
+                case 0: return new ForLoopNode(Interval, (TypeNode) newChild, InducedFieldName, Iteratior, Block);
+                case 1: return new ForLoopNode(Interval, InducedFieldType, (VariableNode) newChild, Iteratior, Block);
+                case 2: return new ForLoopNode(Interval, InducedFieldType, InducedFieldName, (ExpressionNode) newChild, Block);
+                case 3: return new ForLoopNode(Interval, InducedFieldType, InducedFieldName, Iteratior, (BlockNode) newChild);
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
         }
     }
 }

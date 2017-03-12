@@ -16,5 +16,10 @@ namespace libcompiler.SyntaxTree.Nodes
         {
             return Name;
         }
+
+        public override CrawlSyntaxNode GetChild(int index)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -39,5 +39,10 @@ namespace libcompiler.SyntaxTree.Nodes
             IfElse,
             While,
         }
+
+        public override CrawlSyntaxNode GetChild(int index)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

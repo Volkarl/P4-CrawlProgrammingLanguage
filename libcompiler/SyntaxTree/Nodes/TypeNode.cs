@@ -8,5 +8,9 @@
         }
 
         public CrawlType ExportedType { get; }
+        public override CrawlSyntaxNode GetChild(int index)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

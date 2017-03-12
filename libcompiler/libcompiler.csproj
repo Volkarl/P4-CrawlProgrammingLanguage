@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
     <Compile Include="SyntaxTreePrinter.cs" />
+    <Compile Include="SyntaxTree\Internal\SyntaxNodeTreeInjector.cs" />
     <Compile Include="SyntaxTree\Nodes\AssignmentNode.cs" />
     <Compile Include="SyntaxTree\Nodes\BinaryNode.cs" />
     <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />

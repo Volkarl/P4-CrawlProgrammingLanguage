@@ -1,5 +1,9 @@
-﻿using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
+using libcompiler.SyntaxTree.Internal;
 using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
@@ -41,10 +45,16 @@ namespace libcompiler.SyntaxTree.Nodes
 
         protected internal CrawlSyntaxNode(CrawlSyntaxNode parrent, GreenNode self, int slot)
         {
-            //TODO: OwningTree is always null as parrent is null on root. Find way to insert OwningTree, pref without doing _too_ strange stuff
+            if(!(parrent is SyntaxNodeTreeInjector))
+                Parrent = parrent;
+
             OwningTree = parrent?.OwningTree;
+            if (OwningTree == null)
+            {
+                OwningTree = new CrawlSyntaxTree(this, "<Unknown>");
+
+            }
             _green = self;
-            Parrent = parrent;
             //GreenNodes sometimes uses upper bits to encode extra information. Not allowed here
             // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
             Type = self.Type & (NodeType) 0xff;
@@ -57,7 +67,7 @@ namespace libcompiler.SyntaxTree.Nodes
             OwningTree = tree;
             _green = self;
             Parrent = null;
-            Type = self.Type & (NodeType) 0xff;
+            Type = self.Type;
             IndexInParrent = slot;
         }
 
@@ -78,6 +88,33 @@ namespace libcompiler.SyntaxTree.Nodes
             return result;
         }
 
-        internal static GreenNode ExtractGreenNode(CrawlSyntaxNode node) => node._green;
+        internal static GreenNode ExtractGreenNode(CrawlSyntaxNode node) => node?._green;
+
+        public abstract CrawlSyntaxNode GetChild(int index);
+
+        public CrawlSyntaxNode Translplant(CrawlSyntaxNode replacement)
+        {
+
+            Stack<int> parrentIndex = new Stack<int>();
+            int count = 0;
+            GreenNode toInsert = replacement._green;
+            CrawlSyntaxNode self = this;
+            while (self.Parrent != null)
+            {
+                parrentIndex.Push(self.IndexInParrent);
+                toInsert = self.Parrent._green.WithReplacedChild(toInsert, self.IndexInParrent);
+                self = self.Parrent;
+                count++;
+            }
+
+            CrawlSyntaxNode newRoot = toInsert.CreateRed(null, 0);
+            while (parrentIndex.Count != 0)
+            {
+                newRoot = newRoot.GetChild(parrentIndex.Pop());
+                if(newRoot == null) throw new Exception();
+            }
+
+            return newRoot;
+        }
     }
 }

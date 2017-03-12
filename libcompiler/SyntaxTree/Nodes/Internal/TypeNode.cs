@@ -25,5 +25,10 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         {
             return new Nodes.TypeNode(parrent, this, slot);
         }
+
+        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

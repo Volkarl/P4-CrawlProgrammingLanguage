@@ -19,13 +19,11 @@ namespace libcompiler.SyntaxTree.Parser
 {
     public class ParseTreeParser
     {
-        private readonly NodeFactory NodeFactory;
         private readonly ExpressionParser ExpressionParser;
 
         public ParseTreeParser(CrawlSyntaxTree tree)
         {
-            NodeFactory = new NodeFactory(tree);
-            ExpressionParser = new ExpressionParser(NodeFactory);
+            ExpressionParser = new ExpressionParser();
         }
 
         public FlowNode ParseFlow(RuleContext rule)

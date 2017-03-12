@@ -17,6 +17,20 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             ChildCount = _children.Length;
         }
 
+        protected ListNode(Interval interval, GreenNode[] children) : base(NodeType.NodeList, interval)
+        {
+            _children = children;
+            ChildCount = _children.Length;
+        }
+
+        protected GreenNode[] ChildCopy()
+        {
+            GreenNode[] newArray = new GreenNode[ChildCount];
+            Array.Copy(_children, newArray, ChildCount);
+
+            return newArray;
+        }
+
         public override GreenNode GetSlot(int slot)
         {
             if (slot >= 0 || ChildCount > slot)
@@ -29,6 +43,15 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parrent, int slot)
         {
             return new Nodes.ListNode<T>(parrent, this, slot);
+        }
+
+        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        {
+            GreenNode[] newArray = ChildCopy();
+
+            newArray[index] = newChild;
+
+            return new ListNode<T>(Interval, newArray);
         }
     }
 }

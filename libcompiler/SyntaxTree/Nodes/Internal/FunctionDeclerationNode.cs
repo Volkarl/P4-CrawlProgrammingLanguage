@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using System;
+using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
@@ -37,6 +38,19 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parrent, int slot)
         {
             return new Nodes.FunctionDeclerationNode(parrent, this, slot);
+        }
+
+        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        {
+            switch (index)
+            {
+                case 0: return new FunctionDeclerationNode(Interval, ProtectionLevel, (TypeNode) newChild, Identfier, BodyBlock);
+                case 1:return new FunctionDeclerationNode(Interval, ProtectionLevel, FunctionType, (VariableNode) newChild, BodyBlock);
+                case 2:return new FunctionDeclerationNode(Interval, ProtectionLevel, FunctionType, Identfier, (BlockNode) newChild);
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

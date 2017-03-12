@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime.Misc;
 
@@ -15,6 +16,15 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parrent, int slot)
         {
             return new Nodes.BlockNode(parrent, this, slot);
+        }
+
+        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        {
+            GreenNode[] newArray = ChildCopy();
+
+            newArray[index] = newChild;
+
+            return new BlockNode(Interval, newArray);
         }
     }
 }

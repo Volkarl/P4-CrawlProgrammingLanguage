@@ -5,8 +5,8 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
 {
     public class BinaryNode : ExpressionNode
     {
-        public GreenNode LeftHandSide { get; }
-        public GreenNode RightHandSide { get; }
+        public ExpressionNode LeftHandSide { get; }
+        public ExpressionNode RightHandSide { get; }
 
         public BinaryNode(Interval interval, ExpressionNode lhs,
             ExpressionNode rhs, ExpressionType type) : base(interval, NodeType.BinaryExpression, type)
@@ -35,6 +35,16 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parrent, int slot)
         {
             return new Nodes.BinaryNode(parrent, this, slot);
+        }
+
+        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        {
+            if(index == 0)
+                return new BinaryNode(this.Interval, (ExpressionNode) newChild, RightHandSide, ExpressionType);
+            else if(index == 1)
+                return new BinaryNode(this.Interval, LeftHandSide, (ExpressionNode)newChild, ExpressionType);
+
+            throw new ArgumentOutOfRangeException();
         }
     }
 }

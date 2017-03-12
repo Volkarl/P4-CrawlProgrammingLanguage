@@ -34,5 +34,15 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         {
             return new Nodes.AssignmentNode(parrent, this, slot);
         }
+
+        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        {
+            if(index == 0)
+                return new AssignmentNode(this.Interval, (ExpressionNode) newChild, Value);
+            else if(index == 1)
+                return new AssignmentNode(this.Interval, Target, (ExpressionNode) newChild);
+
+            throw new IndexOutOfRangeException();
+        }
     }
 }

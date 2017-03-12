@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime.Misc;
 
@@ -28,6 +29,14 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parrent, int slot)
         {
             return new Nodes.MultiChildExpressionNode(parrent, this, slot);
+        }
+
+        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        {
+            if(index == 0)
+                return new MultiChildExpressionNode(this.Interval, ExpressionType, (ListNode<Nodes.ExpressionNode>) newChild);
+
+            throw new ArgumentOutOfRangeException();
         }
     }
 }

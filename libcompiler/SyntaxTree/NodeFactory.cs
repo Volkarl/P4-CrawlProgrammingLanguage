@@ -6,52 +6,45 @@ using _ = libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree
 {
-    public class NodeFactory
+    public static class NodeFactory
     {
-        private readonly CrawlSyntaxTree _owner;
-
-        public NodeFactory(CrawlSyntaxTree owner)
-        {
-            _owner = owner;
-        }
-
         private static CrawlSyntaxNode Wrap(_.GreenNode selectiveFlowNode)
         {
             return CrawlSyntaxTree.FromGreen(selectiveFlowNode, "<Unknown>").RootNode;
         }
 
-        private _.BlockNode Extract(BlockNode n)
+        private static _.BlockNode Extract(BlockNode n)
         {
             return (_.BlockNode) CrawlSyntaxNode.ExtractGreenNode(n);
         }
 
-        private _.TypeNode Extract(TypeNode n)
+        private static _.TypeNode Extract(TypeNode n)
         {
             return (_.TypeNode)CrawlSyntaxNode.ExtractGreenNode(n);
         }
 
-        private _.VariableNode Extract(VariableNode n)
+        private static _.VariableNode Extract(VariableNode n)
         {
             return (_.VariableNode)CrawlSyntaxNode.ExtractGreenNode(n);
         }
 
-        private _.ExpressionNode Extract(ExpressionNode n)
+        private static _.ExpressionNode Extract(ExpressionNode n)
         {
             return (_.ExpressionNode)CrawlSyntaxNode.ExtractGreenNode(n);
         }
 
-        private _.TokenNode Extract(TokenNode n)
+        private static _.TokenNode Extract(TokenNode n)
         {
             return (_.TokenNode)CrawlSyntaxNode.ExtractGreenNode(n);
         }
 
-        private _.ListNode<T> List<T>(IEnumerable<T> i) where T : CrawlSyntaxNode
+        private static _.ListNode<T> List<T>(IEnumerable<T> i) where T : CrawlSyntaxNode
         {
             //FIXME INTERVAL
             return new _.ListNode<T>(default(Interval), i.Select(CrawlSyntaxNode.ExtractGreenNode));
         }
 
-        public FlowNode If(Interval interval, ExpressionNode conditon, BlockNode trueBlock)
+        public static FlowNode If(Interval interval, ExpressionNode conditon, BlockNode trueBlock)
         {
             return (FlowNode) Wrap(
                 new _.SelectiveFlowNode(
@@ -62,7 +55,7 @@ namespace libcompiler.SyntaxTree
                     null));
         }
 
-        public FlowNode IfElse(Interval interval, ExpressionNode conditon, BlockNode trueBlock, BlockNode falseBlock)
+        public static FlowNode IfElse(Interval interval, ExpressionNode conditon, BlockNode trueBlock, BlockNode falseBlock)
         {
             return (FlowNode) Wrap(
                 new _.SelectiveFlowNode(
@@ -77,7 +70,7 @@ namespace libcompiler.SyntaxTree
 
         
 
-        public FlowNode Forloop(Interval interval, TypeNode inducedVariableType, VariableNode inducedVariableName, ExpressionNode iteratior, BlockNode block)
+        public static FlowNode Forloop(Interval interval, TypeNode inducedVariableType, VariableNode inducedVariableName, ExpressionNode iteratior, BlockNode block)
         {
             return (FlowNode) Wrap(
                 new _.ForLoopNode(
@@ -89,14 +82,14 @@ namespace libcompiler.SyntaxTree
             
         }
 
-        public FlowNode WhileLoop(Interval interval, ExpressionNode condition, BlockNode block)
+        public static FlowNode WhileLoop(Interval interval, ExpressionNode condition, BlockNode block)
         {
             return (FlowNode) Wrap(new _.SelectiveFlowNode(interval, _.SelectiveFlowNode.FlowType.While, Extract(condition), Extract(block), null));
         }
 
-        public DeclerationNode Function(Interval interval, ProtectionLevel protectionLevel, TypeNode functionType, VariableNode identifier, BlockNode block)
+        public static FunctionDeclerationNode Function(Interval interval, ProtectionLevel protectionLevel, TypeNode functionType, VariableNode identifier, BlockNode block)
         {
-            return (DeclerationNode) Wrap(
+            return (FunctionDeclerationNode) Wrap(
                 new _.FunctionDeclerationNode(
                     interval,
                     protectionLevel,
@@ -106,12 +99,12 @@ namespace libcompiler.SyntaxTree
                 ));
         }
 
-        public SingleVariableDecleration SingleVariable(Interval interval, VariableNode identifier)
+        public static SingleVariableDecleration SingleVariable(Interval interval, VariableNode identifier)
         {
             return SingleVariable(interval, identifier, null);
         }
 
-        public SingleVariableDecleration SingleVariable(Interval interval, VariableNode identifier, ExpressionNode value)
+        public static SingleVariableDecleration SingleVariable(Interval interval, VariableNode identifier, ExpressionNode value)
         {
             return (SingleVariableDecleration) Wrap(
                 new _.SingleVariableDecleration(
@@ -121,9 +114,9 @@ namespace libcompiler.SyntaxTree
             );
         }
 
-        public DeclerationNode VariableDecleration(Interval interval, ProtectionLevel protectionLevel, TypeNode type, IEnumerable<SingleVariableDecleration> declerations)
+        public static VariableDeclerationNode VariableDecleration(Interval interval, ProtectionLevel protectionLevel, TypeNode type, IEnumerable<SingleVariableDecleration> declerations)
         {
-            return (DeclerationNode) Wrap(
+            return (VariableDeclerationNode) Wrap(
                 new _.VariableDeclerationNode(
                     interval,
                     protectionLevel,
@@ -132,71 +125,71 @@ namespace libcompiler.SyntaxTree
             );
         }
 
-        public DeclerationNode ClassDecleration(Interval interval, ProtectionLevel protectionLevel, TokenNode identifier, BlockNode bodyBlock)
+        public static ClassDeclerationNode ClassDecleration(Interval interval, ProtectionLevel protectionLevel, TokenNode identifier, BlockNode bodyBlock)
         {
-            return (DeclerationNode) Wrap(
+            return (ClassDeclerationNode) Wrap(
                 new _.ClassDeclerationNode(interval, protectionLevel, Extract(identifier), Extract(bodyBlock))
             );
         }
 
-        public BlockNode Block(Interval interval, IEnumerable<CrawlSyntaxNode> contents)
+        public static BlockNode Block(Interval interval, IEnumerable<CrawlSyntaxNode> contents)
         {
             return (BlockNode) Wrap(
                 new _.BlockNode(interval, contents.Select(CrawlSyntaxNode.ExtractGreenNode)));
         }
 
-        public CrawlSyntaxNode Return(Interval interval, ExpressionNode returnValue)
+        public static ReturnStatement Return(Interval interval, ExpressionNode returnValue)
         {
-            return Wrap(
+            return (ReturnStatement) Wrap(
                 new _.ReturnStatement(interval, Extract(returnValue)));
         }
 
-        public CrawlSyntaxNode Return(Interval interval)
+        public static ReturnStatement Return(Interval interval)
         {
             return Return(interval, null);
         }
 
-        public VariableNode VariableAccess(Interval interval, string name)
+        public static VariableNode VariableAccess(Interval interval, string name)
         {
             return (VariableNode) Wrap(
                 new _.VariableNode(interval, name)
                 );
         }
 
-        public ExpressionNode MemberAccess(Interval interval, ExpressionNode target, VariableNode sub)
+        public static BinaryNode MemberAccess(Interval interval, ExpressionNode target, VariableNode sub)
         {
-            return (ExpressionNode) Wrap(
+            return (BinaryNode) Wrap(
                 new _.BinaryNode(interval, Extract(target), Extract(sub), ExpressionType.SubfieldAccess)
             );
         }
 
-        public ExpressionNode Index(Interval interval, ExpressionNode target, IEnumerable<ExpressionNode> arguments)
+        public static CallishNode Index(Interval interval, ExpressionNode target, IEnumerable<ExpressionNode> arguments)
         {
-            return (ExpressionNode) Wrap(
+            return (CallishNode) Wrap(
                 new _.CallishNode(interval, Extract(target), List(arguments), ExpressionType.Index));
 
         }
 
-        public ExpressionNode Call(Interval interval, ExpressionNode target, IEnumerable<ExpressionNode> arguments)
+        public static CallishNode Call(Interval interval, ExpressionNode target, IEnumerable<ExpressionNode> arguments)
         {
-            return (ExpressionNode) Wrap(
+            return (CallishNode) Wrap(
                 new _.CallishNode(interval, Extract(target), List(arguments), ExpressionType.Invocation));
         }
 
-        public CrawlSyntaxNode Assignment(Interval interval, ExpressionNode target, ExpressionNode value)
+        public static AssignmentNode Assignment(Interval interval, ExpressionNode target, ExpressionNode value)
         {
-            return Wrap(
+            return (AssignmentNode) Wrap(
                 new _.AssignmentNode(interval, Extract(target), Extract(target)));
         }
 
-        public CrawlSyntaxNode CompilationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
+        public static CrawlSyntaxNode CompilationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
         {
             return (CompiliationUnitNode) Wrap(
                 new _.CompiliationUnitNode(interval, List(importNodes), Extract(rootCode)));
         }
 
         //TODO: Also expose this as individual methods
-        public ExpressionNode MultiExpression(Interval interval, ExpressionType type, IEnumerable<ExpressionNode> sources)
+        public static ExpressionNode MultiExpression(Interval interval, ExpressionType type, IEnumerable<ExpressionNode> sources)
         {
             return (ExpressionNode) Wrap(
                 new _.MultiChildExpressionNode(interval, type, List(sources)));
@@ -204,7 +197,7 @@ namespace libcompiler.SyntaxTree
 
         //TODO: Also expose this as individual methods
         //TODO: Automatically catch invalid ExpressionTypes for this and delegate to relevant target
-        public ExpressionNode BinaryExpression(Interval interval, ExpressionType type, ExpressionNode leftHandSide, ExpressionNode rightHandSide)
+        public static ExpressionNode BinaryExpression(Interval interval, ExpressionType type, ExpressionNode leftHandSide, ExpressionNode rightHandSide)
         {
             return (ExpressionNode) Wrap(
                 new _.BinaryNode(interval, Extract(leftHandSide), Extract(rightHandSide), type)
@@ -214,37 +207,37 @@ namespace libcompiler.SyntaxTree
 
         private static ExpressionNode MkLiteral(Interval interval, string text, LiteralType type)
             => (ExpressionNode) Wrap(new _.LiteralNode(interval, text, type));
-        public ExpressionNode StringConstant(Interval interval, string textRepresentation)
+        public static ExpressionNode StringConstant(Interval interval, string textRepresentation)
         {
             return MkLiteral(interval, textRepresentation, LiteralType.String);
         }
 
-        public ExpressionNode IntegerConstant(Interval interval, string textRepresentation)
+        public static ExpressionNode IntegerConstant(Interval interval, string textRepresentation)
         {
             return MkLiteral(interval, textRepresentation, LiteralType.Int);
         }
 
-        public ExpressionNode BooleanConstant(Interval interval, string textRepresentation)
+        public static ExpressionNode BooleanConstant(Interval interval, string textRepresentation)
         {
             return MkLiteral(interval, textRepresentation, LiteralType.Boolean);
         }
 
-        public ExpressionNode RealConstant(Interval interval, string textRepresentation)
+        public static ExpressionNode RealConstant(Interval interval, string textRepresentation)
         {
             return MkLiteral(interval, textRepresentation, LiteralType.Real);
         }
 
-        public VariableNode VariableNode(Interval interval, string name)
+        public static VariableNode VariableNode(Interval interval, string name)
         {
             return (VariableNode) Wrap(new _.VariableNode(interval, name));
         }
 
-        public TokenNode TokenNode(Interval interval, string name)
+        public static TokenNode TokenNode(Interval interval, string name)
         {
             return (TokenNode) Wrap(new _.TokenNode(interval, name));
         }
 
-        public TypeNode Type(Interval interval, CrawlType crawlType)
+        public static TypeNode Type(Interval interval, CrawlType crawlType)
         {
             return (TypeNode) Wrap(new _.TypeNode(interval, crawlType));
         }

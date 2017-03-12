@@ -21,5 +21,10 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         {
             throw new System.NotImplementedException();
         }
+
+        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

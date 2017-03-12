@@ -48,5 +48,15 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         {
             return new Nodes.CallishNode(parrent, this, slot);
         }
+
+        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        {
+            if(index == 0)
+                return new CallishNode(this.Interval, (ExpressionNode)newChild, Arguments, ExpressionType);
+            else if(index == 1)
+                return new CallishNode(this.Interval, Target, (ListNode<Nodes.ExpressionNode>)newChild, ExpressionType);
+
+            throw new ArgumentOutOfRangeException();
+        }
     }
 }

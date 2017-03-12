@@ -10,13 +10,6 @@ namespace libcompiler.SyntaxTree.Parser
 {
     public class ExpressionParser
     {
-        private readonly NodeFactory NodeFactory;
-
-        public ExpressionParser(NodeFactory nodeFactory)
-        {
-            NodeFactory = nodeFactory;
-        }
-
         public ExpressionNode ParseExpression(RuleContext rule)
         {
             //Literal value.

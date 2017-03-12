@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using System;
+using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
@@ -31,6 +32,16 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parrent, int slot)
         {
             return new Nodes.ClassDeclerationNode(parrent, this, slot);
+        }
+
+        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        {
+            if(index == 0)
+                return new ClassDeclerationNode(this.Interval, ProtectionLevel, (TokenNode)newChild, BodyBlock);
+            else if(index == 1)
+                return new ClassDeclerationNode(this.Interval, ProtectionLevel, Identifier, (BlockNode)newChild);
+
+            throw new ArgumentOutOfRangeException();
         }
     }
 }
