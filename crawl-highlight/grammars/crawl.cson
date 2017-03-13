@@ -1,0 +1,249 @@
+'scopeName': 'source.crawl'
+'name': 'Cräwl'
+'fileTypes': [
+  'crawl',
+  'cräwl',
+  'crw',
+  'cwl'
+]
+
+
+
+'patterns' : [
+  {
+    'comment':'  Comments using //  '
+    'match': '//.*$'
+    'name' :'comment.double-slash.crawl'
+  },
+
+
+  {
+    'comment': '  function_decleration: intet(Sted sted) PrintMuligheder =...  '
+    'match': '([\\w\\d]*)(\\s*)(\\((.*)\\))(\\s*)([\\w\\d]*)(\\s*)(=)'
+    'name' :'meta'
+    'captures' :
+      '6' :
+        'comment' : '  Hightlight function name when declared'
+        'name' : 'entity.name.function.crawl'
+  },
+  {
+    'comment': '  class_declaration, first half:  klasse Helt ... '
+    'match': '\\b(klasse)(\\s*)([\\w\\d]*)'
+    'name' :'meta'
+    'captures' :
+      '1' :
+        'comment' : '  Highlight class keyword.  '
+        'name' : 'entity.name.type.crawl'
+      '3' :
+        'comment' : '  Hightlight class name when declared.  '
+        'name' : 'storage.type.class.crawl'
+  },
+  {
+    'comment' : '  class_declaration, second half:  ...  : menneske, soldat, skjald = '
+    'match' : '(:)((\\s*)([\\w\\d]+)(\\s*)((,)(\\s*)([\\w\\d]+)(\\s*))*)(=)'
+    'name' :'meta'
+    'captures' :
+      '2' :
+        'name' : 'entity.other.inherited-class.crawl'
+  },
+
+
+  {
+    'comment':'  NUMBER   '
+    'match': '\\b(\\d+)\\b'
+    'name' :'constant.numeric.crawl'
+  },
+  {
+    'comment':'  POINT_REAL_1 ( .9)  '
+    'match': '(\\.)(\\d+)\\b'
+    'name' :'constant.numeric.crawl'
+  },
+  {
+    'comment':'  POINT_REAL_2 (9.9)  '
+    'match': '\\b(\\d+)(\\.)(\\d+)\\b'
+    'name' :'constant.numeric.crawl'
+  },
+  {
+    'comment':'  EXPONENT_REAL_1 (NUMBER EXPONENT_END)  '
+    'match': '\\b(\\d+)(E|e)(\\+|\\-)?(\\d+)\\b'
+    'name' :'constant.numeric.crawl'
+  },
+  {
+    'comment':'  EXPONENT_REAL_2 (POINT_REAL1 EXPONENT_END)  '
+    'match': '(\\.)(\\d+)(E|e)(\\+|\\-)?(\\d+)\\b'
+    'name' :'constant.numeric.crawl'
+  },
+  {
+    'comment':'  EXPONENT_REAL_3 (POINT_REAL_2 EXPONENT_END)  '
+    'match': '\\b(\\d+)(\\.)(\\d+)(E|e)(\\+|\\-)?(\\d+)\\b'
+    'name' :'constant.numeric.crawl'
+  },
+  {
+    'comment':'  TRUE  '
+    'match': '\\b(sandt)\\b'
+    'name' : 'constant.language.crawl'
+  },
+  {
+    'comment':'  FALSE  '
+    'match': '\\b(falsk)\\b'
+    'name' : 'constant.language.crawl'
+  },
+  {
+    'comment':'  Strings  '
+    'begin': '"'
+    'end'  : '"'
+    'name' : 'string.quoted.double.crawl'
+    'patterns' :[
+      {
+        'comment':'Escape characters within strings. I have no idea why it takes four backslashes to escape one.'
+        'match' : '\\\\.'
+        'name' : 'constant.character.escape.crawl'
+      }
+    ]
+  },
+  {
+    'comment':'   Chars  '
+    'match' : '\'.\''
+    'name' : 'constant.character.crawl'
+  },
+  {
+    'comment':'  Chars using escape characters. I have no idea why it takes four backslashes to escape one.  '
+    'match' : '\'\\\\.\''
+    'name' : 'constant.character.escape.crawl'
+  },
+
+
+  {
+    'comment':'  IMPORT  '
+    'match': '\\b(importer)\\b'
+    'name' : 'keyword.other.crawl'
+  },
+
+
+  {
+    'comment':'  Void  '
+    'match': '\\b(intet)\\b'
+    'name' : 'constat.other.crawl'
+  },
+
+
+  {
+    'comment':'  PUBLIC  '
+    'match': '\\b(offentlig|offentligt)\\b'
+    'name' : 'storage.modifier.crawl'
+  },
+  {
+    'comment':'  PROTECTED  '
+    'match': '\\b(beskyttet)\\b'
+    'name' : 'storage.modifier.crawl'
+  },
+  {
+    'comment':'  INTERNAL  '
+    'match': '\\b(beskyttet)\\b'
+    'name' : 'storage.modifier.crawl'
+  },
+  {
+    'comment':'  PROTECTED_INTERNAL  '
+    'match': '\\b(beskyttet intern)\\b'
+    'name' : 'storage.modifier.crawl'
+  },
+
+
+  {
+    'comment':'  IF  '
+    'match': '\\b(hvis)\\b'
+    'name' : 'keyword.control.crawl'
+  },
+  {
+    'comment':'  ELSE  '
+    'match': '\\b(ellers)\\b'
+    'name' : 'keyword.control.crawl'
+  },
+  {
+    'comment':'  WHILE  '
+    'match': '\\b(mens)\\b'
+    'name' : 'keyword.control.crawl'
+  },
+  {
+    'comment':'  FOR  '
+    'match': '\\b(for)\\b'
+    'name' : 'keyword.control.crawl'
+  },
+  {
+    'comment':'  FOR_LOOP_SEPARATOR  '
+    'match': '\\b(fra)\\b'
+    'name' : 'keyword.control.crawl'
+  },
+  {
+    'comment':'  TO  '
+    'match': '\\b(til)\\b'
+    'name' : 'keyword.control.crawl'
+  },
+  {
+    'comment':'  AND  '
+    'match': '\\b(og)\\b'
+    'name' : 'keyword.control.crawl'
+  },
+  {
+    'comment':'  OR  '
+    'match': '\\b(eller)\\b'
+    'name' : 'keyword.control.crawl'
+  },
+
+
+  {
+  'comment':'  ITEM_SEPARATOR  '
+  'match': '(,)'
+  'name' : 'keyword.operator.crawl'
+  },
+  {
+    'comment':'  ASSIGNMENT_SYMBOL  '
+    'match': '(=)'
+    'name' : 'keyword.operator.crawl'
+  },
+  {
+    'comment':'  END_OF_STATEMENT  '
+    'match': '(;)'
+    'name' : 'keyword.control.crawl'
+  },
+  {
+    'comment':'  LPARANTHESIS  '
+    'match': '\\('
+    'name' : 'keyword.other.crawl'
+  },
+  {
+    'comment':'  RPARANTHESIS  '
+    'match': '\\)'
+    'name' : 'keyword.other.crawl'
+  },
+  {
+    'comment':'  LBRACKET  '
+    'match': '\\['
+    'name' : 'keyword.other.crawl'
+  },
+  {
+    'comment':'  RBRACKET  '
+    'match': '\\]'
+    'name' : 'keyword.other.crawl'
+  },
+  {
+    'comment':'  INVERT  '
+    'match': '\\b(not)\\b'
+    'name' : 'keyword.operator.crawl'
+  },
+  {
+    'comment':'  DOT  '
+    'match': '\\.'
+    'name' : 'keyword.operator.crawl'
+  },
+  {
+    'comment':'  EXPONENT  '
+    'match': '\\*\\*'
+    'name' : 'keyword.operator.crawl'
+  },
+  {
+    'comment':'  INHERITANCE_OPERATOR  '
+    'match': ':'
+    'name' : 'keyword.operator.crawl'
+  }
+]
