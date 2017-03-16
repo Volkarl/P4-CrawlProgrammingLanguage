@@ -17,7 +17,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             throw new System.NotImplementedException();
         }
 
-        public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parrent, int slot)
+        public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int slot)
         {
             throw new System.NotImplementedException();
         }

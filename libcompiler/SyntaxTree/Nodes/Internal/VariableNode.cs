@@ -22,9 +22,9 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             throw new System.NotImplementedException();
         }
 
-        public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parrent, int slot)
+        public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int slot)
         {
-            return new Nodes.VariableNode(parrent, this, slot);
+            return new Nodes.VariableNode(parent, this, slot);
         }
 
         internal override GreenNode WithReplacedChild(GreenNode newChild, int index)

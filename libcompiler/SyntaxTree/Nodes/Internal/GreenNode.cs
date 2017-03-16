@@ -15,7 +15,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public int ChildCount { get; protected set; }
 
         public abstract GreenNode GetSlot(int slot);
-        public abstract CrawlSyntaxNode CreateRed(CrawlSyntaxNode parrent, int slot);
+        public abstract CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int slot);
 
         protected GreenNode(NodeType type, Interval interval)
         {
