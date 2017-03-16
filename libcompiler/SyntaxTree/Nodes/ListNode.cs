@@ -20,7 +20,7 @@ namespace libcompiler.SyntaxTree.Nodes
         {
             get
             {
-                if (index >= 0 || _childNodes.Length > index)
+                if (index >= 0 && _childNodes.Length > index)
                 {
                     return GetRed(ref _childNodes[index], index);
                 }

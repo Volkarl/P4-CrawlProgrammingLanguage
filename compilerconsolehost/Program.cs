@@ -57,7 +57,7 @@ namespace compilerconsolehost
                 ITokenSource ts = new CrawlLexer(fs);
                 //An ITokenStream lets us go forwards and backwards in the token-series.
                 ITokenStream tstream = new CommonTokenStream(ts);
-                //And then we can have our parser.
+                //That's what our parser wants.
                 CrawlParser parser = new CrawlParser(tstream);
 
                 //The translation_unit is the top rule in our grammar.
@@ -78,7 +78,7 @@ namespace compilerconsolehost
         {
             CrawlSyntaxTree tree = CrawlSyntaxTree.ParseTree(new StreamReader(File.OpenRead(s)), s);
 
-            var t = new SyntaxTreePrinter();
+            var t = new PrettyPrintVisitor();
             t.Visit(tree.RootNode);
             Console.WriteLine(t.BuildString.ToString());
         }

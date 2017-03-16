@@ -20,12 +20,12 @@ namespace libcompiler.SyntaxTree.Nodes
         /// <summary>
         /// The parrent <see cref="CrawlSyntaxNode"/> of this node. It is null if this is a root node
         /// </summary>
-        public CrawlSyntaxNode Parrent { get; }
+        public CrawlSyntaxNode Parent { get; }
 
         /// <summary>
         /// The position where this node appear in the parrent
         /// </summary>
-        public int IndexInParrent { get; }
+        public int IndexInParent { get; }
         
         /// <summary>
         /// The <see cref="NodeType"/> of this <see cref="CrawlSyntaxNode"/>. 
@@ -46,7 +46,7 @@ namespace libcompiler.SyntaxTree.Nodes
         protected internal CrawlSyntaxNode(CrawlSyntaxNode parrent, GreenNode self, int slot)
         {
             if(!(parrent is SyntaxNodeTreeInjector))
-                Parrent = parrent;
+                Parent = parrent;
 
             OwningTree = parrent?.OwningTree;
             if (OwningTree == null)
@@ -58,7 +58,7 @@ namespace libcompiler.SyntaxTree.Nodes
             //GreenNodes sometimes uses upper bits to encode extra information. Not allowed here
             // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
             Type = self.Type & (NodeType) 0xff;
-            IndexInParrent = slot;
+            IndexInParent = slot;
 
         }
 
@@ -66,9 +66,9 @@ namespace libcompiler.SyntaxTree.Nodes
         {
             OwningTree = tree;
             _green = self;
-            Parrent = null;
+            Parent = null;
             Type = self.Type;
-            IndexInParrent = slot;
+            IndexInParent = slot;
         }
 
         protected T GetRed<T>(ref T field, int slot) where T : CrawlSyntaxNode
@@ -99,11 +99,11 @@ namespace libcompiler.SyntaxTree.Nodes
             int count = 0;
             GreenNode toInsert = replacement._green;
             CrawlSyntaxNode self = this;
-            while (self.Parrent != null)
+            while (self.Parent != null)
             {
-                parrentIndex.Push(self.IndexInParrent);
-                toInsert = self.Parrent._green.WithReplacedChild(toInsert, self.IndexInParrent);
-                self = self.Parrent;
+                parrentIndex.Push(self.IndexInParent);
+                toInsert = self.Parent._green.WithReplacedChild(toInsert, self.IndexInParent);
+                self = self.Parent;
                 count++;
             }
 

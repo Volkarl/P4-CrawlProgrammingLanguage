@@ -6,7 +6,7 @@ using libcompiler.SyntaxTree.Nodes;
 namespace libcompiler
 {
     
-    public class SyntaxTreePrinter : SyntaxTreeVistitor
+    public class PrettyPrintVisitor : SyntaxTreeVistitor
     {
         public StringBuilder BuildString = new StringBuilder();
 
@@ -15,7 +15,7 @@ namespace libcompiler
             while (count >= 5)
             {
                 BuildString.Append(' ', 4);
-                BuildString.Append('|');
+                BuildString.Append('│');
                 count -= 5;
             }
             BuildString.Append(' ', count);

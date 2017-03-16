@@ -50,13 +50,19 @@ namespace libcompiler.SyntaxTree
 
         internal static CrawlSyntaxTree FromGreen(GreenNode root, string name) => new CrawlSyntaxTree(root, name);
 
-        public static CrawlSyntaxTree ParseTree(TextReader tr, string compilationUnitName)
-        {
-            
-            ITokenSource ts = new CrawlLexer(new AntlrInputStream(tr));
-            ITokenStream tstream = new CommonTokenStream(ts);
-            CrawlParser parser = new CrawlParser(tstream);
 
+        public static CrawlSyntaxTree ParseTree(TextReader textReader, string compilationUnitName)
+        {
+
+            //An ITokenSource lets us get the tokens one at a time.
+            ITokenSource tSource = new CrawlLexer(new AntlrInputStream(textReader));
+            //An ITokenStream lets us go forwards and backwards in the token-series.
+            ITokenStream tStream = new CommonTokenStream(tSource);
+            //That's what our parser wants.
+            CrawlParser parser = new CrawlParser(tStream);
+
+            //The translation_unit is the top rule in our grammar.
+            //Asking the parser to match that from the token stream leaves us at the top of the parse tree.
             CrawlParser.Translation_unitContext rootContext = parser.translation_unit();
             
             return new CrawlSyntaxTree(rootContext, compilationUnitName);
