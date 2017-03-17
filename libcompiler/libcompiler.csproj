@@ -40,7 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CrawlCompiler.cs" />
+    <Compile Include="CrawlCompilerConfiguration.cs" />
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
+    <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
     <Compile Include="SyntaxTree\Internal\SyntaxNodeTreeInjector.cs" />
     <Compile Include="SyntaxTree\Nodes\AssignmentNode.cs" />
@@ -108,6 +111,7 @@
     <Compile Include="SyntaxTree\Nodes\VariableDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\VariableNode.cs" />
     <Compile Include="TraceListners.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Crawl.g4" />
