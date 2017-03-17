@@ -10,7 +10,7 @@ namespace libcompiler.SyntaxTree
     {
         private static CrawlSyntaxNode Wrap(_.GreenNode selectiveFlowNode)
         {
-            return CrawlSyntaxTree.FromGreen(selectiveFlowNode, "<Unknown>").RootNode;
+            return selectiveFlowNode.CreateRed(null, 0);
         }
 
         private static _.BlockNode Extract(BlockNode n)
@@ -182,7 +182,7 @@ namespace libcompiler.SyntaxTree
                 new _.AssignmentNode(interval, Extract(target), Extract(target)));
         }
 
-        public static CrawlSyntaxNode CompilationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
+        public static CompiliationUnitNode CompilationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
         {
             return (CompiliationUnitNode) Wrap(
                 new _.CompiliationUnitNode(interval, List(importNodes), Extract(rootCode)));

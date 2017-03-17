@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http.Headers;
 using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal

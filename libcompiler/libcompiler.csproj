@@ -45,7 +45,6 @@
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
-    <Compile Include="SyntaxTree\Internal\SyntaxNodeTreeInjector.cs" />
     <Compile Include="SyntaxTree\Nodes\AssignmentNode.cs" />
     <Compile Include="SyntaxTree\Nodes\BinaryNode.cs" />
     <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
@@ -121,6 +120,9 @@
       <Project>{e1a46d9d-66cb-46e8-93b0-7fc87299abef}</Project>
       <Name>Antlr4.Runtime.vs2013</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SyntaxTree\Internal\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -1,12 +1,10 @@
-﻿using Antlr4.Runtime.Misc;
-
-namespace libcompiler.SyntaxTree.Nodes
+﻿namespace libcompiler.SyntaxTree.Nodes
 {
     public class ImportNode : CrawlSyntaxNode
     {
         public string Module { get; }
 
-        public ImportNode(CrawlSyntaxNode parrent, Internal.ImportNode self, int slot) : base(parrent, self, slot)
+        public ImportNode(CrawlSyntaxNode parent, Internal.ImportNode self, int slot) : base(parent, self, slot)
         {
             Module = self.Module;
         }

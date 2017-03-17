@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
     public class ListNode<T> : CrawlSyntaxNode, IReadOnlyList<T> where T : CrawlSyntaxNode
     {
-        public ListNode(CrawlSyntaxNode parrent, GreenNode self, int slot) : base(parrent, self, slot)
+        public ListNode(CrawlSyntaxNode parent, GreenNode self, int slot) : base(parent, self, slot)
         {
             _childNodes = new T[self.ChildCount];
         }

@@ -1,13 +1,10 @@
-﻿using Antlr4.Runtime.Misc;
-using libcompiler.SyntaxTree.Nodes.Internal;
-
-namespace libcompiler.SyntaxTree.Nodes
+﻿namespace libcompiler.SyntaxTree.Nodes
 {
     public class VariableNode : ExpressionNode
     {
         public string Name { get; }
 
-        public VariableNode(CrawlSyntaxNode parrent, Internal.VariableNode self, int slot) : base(parrent, self, slot)
+        public VariableNode(CrawlSyntaxNode parent, Internal.VariableNode self, int slot) : base(parent, self, slot)
         {
             Name = self.Name;
         }

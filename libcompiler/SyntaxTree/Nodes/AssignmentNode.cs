@@ -1,4 +1,3 @@
-using Antlr4.Runtime.Misc;
 using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
@@ -18,7 +17,7 @@ namespace libcompiler.SyntaxTree.Nodes
         /// </summary>
         public ExpressionNode Value => GetRed(ref _value, 1);
 
-        public AssignmentNode(CrawlSyntaxNode parrent, GreenNode self, int slot) : base(parrent, self, slot)
+        public AssignmentNode(CrawlSyntaxNode parent, GreenNode self, int slot) : base(parent, self, slot)
         {
 
         }

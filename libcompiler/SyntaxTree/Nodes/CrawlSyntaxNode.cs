@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
-using libcompiler.SyntaxTree.Internal;
 using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
@@ -11,19 +9,37 @@ namespace libcompiler.SyntaxTree.Nodes
     public abstract class CrawlSyntaxNode
     {
         private readonly GreenNode _green;
+        private CrawlSyntaxTree _owningTree;
 
         /// <summary>
         /// The <see cref="CrawlSyntaxTree"/> this Node belongs to. 
         /// </summary>
-        public CrawlSyntaxTree OwningTree { get; }
+        public CrawlSyntaxTree OwningTree
+        {
+            get
+            {
+                //If we already know what tree owns this node, great
+                if (_owningTree != null) return _owningTree;
+
+                //otherwise we to find it.
+                //If ask our parent for it. If we don't have a parent, make one up.
+                CrawlSyntaxTree newTree = Parent == null ? new CrawlSyntaxTree(this, "<Unknown>") : Parent.OwningTree;
+
+                //Save it thread safe
+                Interlocked.CompareExchange(ref _owningTree, newTree, null);
+
+                //Return what actually got saved
+                return _owningTree;
+            }
+        }
 
         /// <summary>
-        /// The parrent <see cref="CrawlSyntaxNode"/> of this node. It is null if this is a root node
+        /// The parent <see cref="CrawlSyntaxNode"/> of this node. It is null if this is a root node
         /// </summary>
         public CrawlSyntaxNode Parent { get; }
 
         /// <summary>
-        /// The position where this node appear in the parrent
+        /// The position where this node appear in the parent
         /// </summary>
         public int IndexInParent { get; }
         
@@ -43,32 +59,16 @@ namespace libcompiler.SyntaxTree.Nodes
 
         public int ChildCount => _green.ChildCount;
 
-        protected internal CrawlSyntaxNode(CrawlSyntaxNode parrent, GreenNode self, int slot)
+        protected internal CrawlSyntaxNode(CrawlSyntaxNode parent, GreenNode self, int slot)
         {
-            if(!(parrent is SyntaxNodeTreeInjector))
-                Parent = parrent;
+            Parent = parent;
 
-            OwningTree = parrent?.OwningTree;
-            if (OwningTree == null)
-            {
-                OwningTree = new CrawlSyntaxTree(this, "<Unknown>");
-
-            }
             _green = self;
             //GreenNodes sometimes uses upper bits to encode extra information. Not allowed here
             // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
             Type = self.Type & (NodeType) 0xff;
             IndexInParent = slot;
 
-        }
-
-        protected internal CrawlSyntaxNode(CrawlSyntaxTree tree, GreenNode self, int slot)
-        {
-            OwningTree = tree;
-            _green = self;
-            Parent = null;
-            Type = self.Type;
-            IndexInParent = slot;
         }
 
         protected T GetRed<T>(ref T field, int slot) where T : CrawlSyntaxNode

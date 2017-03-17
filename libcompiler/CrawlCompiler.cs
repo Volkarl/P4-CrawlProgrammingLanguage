@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Antlr4.Runtime;
-using libcompiler.Parser;
 using libcompiler.SyntaxTree;
 
 namespace libcompiler

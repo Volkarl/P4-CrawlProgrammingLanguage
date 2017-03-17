@@ -1,5 +1,4 @@
-﻿using Antlr4.Runtime.Misc;
-using libcompiler.SyntaxTree.Nodes.Internal;
+﻿using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
@@ -14,7 +13,7 @@ namespace libcompiler.SyntaxTree.Nodes
         public BlockNode BodyBlock => GetRed(ref _body, 1);
         
 
-        public ClassDeclerationNode(CrawlSyntaxNode parrent, GreenNode self, int slot) : base(parrent, self, slot)
+        public ClassDeclerationNode(CrawlSyntaxNode parent, GreenNode self, int slot) : base(parent, self, slot)
            
         {
             

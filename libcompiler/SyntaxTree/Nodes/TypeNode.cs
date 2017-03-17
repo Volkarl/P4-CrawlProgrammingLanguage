@@ -2,7 +2,7 @@
 {
     public class TypeNode : CrawlSyntaxNode
     {
-        public TypeNode(CrawlSyntaxNode parrent, Internal.TypeNode self, int slot) : base(parrent, self, slot)
+        public TypeNode(CrawlSyntaxNode parent, Internal.TypeNode self, int slot) : base(parent, self, slot)
         {
             ExportedType = self.ExportedType;
         }

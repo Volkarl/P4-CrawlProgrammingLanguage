@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Antlr4.Runtime.Misc;
-using libcompiler.SyntaxTree.Nodes.Internal;
+﻿using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
@@ -9,8 +6,8 @@ namespace libcompiler.SyntaxTree.Nodes
     {
         //TODO: Probably some kind of (generated) Scope information here
         
-        public BlockNode(CrawlSyntaxNode parrent, GreenNode self, int slot)
-            : base(parrent, self, slot)
+        public BlockNode(CrawlSyntaxNode parent, GreenNode self, int slot)
+            : base(parent, self, slot)
         {
         }
     }

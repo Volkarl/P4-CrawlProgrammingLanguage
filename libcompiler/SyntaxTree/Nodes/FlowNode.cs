@@ -1,11 +1,8 @@
-﻿using Antlr4.Runtime.Misc;
-using libcompiler.SyntaxTree.Nodes.Internal;
-
-namespace libcompiler.SyntaxTree.Nodes
+﻿namespace libcompiler.SyntaxTree.Nodes
 {
     public abstract class FlowNode : CrawlSyntaxNode
     {
-        protected FlowNode(CrawlSyntaxNode parrent, Internal.FlowNode self, int slot) : base(parrent, self, slot)
+        protected FlowNode(CrawlSyntaxNode parent, Internal.FlowNode self, int slot) : base(parent, self, slot)
         {
         }
     }

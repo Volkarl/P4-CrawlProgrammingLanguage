@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Antlr4.Runtime.Misc;
-using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
@@ -16,7 +12,7 @@ namespace libcompiler.SyntaxTree.Nodes
         public ListNode<ExpressionNode> Arguments => GetRed(ref _arguments, 1);
 
 
-        public CallishNode(CrawlSyntaxNode parrent, Internal.ExpressionNode self, int slot) : base(parrent, self, slot)
+        public CallishNode(CrawlSyntaxNode parent, Internal.ExpressionNode self, int slot) : base(parent, self, slot)
         {
             
         }
