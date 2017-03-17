@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Antlr4.Runtime.vs2013", "ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "compilerconsolehost", "compilerconsolehost\compilerconsolehost.csproj", "{3596D894-5514-41C4-AE2C-EE366E355A8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libcompiler.Tests", "libcompiler.Tests\libcompiler.Tests.csproj", "{4A3C9C96-C3F9-4946-8974-B4F8B79A0AA9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,10 +29,6 @@ Global
 		{3596D894-5514-41C4-AE2C-EE366E355A8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3596D894-5514-41C4-AE2C-EE366E355A8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3596D894-5514-41C4-AE2C-EE366E355A8A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A3C9C96-C3F9-4946-8974-B4F8B79A0AA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A3C9C96-C3F9-4946-8974-B4F8B79A0AA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A3C9C96-C3F9-4946-8974-B4F8B79A0AA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A3C9C96-C3F9-4946-8974-B4F8B79A0AA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
