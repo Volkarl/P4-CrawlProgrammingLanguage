@@ -23,7 +23,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return $"decl {FunctionType.ExportedType.Textdef} {Identfier} =";
         }
 
-        public override GreenNode GetSlot(int slot)
+        public override GreenNode GetChildAt(int slot)
         {
             switch (slot)
             {

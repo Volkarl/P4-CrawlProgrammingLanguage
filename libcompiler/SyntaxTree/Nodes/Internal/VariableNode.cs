@@ -17,7 +17,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return Name;
         }
 
-        public override GreenNode GetSlot(int slot)
+        public override GreenNode GetChildAt(int slot)
         {
             throw new System.NotImplementedException();
         }

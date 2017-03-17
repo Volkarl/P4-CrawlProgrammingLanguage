@@ -77,7 +77,7 @@ namespace libcompiler.SyntaxTree.Nodes
 
             if (result == null)
             {
-                GreenNode green = this._green.GetSlot(slot);
+                GreenNode green = this._green.GetChildAt(slot);
                 if (green != null)
                 {
                     Interlocked.CompareExchange(ref field, (T)green.CreateRed(this, slot), null);
@@ -90,7 +90,7 @@ namespace libcompiler.SyntaxTree.Nodes
 
         internal static GreenNode ExtractGreenNode(CrawlSyntaxNode node) => node?._green;
 
-        public abstract CrawlSyntaxNode GetChild(int index);
+        public abstract CrawlSyntaxNode GetChildAt(int index);
 
         public CrawlSyntaxNode Translplant(CrawlSyntaxNode replacement)
         {
@@ -110,7 +110,7 @@ namespace libcompiler.SyntaxTree.Nodes
             CrawlSyntaxNode newRoot = toInsert.CreateRed(null, 0);
             while (parrentIndex.Count != 0)
             {
-                newRoot = newRoot.GetChild(parrentIndex.Pop());
+                newRoot = newRoot.GetChildAt(parrentIndex.Pop());
                 if(newRoot == null) throw new Exception();
             }
 

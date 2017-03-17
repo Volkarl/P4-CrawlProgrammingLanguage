@@ -21,7 +21,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return (NodeType)((int)type << 8) | nodeType;
         }
 
-        public override GreenNode GetSlot(int slot)
+        public override GreenNode GetChildAt(int slot)
         {
             switch (slot)
             {

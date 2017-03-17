@@ -24,7 +24,7 @@ namespace libcompiler.SyntaxTree.Nodes
             return $"decl {FunctionType.ExportedType.Textdef} {Identfier} =";
         }
 
-        public override CrawlSyntaxNode GetChild(int index)
+        public override CrawlSyntaxNode GetChildAt(int index)
         {
             throw new System.NotImplementedException();
         }

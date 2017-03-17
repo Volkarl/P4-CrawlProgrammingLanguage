@@ -16,7 +16,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             Value = value;
         }
 
-        public override GreenNode GetSlot(int slot)
+        public override GreenNode GetChildAt(int slot)
         {
             return null;
         }

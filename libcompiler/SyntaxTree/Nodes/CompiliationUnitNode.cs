@@ -19,7 +19,7 @@ namespace libcompiler.SyntaxTree.Nodes
 
         public ListNode<ImportNode> Imports => GetRed(ref _imports, 0);
         public BlockNode Code => GetRed(ref _code, 1);
-        public override CrawlSyntaxNode GetChild(int index)
+        public override CrawlSyntaxNode GetChildAt(int index)
         {
             switch (index)
             {

@@ -15,7 +15,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             Declerations = declerations;
         }
 
-        public override GreenNode GetSlot(int slot)
+        public override GreenNode GetChildAt(int slot)
         {
             switch (slot)
             {

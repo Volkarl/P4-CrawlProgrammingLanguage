@@ -31,7 +31,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return newArray;
         }
 
-        public override GreenNode GetSlot(int slot)
+        public override GreenNode GetChildAt(int slot)
         {
             if (slot >= 0 || ChildCount > slot)
             {

@@ -11,7 +11,7 @@ namespace libcompiler.SyntaxTree.Nodes
             Module = self.Module;
         }
 
-        public override CrawlSyntaxNode GetChild(int index)
+        public override CrawlSyntaxNode GetChildAt(int index)
         {
             throw new System.NotImplementedException();
         }

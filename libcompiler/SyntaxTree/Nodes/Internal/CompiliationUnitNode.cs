@@ -18,7 +18,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             Body = block;
         }
 
-        public override GreenNode GetSlot(int slot)
+        public override GreenNode GetChildAt(int slot)
         {
             switch (slot)
             {

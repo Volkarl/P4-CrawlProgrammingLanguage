@@ -40,7 +40,7 @@ namespace libcompiler.SyntaxTree.Nodes
             While,
         }
 
-        public override CrawlSyntaxNode GetChild(int index)
+        public override CrawlSyntaxNode GetChildAt(int index)
         {
             throw new NotImplementedException();
         }

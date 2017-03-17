@@ -40,7 +40,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             While,
         }
 
-        public override GreenNode GetSlot(int slot)
+        public override GreenNode GetChildAt(int slot)
         {
             switch (slot)
             {

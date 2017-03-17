@@ -13,7 +13,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             DefaultValue = defaultValue;
         }
 
-        public override GreenNode GetSlot(int slot)
+        public override GreenNode GetChildAt(int slot)
         {
             switch (slot)
             {
