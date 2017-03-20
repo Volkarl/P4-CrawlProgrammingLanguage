@@ -135,5 +135,10 @@ namespace libcompiler.SyntaxTree.Nodes
 
             return newRoot;
         }
+
+        public override string ToString()
+        {
+            return _green.Type.ToString();
+        }
     }
 }
