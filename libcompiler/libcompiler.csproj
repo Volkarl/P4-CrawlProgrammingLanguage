@@ -50,7 +50,7 @@
     <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CallishNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\CompiliationUnitNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\TranslationUnitNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxTree.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Crawl.g4" />
+    <None Include="SyntaxTree\Nodes\redgreen.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\external_dependencies\antlr4\runtime\CSharp\runtime\CSharp\Antlr4.Runtime\Antlr4.Runtime.vs2013.csproj">
