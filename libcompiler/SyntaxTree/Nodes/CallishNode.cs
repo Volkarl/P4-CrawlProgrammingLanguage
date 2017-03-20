@@ -1,29 +1,39 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Antlr4.Runtime.Misc;
-using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
+    /// <summary>
+    /// Represents a node looking like a call. This is actuall calls and index access.
+    /// </summary>
     public class CallishNode : ExpressionNode
     {
         private ExpressionNode _target;
         private ListNode<ExpressionNode> _arguments;
 
-
+        /// <summary>
+        /// The expression to call.
+        /// </summary>
         public ExpressionNode Target => GetRed(ref _target, 0);
+
+        /// <summary>
+        /// The arguments of the call. If no arguments it means an empty call __();
+        /// </summary>
         public ListNode<ExpressionNode> Arguments => GetRed(ref _arguments, 1);
 
 
-        public CallishNode(CrawlSyntaxNode parrent, Internal.ExpressionNode self, int slot) : base(parrent, self, slot)
+        public CallishNode(CrawlSyntaxNode parent, Internal.ExpressionNode self, int slot) : base(parent, self, slot)
         {
             
         }
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new NotImplementedException();
+            switch (index)
+            {
+                case 0: return Target;
+                case 1: return Arguments;
+                default: return default(CrawlSyntaxNode);
+            }
         }
     }
 }

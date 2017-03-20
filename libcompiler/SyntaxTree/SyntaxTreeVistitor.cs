@@ -58,7 +58,7 @@ namespace libcompiler.SyntaxTree
                 case NodeType.Import:
                     throw new NotImplementedException();
                 case NodeType.CompilationUnit:
-                    VisitCompiliationUnit((CompiliationUnitNode) node);
+                    VisitCompiliationUnit((TranslationUnitNode) node);
                     break;
                 case NodeType.Literal:
                     VisitLiteral((LiteralNode) node);
@@ -66,9 +66,17 @@ namespace libcompiler.SyntaxTree
                 case NodeType.NodeList:
                     VisitList((IEnumerable<CrawlSyntaxNode>) node);
                     break;
+                case NodeType.UnaryExpression:
+                    VisitUnary((UnaryNode) node);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void VisitUnary(UnaryNode node)
+        {
+            Visit(node.Target);
         }
 
         private void VisitList(IEnumerable<CrawlSyntaxNode> node) 
@@ -87,10 +95,7 @@ namespace libcompiler.SyntaxTree
 
         protected virtual  void VisitMulti(MultiChildExpressionNode node)
         {
-            foreach (ExpressionNode argument in node.Arguments)
-            {
-                Visit(argument);
-            }
+            Visit(node.Arguments);
         }
 
         protected virtual void VisitReturnStatement(ReturnStatement node)
@@ -135,10 +140,7 @@ namespace libcompiler.SyntaxTree
         {
             Visit(node.Target);
 
-            foreach (ExpressionNode expressionNode in node.Arguments)
-            {
-                Visit(expressionNode);
-            }
+            Visit(node.Arguments);
         }
 
         protected virtual void VisitFunctionDecleration(FunctionDeclerationNode node)
@@ -154,10 +156,7 @@ namespace libcompiler.SyntaxTree
 
         protected virtual void VisitVariableDecleration(VariableDeclerationNode node)
         {
-            foreach (SingleVariableDecleration decleration in node.Declerations)
-            {
-                Visit(decleration);
-            }
+            Visit(node.Declerations);
         }
 
         protected virtual void VisitClassDecleration(ClassDeclerationNode node)
@@ -170,7 +169,7 @@ namespace libcompiler.SyntaxTree
             
         }
 
-        protected virtual void VisitCompiliationUnit(CompiliationUnitNode node)
+        protected virtual void VisitCompiliationUnit(TranslationUnitNode node)
         {
             foreach (ImportNode nodeImport in node.Imports)
             {

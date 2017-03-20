@@ -20,6 +20,8 @@
         ShortCircuitOr,
         ShortCircuitAnd,
         Constant,
-        Variable
+        Variable,
+        Negate,
+        Not
     }
 }

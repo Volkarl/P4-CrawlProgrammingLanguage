@@ -1,8 +1,10 @@
-using Antlr4.Runtime.Misc;
 using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
+    /// <summary>
+    /// Represents an assignment (a = b;)
+    /// </summary>
     public class AssignmentNode : CrawlSyntaxNode
     {
         private ExpressionNode _target;
@@ -18,14 +20,19 @@ namespace libcompiler.SyntaxTree.Nodes
         /// </summary>
         public ExpressionNode Value => GetRed(ref _value, 1);
 
-        public AssignmentNode(CrawlSyntaxNode parrent, GreenNode self, int slot) : base(parrent, self, slot)
+        public AssignmentNode(CrawlSyntaxNode parent, GreenNode self, int slot) : base(parent, self, slot)
         {
 
         }
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new System.NotImplementedException();
+            switch (index)
+            {
+                case 0: return Target;
+                case 1: return Value;
+                default: return default(CrawlSyntaxNode);
+            }
         }
     }
 }

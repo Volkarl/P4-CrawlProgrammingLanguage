@@ -1,8 +1,10 @@
-﻿using Antlr4.Runtime.Misc;
-using libcompiler.SyntaxTree.Nodes.Internal;
+﻿using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
+    /// <summary>
+    /// This declares a class.
+    /// </summary>
     public class ClassDeclerationNode : DeclerationNode
     {
         private TokenNode _identifier;
@@ -10,11 +12,18 @@ namespace libcompiler.SyntaxTree.Nodes
 
         //TODO: List of constructors? Probably as extension method to not calculate unless required
 
+        /// <summary>
+        /// The name of this class.
+        /// </summary>
         public TokenNode Identifier => GetRed(ref _identifier, 0);
+
+        /// <summary>
+        /// All the contents inside the class (functions, variables and stuff)
+        /// </summary>
         public BlockNode BodyBlock => GetRed(ref _body, 1);
         
 
-        public ClassDeclerationNode(CrawlSyntaxNode parrent, GreenNode self, int slot) : base(parrent, self, slot)
+        public ClassDeclerationNode(CrawlSyntaxNode parent, GreenNode self, int slot) : base(parent, self, slot)
            
         {
             
@@ -22,7 +31,12 @@ namespace libcompiler.SyntaxTree.Nodes
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new System.NotImplementedException();
+            switch (index)
+            {
+                case 0: return Identifier;
+                case 1: return BodyBlock;
+                default: return default(CrawlSyntaxNode);
+            }
         }
     }
 }

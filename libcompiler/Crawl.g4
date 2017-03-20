@@ -331,7 +331,7 @@ LPARANTHESIS			: '(' {opened++;} ;
 RPARANTHESIS			: ')'  {opened--;};
 LBRACKET				: '['  {opened++;};
 RBRACKET				: ']'  {opened--;};
-INVERT					: 'not' ;
+INVERT					: 'ikke' ;
 DOT						: '.' ;
 EXPONENT				: '**' ;
 INHERITANCE_OPERATOR	: ':';

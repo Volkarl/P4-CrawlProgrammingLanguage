@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
 using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
@@ -31,7 +28,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
 
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int slot)
         {
-            return new Nodes.CompiliationUnitNode(parent, this, slot);
+            return new Nodes.TranslationUnitNode(parent, this, slot);
         }
 
         internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
@@ -41,7 +38,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             else if(index == 1)
                 return new CompiliationUnitNode(this.Interval, Imports, (BlockNode)newChild);
 
-            throw new IndexOutOfRangeException();
+            throw new ArgumentOutOfRangeException();
         }
     }
 }

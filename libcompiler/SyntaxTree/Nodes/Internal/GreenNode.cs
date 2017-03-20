@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Antlr4.Runtime.Misc;
+﻿using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
@@ -12,7 +7,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public NodeType Type { get; }
         public Interval Interval { get; }
 
-        public int ChildCount { get; protected set; }
+        public int ChildCount { get; protected set; } = 2;
 
         public abstract GreenNode GetChildAt(int slot);
         public abstract CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int slot);

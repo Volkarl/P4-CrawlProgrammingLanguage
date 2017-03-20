@@ -1,5 +1,4 @@
-﻿using Antlr4.Runtime.Misc;
-using libcompiler.SyntaxTree.Nodes.Internal;
+﻿using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
@@ -12,14 +11,27 @@ namespace libcompiler.SyntaxTree.Nodes
         public VariableNode Identifier => GetRed(ref _id, 0);
         public ExpressionNode DefaultValue => GetRed(ref _default, 1);
 
-        public SingleVariableDecleration(CrawlSyntaxNode parrent, GreenNode self, int slot) : base(parrent, self, slot)
+        public SingleVariableDecleration(CrawlSyntaxNode parent, GreenNode self, int slot) : base(parent, self, slot)
         {
             
         }
 
+        public override string ToString()
+        {
+            if (DefaultValue == null)
+                return Identifier.Name;
+            else return Identifier.Name + " = ";
+        }
+
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new System.NotImplementedException();
+            switch (index)
+            {
+                case 0: return Identifier;
+                case 1: return DefaultValue;;
+                default:
+                    return default(CrawlSyntaxNode);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using System;
+using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
@@ -10,6 +11,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             : base(interval, NodeType.Variable, SyntaxTree.ExpressionType.Variable)
         {
             Name = name;
+            ChildCount = 0;
         }
 
         public override string ToString()
@@ -19,7 +21,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
 
         public override GreenNode GetChildAt(int slot)
         {
-            throw new System.NotImplementedException();
+            return default(GreenNode);
         }
 
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int slot)
@@ -29,7 +31,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
 
         internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
         {
-            throw new System.NotImplementedException();
+            throw new ArgumentOutOfRangeException();
         }
     }
 }

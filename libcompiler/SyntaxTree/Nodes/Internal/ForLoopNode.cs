@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http.Headers;
 using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
@@ -18,6 +17,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             InducedFieldName = inducedFieldName;
             Iteratior = iteratior;
             Block = block;
+            ChildCount = 4;
         }
 
         public override GreenNode GetChildAt(int slot)

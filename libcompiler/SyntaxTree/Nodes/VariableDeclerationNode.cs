@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Antlr4.Runtime.Misc;
-using libcompiler.SyntaxTree.Nodes.Internal;
+﻿using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
@@ -9,17 +6,23 @@ namespace libcompiler.SyntaxTree.Nodes
     {
         private TypeNode _declType;
         private ListNode<SingleVariableDecleration> _decls;
+
         public TypeNode DeclerationType => GetRed(ref _declType, 0);
         public ListNode<SingleVariableDecleration> Declerations => GetRed(ref _decls, 1);
 
-        public VariableDeclerationNode(CrawlSyntaxNode parrent, GreenNode self, int slot) : base(parrent, self, slot)
+        public VariableDeclerationNode(CrawlSyntaxNode parent, GreenNode self, int slot) : base(parent, self, slot)
         {
             
         }
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new System.NotImplementedException();
+            switch (index)
+            {
+                case 0: return DeclerationType;
+                case 1: return Declerations;
+                default: return default(CrawlSyntaxNode);
+            }
         }
     }
 }

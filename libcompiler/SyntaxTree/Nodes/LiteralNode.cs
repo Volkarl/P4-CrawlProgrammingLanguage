@@ -5,7 +5,7 @@ namespace libcompiler.SyntaxTree.Nodes
         public string Value { get; }
         public LiteralType LiteralType { get; }
 
-        public LiteralNode(CrawlSyntaxNode parrent, Internal.LiteralNode self, int slot) : base(parrent, self, slot)
+        public LiteralNode(CrawlSyntaxNode parent, Internal.LiteralNode self, int slot) : base(parent, self, slot)
         
         {
             Value = self.Value;
@@ -19,7 +19,7 @@ namespace libcompiler.SyntaxTree.Nodes
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new System.NotImplementedException();
+            return default(CrawlSyntaxNode);
         }
     }
 }

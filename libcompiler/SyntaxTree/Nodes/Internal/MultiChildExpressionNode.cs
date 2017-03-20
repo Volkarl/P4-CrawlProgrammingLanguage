@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
@@ -12,6 +10,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public MultiChildExpressionNode(Interval interval, ExpressionType expressionType, ListNode<Nodes.ExpressionNode> arguments) : base(interval, NodeType.MultiExpression, expressionType)
         {
             Arguments = arguments;
+            ChildCount = 1;
         }
 
         public override string ToString()

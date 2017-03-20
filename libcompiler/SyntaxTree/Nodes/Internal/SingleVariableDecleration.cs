@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using System;
+using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
@@ -11,6 +12,9 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         {
             Identifier = identifier;
             DefaultValue = defaultValue;
+
+
+            ChildCount = defaultValue == null ? 1 : 2;
         }
 
         public override GreenNode GetChildAt(int slot)
@@ -32,7 +36,12 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
 
         internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
         {
-            throw new System.NotImplementedException();
+            switch (index)
+            {
+                case 0: return new SingleVariableDecleration(Interval, (VariableNode) newChild, DefaultValue);
+                case 1: return new SingleVariableDecleration(Interval, Identifier, (ExpressionNode) newChild);
+                default: throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

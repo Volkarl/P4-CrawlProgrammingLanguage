@@ -40,15 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CrawlCompiler.cs" />
+    <Compile Include="CrawlCompilerConfiguration.cs" />
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
+    <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
-    <Compile Include="SyntaxTree\Internal\SyntaxNodeTreeInjector.cs" />
     <Compile Include="SyntaxTree\Nodes\AssignmentNode.cs" />
     <Compile Include="SyntaxTree\Nodes\BinaryNode.cs" />
     <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CallishNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\CompiliationUnitNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\UnaryNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\TranslationUnitNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxTree.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
@@ -97,26 +100,33 @@
     <Compile Include="CrawlSyntaxException.cs" />
     <Compile Include="SyntaxTree\Nodes\TokenNode.cs" />
     <Compile Include="SyntaxTree\Nodes\TypeNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\UnaryNode.cs" />
     <Compile Include="SyntaxTree\Parser\ExpressionParser.cs" />
     <Compile Include="SyntaxTree\Parser\ParseTreeParser.cs" />
     <Compile Include="SyntaxTree\ProtectionLevel.cs" />
     <Compile Include="SyntaxTree\Nodes\ReturnStatement.cs" />
     <Compile Include="SyntaxTree\Nodes\SelectiveFlowNode.cs" />
     <Compile Include="SyntaxTree\Nodes\SingleVariableDecleration.cs" />
+    <Compile Include="SyntaxTree\SuperPrettyPrintVisitor.cs" />
     <Compile Include="SyntaxTree\SyntaxTreeVistitor.cs" />
     <Compile Include="SyntaxTree\NodeType.cs" />
     <Compile Include="SyntaxTree\Nodes\VariableDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\VariableNode.cs" />
     <Compile Include="TraceListners.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Crawl.g4" />
+    <None Include="SyntaxTree\Nodes\redgreen.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\external_dependencies\antlr4\runtime\CSharp\runtime\CSharp\Antlr4.Runtime\Antlr4.Runtime.vs2013.csproj">
       <Project>{e1a46d9d-66cb-46e8-93b0-7fc87299abef}</Project>
       <Name>Antlr4.Runtime.vs2013</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SyntaxTree\Internal\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

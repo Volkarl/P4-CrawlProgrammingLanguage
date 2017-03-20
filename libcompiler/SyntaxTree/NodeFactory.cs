@@ -10,7 +10,7 @@ namespace libcompiler.SyntaxTree
     {
         private static CrawlSyntaxNode Wrap(_.GreenNode selectiveFlowNode)
         {
-            return CrawlSyntaxTree.FromGreen(selectiveFlowNode, "<Unknown>").RootNode;
+            return selectiveFlowNode.CreateRed(null, 0);
         }
 
         private static _.BlockNode Extract(BlockNode n)
@@ -49,7 +49,7 @@ namespace libcompiler.SyntaxTree
             return (FlowNode) Wrap(
                 new _.SelectiveFlowNode(
                     interval, 
-                    _.SelectiveFlowNode.FlowType.If,
+                    NodeType.If,
                     (_.ExpressionNode) CrawlSyntaxNode.ExtractGreenNode(conditon),
                     (_.BlockNode) CrawlSyntaxNode.ExtractGreenNode(trueBlock),
                     null));
@@ -60,7 +60,7 @@ namespace libcompiler.SyntaxTree
             return (FlowNode) Wrap(
                 new _.SelectiveFlowNode(
                     interval, 
-                    _.SelectiveFlowNode.FlowType.IfElse, 
+                    NodeType.IfElse, 
                     Extract(conditon), 
                     Extract(trueBlock), 
                     Extract(falseBlock)));
@@ -84,7 +84,7 @@ namespace libcompiler.SyntaxTree
 
         public static FlowNode WhileLoop(Interval interval, ExpressionNode condition, BlockNode block)
         {
-            return (FlowNode) Wrap(new _.SelectiveFlowNode(interval, _.SelectiveFlowNode.FlowType.While, Extract(condition), Extract(block), null));
+            return (FlowNode) Wrap(new _.SelectiveFlowNode(interval, NodeType.While, Extract(condition), Extract(block), null));
         }
 
         public static FunctionDeclerationNode Function(Interval interval, ProtectionLevel protectionLevel, TypeNode functionType, VariableNode identifier, BlockNode block)
@@ -179,12 +179,12 @@ namespace libcompiler.SyntaxTree
         public static AssignmentNode Assignment(Interval interval, ExpressionNode target, ExpressionNode value)
         {
             return (AssignmentNode) Wrap(
-                new _.AssignmentNode(interval, Extract(target), Extract(target)));
+                new _.AssignmentNode(interval, Extract(target), Extract(value)));
         }
 
-        public static CrawlSyntaxNode CompilationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
+        public static TranslationUnitNode CompilationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
         {
-            return (CompiliationUnitNode) Wrap(
+            return (TranslationUnitNode) Wrap(
                 new _.CompiliationUnitNode(interval, List(importNodes), Extract(rootCode)));
         }
 
@@ -193,6 +193,13 @@ namespace libcompiler.SyntaxTree
         {
             return (ExpressionNode) Wrap(
                 new _.MultiChildExpressionNode(interval, type, List(sources)));
+        }
+
+        public static ExpressionNode UnaryExpression(Interval interval, ExpressionType type, ExpressionNode target)
+        {
+            return (ExpressionNode)Wrap(
+                new _.UnaryNode(interval, type, Extract(target))
+                );
         }
 
         //TODO: Also expose this as individual methods

@@ -1,8 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using Antlr4.Runtime.Misc;
-using libcompiler.SyntaxTree.Nodes.Internal;
-
-namespace libcompiler.SyntaxTree.Nodes
+﻿namespace libcompiler.SyntaxTree.Nodes
 {
     public class ForLoopNode : FlowNode
     {
@@ -11,20 +7,26 @@ namespace libcompiler.SyntaxTree.Nodes
         private ExpressionNode _iterator;
         private BlockNode _block;
 
-
         public TypeNode InducedFieldType => GetRed(ref _type, 0);
         public VariableNode InducedFieldName => GetRed(ref _field, 1);
         public ExpressionNode Iteratior => GetRed(ref _iterator, 2);
         public BlockNode Block => GetRed(ref _block, 3);
 
-        public ForLoopNode(CrawlSyntaxNode parrent, Internal.FlowNode self, int slot) : base(parrent, self, slot) 
+        public ForLoopNode(CrawlSyntaxNode parent, Internal.FlowNode self, int slot) : base(parent, self, slot) 
         {
             
         }
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new System.NotImplementedException();
+            switch (index)
+            {
+                case 0: return InducedFieldType;
+                case 1: return InducedFieldName;;
+                case 2: return Iteratior;
+                case 3: return Block;
+                default: return default(CrawlSyntaxNode);
+            }
         }
     }
 }

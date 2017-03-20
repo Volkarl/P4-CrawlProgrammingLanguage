@@ -8,9 +8,9 @@ using libcompiler.SyntaxTree.Nodes;
 
 namespace libcompiler.SyntaxTree.Parser
 {
-    public class ExpressionParser
+    public static class ExpressionParser
     {
-        public ExpressionNode ParseExpression(RuleContext rule)
+        public static ExpressionNode ParseExpression(RuleContext rule)
         {
             //Literal value.
             if (rule.RuleIndex == CrawlParser.RULE_literal)
@@ -49,13 +49,26 @@ namespace libcompiler.SyntaxTree.Parser
                 case CrawlParser.RULE_or_expression:
                 case CrawlParser.RULE_exponential_expression:
                     return ParseMultu(rule);
+                case CrawlParser.RULE_unary_expression:
+                    return ParseUnary(rule);
                 default:
                     throw new NotImplementedException("Some expression type is not handled");
                     
             }
         }
 
-        private ExpressionNode ParseMultu(RuleContext rule)
+        private static ExpressionNode ParseUnary(RuleContext rule)
+        {
+            RuleContext tar = (RuleContext) rule.GetChild(1);
+            ExpressionNode target = ParseExpression(tar);
+
+            ITerminalNode symbol = (ITerminalNode) rule.GetChild(0).GetChild(0);
+            ExpressionType type = ParseUnaryOp(symbol);
+
+            return NodeFactory.UnaryExpression(rule.SourceInterval, type, target);
+        }
+
+        private static ExpressionNode ParseMultu(RuleContext rule)
         {
             List<ExpressionNode> sources = new List<ExpressionNode>();
             sources.Add(ParseExpression((RuleContext)rule.GetChild(0)));
@@ -82,7 +95,7 @@ namespace libcompiler.SyntaxTree.Parser
             return NodeFactory.MultiExpression(rule.SourceInterval, type, sources);
         }
 
-        private ExpressionNode ParseBinary(RuleContext rule)
+        private static ExpressionNode ParseBinary(RuleContext rule)
         {
             if (rule.ChildCount != 3) throw new CrawlImpossibleStateException("SHOULD NOT HAPPEN", rule.SourceInterval);
 
@@ -138,7 +151,24 @@ namespace libcompiler.SyntaxTree.Parser
             throw new NotImplementedException($"There is no known multiop {nameof(ExpressionType)} for {textop}");
         }
 
-        private ExpressionNode ParsePostfix(RuleContext rule)
+        private static readonly Dictionary<string, ExpressionType> UnaryMap = new Dictionary<string, ExpressionType>
+        {
+            {"-", ExpressionType.Negate },
+            {"ikke", ExpressionType.Not},
+        };
+
+        private static ExpressionType ParseUnaryOp(ITerminalNode op)
+        {
+            string textop = op.GetText();
+            ExpressionType et;
+            if (UnaryMap.TryGetValue(textop, out et))
+                return et;
+
+
+            throw new NotImplementedException($"There is no known unary {nameof(ExpressionType)} for {textop}");
+        }
+
+        private static ExpressionNode ParsePostfix(RuleContext rule)
         {
             ExpressionNode node = ParseExpression((RuleContext) rule.GetChild(0));
 
@@ -165,7 +195,7 @@ namespace libcompiler.SyntaxTree.Parser
             return node;
         }
 
-        private ExpressionNode ParseLiteral(RuleContext rule)
+        private static ExpressionNode ParseLiteral(RuleContext rule)
         {
             RuleContext realLiteral = (RuleContext) rule.GetChild(0);
 
@@ -185,7 +215,7 @@ namespace libcompiler.SyntaxTree.Parser
 
         }
 
-        public ExpressionNode ParseSideEffectStatement(RuleContext rule)
+        public static ExpressionNode ParseSideEffectStatement(RuleContext rule)
         {
             ITerminalNode eos = (ITerminalNode) rule.GetChild(2);
             if(eos.Symbol.Type != CrawlLexer.END_OF_STATEMENT)
@@ -200,7 +230,7 @@ namespace libcompiler.SyntaxTree.Parser
             return NodeFactory.Call(rule.SourceInterval, target, args);
         }
 
-        public List<ExpressionNode> ParseCallTail(RuleContext rule)
+        public static List<ExpressionNode> ParseCallTail(RuleContext rule)
         {
             if (rule.ChildCount == 2)
             {
@@ -215,7 +245,7 @@ namespace libcompiler.SyntaxTree.Parser
             throw new NotImplementedException("Not sure when this could happen....");
         }
 
-        private List<ExpressionNode> ParseExpressionList(RuleContext expList)
+        private static List<ExpressionNode> ParseExpressionList(RuleContext expList)
         {
             List<ExpressionNode> n = new List<ExpressionNode>(expList.ChildCount / 2);
             for (int i = 0; i < expList.ChildCount; i += 2)

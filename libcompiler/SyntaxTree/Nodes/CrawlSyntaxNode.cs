@@ -2,36 +2,57 @@
 using System.Collections.Generic;
 using System.Threading;
 using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
-using libcompiler.SyntaxTree.Internal;
 using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
+    /// <summary>
+    /// The root class for all Red nodes (See redgreen.md). Most generic 
+    /// functionality is located here. Rest is (at time of writing) in 
+    /// <see cref="ListNode{T}"/> and <see cref="ExpressionNode"/>
+    /// </summary>
     public abstract class CrawlSyntaxNode
     {
         private readonly GreenNode _green;
+        private CrawlSyntaxTree _owningTree;
 
         /// <summary>
         /// The <see cref="CrawlSyntaxTree"/> this Node belongs to. 
         /// </summary>
-        public CrawlSyntaxTree OwningTree { get; }
+        public CrawlSyntaxTree OwningTree
+        {
+            get
+            {
+                //If we already know what tree owns this node, great
+                if (_owningTree != null) return _owningTree;
+
+                //otherwise we to find it.
+                //If ask our parent for it. If we don't have a parent, make one up.
+                CrawlSyntaxTree newTree = Parent == null ? new CrawlSyntaxTree(this, "<Unknown>") : Parent.OwningTree;
+
+                //Save it thread safe
+                Interlocked.CompareExchange(ref _owningTree, newTree, null);
+
+                //Return what actually got saved
+                return _owningTree;
+            }
+        }
 
         /// <summary>
-        /// The parrent <see cref="CrawlSyntaxNode"/> of this node. It is null if this is a root node
+        /// The parent <see cref="CrawlSyntaxNode"/> of this node. It is null if this is a root node
         /// </summary>
         public CrawlSyntaxNode Parent { get; }
 
         /// <summary>
-        /// The position where this node appear in the parrent
+        /// The position where this node appear in the parent
         /// </summary>
         public int IndexInParent { get; }
         
         /// <summary>
         /// The <see cref="NodeType"/> of this <see cref="CrawlSyntaxNode"/>. 
-        /// It is unique to most <see cref="CrawlSyntaxNode"/> with the 
-        /// exception being <see cref="ExpressionNode"/> which also contains
-        /// an <see cref="ExpressionType"/>
+        /// It is unique to most types of <see cref="CrawlSyntaxNode"/> and in some
+        /// cases one <see cref="CrawlSyntaxNode"/> will represent different 
+        /// on what value <see cref="Type"/> has.
         /// </summary>
         public NodeType Type { get; }
 
@@ -41,36 +62,34 @@ namespace libcompiler.SyntaxTree.Nodes
         /// </summary>
         public Interval Interval => _green.Interval;
 
+        /// <summary>
+        /// The number of children this node has.
+        /// </summary>
         public int ChildCount => _green.ChildCount;
 
-        protected internal CrawlSyntaxNode(CrawlSyntaxNode parrent, GreenNode self, int slot)
+        protected internal CrawlSyntaxNode(CrawlSyntaxNode parent, GreenNode self, int slot)
         {
-            if(!(parrent is SyntaxNodeTreeInjector))
-                Parent = parrent;
+            Parent = parent;
 
-            OwningTree = parrent?.OwningTree;
-            if (OwningTree == null)
-            {
-                OwningTree = new CrawlSyntaxTree(this, "<Unknown>");
-
-            }
             _green = self;
             //GreenNodes sometimes uses upper bits to encode extra information. Not allowed here
             // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
-            Type = self.Type & (NodeType) 0xff;
-            IndexInParent = slot;
-
-        }
-
-        protected internal CrawlSyntaxNode(CrawlSyntaxTree tree, GreenNode self, int slot)
-        {
-            OwningTree = tree;
-            _green = self;
-            Parent = null;
             Type = self.Type;
             IndexInParent = slot;
+
         }
 
+        /// <summary>
+        /// This is one of the big pieces of the puzzle of how the Red side of the tree.
+        /// It tries to take the <paramref name="slot"/> child and either return the
+        /// coresponding child or create it. This value is cached in <paramref name="field"/>.
+        /// This would be rather simple to do, except that this needs to be done
+        /// <b>thread safe</b>.
+        /// </summary>
+        /// <typeparam name="T">The type of child</typeparam>
+        /// <param name="field">A field to cache the value in.</param>
+        /// <param name="slot">The index of the child</param>
+        /// <returns>A child node, either a new or from cache.</returns>
         protected T GetRed<T>(ref T field, int slot) where T : CrawlSyntaxNode
         {
             T result = field;
@@ -115,6 +134,11 @@ namespace libcompiler.SyntaxTree.Nodes
             }
 
             return newRoot;
+        }
+
+        public override string ToString()
+        {
+            return _green.Type.ToString();
         }
     }
 }

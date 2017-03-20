@@ -11,33 +11,13 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
 
         
 
-        public SelectiveFlowNode(Interval interval, FlowType type, ExpressionNode check, BlockNode primary, BlockNode alternative) : base(MakeNodeType(type), interval)
+        public SelectiveFlowNode(Interval interval, NodeType type, ExpressionNode check, BlockNode primary, BlockNode alternative) : base(type, interval)
         {
             Check = check;
             Primary = primary;
             Alternative = alternative;
-        }
 
-        private static NodeType MakeNodeType(FlowType type)
-        {
-            switch (type)
-            {
-                case FlowType.If:
-                    return NodeType.If;
-                case FlowType.IfElse:
-                    return NodeType.IfElse;
-                case FlowType.While:
-                    return NodeType.While;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
-        }
-
-        public enum FlowType
-        {
-            If,
-            IfElse,
-            While,
+            ChildCount = alternative == null ? 2 : 3;
         }
 
         public override GreenNode GetChildAt(int slot)
@@ -60,7 +40,15 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
 
         internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
         {
-            throw new NotImplementedException();
+            switch (index)
+            {
+                case 0: return new SelectiveFlowNode(Interval, Type, (ExpressionNode) newChild, Primary, Alternative);
+                case 1: return new SelectiveFlowNode(Interval, Type, Check, (BlockNode) newChild, Alternative);
+                case 2: return new SelectiveFlowNode(Interval, Type, Check, Primary, (BlockNode) newChild);
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }
