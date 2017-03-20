@@ -6,6 +6,7 @@ namespace libcompiler.SyntaxTree.Nodes
     {
         private TypeNode _declType;
         private ListNode<SingleVariableDecleration> _decls;
+
         public TypeNode DeclerationType => GetRed(ref _declType, 0);
         public ListNode<SingleVariableDecleration> Declerations => GetRed(ref _decls, 1);
 
@@ -16,7 +17,12 @@ namespace libcompiler.SyntaxTree.Nodes
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new System.NotImplementedException();
+            switch (index)
+            {
+                case 0: return DeclerationType;
+                case 1: return Declerations;
+                default: return default(CrawlSyntaxNode);
+            }
         }
     }
 }

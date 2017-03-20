@@ -74,8 +74,7 @@ namespace libcompiler.SyntaxTree.Nodes
             _green = self;
             //GreenNodes sometimes uses upper bits to encode extra information. Not allowed here
             // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
-            //TODO: I don't think this is used anymore
-            Type = self.Type & (NodeType) 0xff;
+            Type = self.Type;
             IndexInParent = slot;
 
         }

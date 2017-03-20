@@ -18,7 +18,13 @@ namespace libcompiler.SyntaxTree.Nodes
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new System.NotImplementedException();
+            switch (index)
+            {
+                case 0: return Identifier;
+                case 1: return DefaultValue;;
+                default:
+                    return default(CrawlSyntaxNode);
+            }
         }
     }
 }

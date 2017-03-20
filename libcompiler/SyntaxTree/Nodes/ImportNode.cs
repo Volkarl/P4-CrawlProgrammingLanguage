@@ -11,7 +11,7 @@
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new System.NotImplementedException();
+            return default(CrawlSyntaxNode);
         }
     }
 }

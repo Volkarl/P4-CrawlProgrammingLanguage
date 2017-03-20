@@ -7,7 +7,6 @@
         private ExpressionNode _iterator;
         private BlockNode _block;
 
-
         public TypeNode InducedFieldType => GetRed(ref _type, 0);
         public VariableNode InducedFieldName => GetRed(ref _field, 1);
         public ExpressionNode Iteratior => GetRed(ref _iterator, 2);
@@ -20,7 +19,14 @@
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new System.NotImplementedException();
+            switch (index)
+            {
+                case 0: return InducedFieldType;
+                case 1: return InducedFieldName;;
+                case 2: return Iteratior;
+                case 3: return Block;
+                default: return default(CrawlSyntaxNode);
+            }
         }
     }
 }

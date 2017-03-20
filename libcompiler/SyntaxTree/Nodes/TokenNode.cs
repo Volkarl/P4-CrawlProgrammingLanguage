@@ -12,7 +12,7 @@ namespace libcompiler.SyntaxTree.Nodes
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new NotImplementedException();
+            return default(CrawlSyntaxNode);
         }
     }
 }

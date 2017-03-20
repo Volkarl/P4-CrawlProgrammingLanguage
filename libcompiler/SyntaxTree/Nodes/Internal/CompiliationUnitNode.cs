@@ -38,7 +38,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             else if(index == 1)
                 return new CompiliationUnitNode(this.Interval, Imports, (BlockNode)newChild);
 
-            throw new IndexOutOfRangeException();
+            throw new ArgumentOutOfRangeException();
         }
     }
 }

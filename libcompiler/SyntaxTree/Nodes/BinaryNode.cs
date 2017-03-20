@@ -28,7 +28,12 @@
 
         public override CrawlSyntaxNode GetChildAt(int index)
         {
-            throw new System.NotImplementedException();
+            switch (index)
+            {
+                case 0: return LeftHandSide;
+                case 1: return RightHandSide;
+                default: return default(CrawlSyntaxNode);
+            }
         }
     }
 }

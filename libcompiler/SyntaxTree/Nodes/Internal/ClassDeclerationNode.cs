@@ -5,9 +5,6 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
 {
     public class ClassDeclerationNode : DeclerationNode
     {
-        //TODO: List of constructors? Probably as extension method to not calculate unless required
-
-            //This could probably be turned into a BinaryNode, but class is likely to get more information thrown at it
         public TokenNode Identifier { get; }
         public BlockNode BodyBlock { get; }
 

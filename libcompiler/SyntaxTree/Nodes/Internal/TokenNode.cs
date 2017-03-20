@@ -25,7 +25,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
 
         internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
         {
-            throw new NotImplementedException();
+            throw new ArgumentOutOfRangeException();
         }
     }
 }

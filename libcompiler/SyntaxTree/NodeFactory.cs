@@ -49,7 +49,7 @@ namespace libcompiler.SyntaxTree
             return (FlowNode) Wrap(
                 new _.SelectiveFlowNode(
                     interval, 
-                    _.SelectiveFlowNode.FlowType.If,
+                    NodeType.If,
                     (_.ExpressionNode) CrawlSyntaxNode.ExtractGreenNode(conditon),
                     (_.BlockNode) CrawlSyntaxNode.ExtractGreenNode(trueBlock),
                     null));
@@ -60,7 +60,7 @@ namespace libcompiler.SyntaxTree
             return (FlowNode) Wrap(
                 new _.SelectiveFlowNode(
                     interval, 
-                    _.SelectiveFlowNode.FlowType.IfElse, 
+                    NodeType.IfElse, 
                     Extract(conditon), 
                     Extract(trueBlock), 
                     Extract(falseBlock)));
@@ -84,7 +84,7 @@ namespace libcompiler.SyntaxTree
 
         public static FlowNode WhileLoop(Interval interval, ExpressionNode condition, BlockNode block)
         {
-            return (FlowNode) Wrap(new _.SelectiveFlowNode(interval, _.SelectiveFlowNode.FlowType.While, Extract(condition), Extract(block), null));
+            return (FlowNode) Wrap(new _.SelectiveFlowNode(interval, NodeType.While, Extract(condition), Extract(block), null));
         }
 
         public static FunctionDeclerationNode Function(Interval interval, ProtectionLevel protectionLevel, TypeNode functionType, VariableNode identifier, BlockNode block)
