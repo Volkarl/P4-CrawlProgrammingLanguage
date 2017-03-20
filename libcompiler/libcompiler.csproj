@@ -50,6 +50,7 @@
     <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CallishNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\UnaryNode.cs" />
     <Compile Include="SyntaxTree\Nodes\TranslationUnitNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxTree.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="CrawlSyntaxException.cs" />
     <Compile Include="SyntaxTree\Nodes\TokenNode.cs" />
     <Compile Include="SyntaxTree\Nodes\TypeNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\UnaryNode.cs" />
     <Compile Include="SyntaxTree\Parser\ExpressionParser.cs" />
     <Compile Include="SyntaxTree\Parser\ParseTreeParser.cs" />
     <Compile Include="SyntaxTree\ProtectionLevel.cs" />

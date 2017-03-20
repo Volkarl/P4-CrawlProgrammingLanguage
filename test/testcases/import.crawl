@@ -1,0 +1,3 @@
+importer foo;
+
+bar("baz");

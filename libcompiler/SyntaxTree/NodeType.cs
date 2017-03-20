@@ -12,6 +12,7 @@ namespace libcompiler.SyntaxTree
         Index,
         MultiExpression,
         BinaryExpression,
+        UnaryExpression,
         Variable,
         ClassDecleration,
         VariableDecleration,
@@ -23,6 +24,6 @@ namespace libcompiler.SyntaxTree
         Literal,
         NodeList,
         Token,
-        Type
+        Type,
     }
 }
