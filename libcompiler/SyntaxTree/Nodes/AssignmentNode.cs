@@ -2,6 +2,9 @@ using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
+    /// <summary>
+    /// Represents an assignment (a = b;)
+    /// </summary>
     public class AssignmentNode : CrawlSyntaxNode
     {
         private ExpressionNode _target;

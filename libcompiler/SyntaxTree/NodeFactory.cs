@@ -182,9 +182,9 @@ namespace libcompiler.SyntaxTree
                 new _.AssignmentNode(interval, Extract(target), Extract(target)));
         }
 
-        public static CompiliationUnitNode CompilationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
+        public static TranslationUnitNode CompilationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
         {
-            return (CompiliationUnitNode) Wrap(
+            return (TranslationUnitNode) Wrap(
                 new _.CompiliationUnitNode(interval, List(importNodes), Extract(rootCode)));
         }
 

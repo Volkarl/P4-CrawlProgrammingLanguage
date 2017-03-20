@@ -6,6 +6,11 @@ using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
+    /// <summary>
+    /// The root class for all Red nodes (See redgreen.md). Most generic 
+    /// functionality is located here. Rest is (at time of writing) in 
+    /// <see cref="ListNode{T}"/> and <see cref="ExpressionNode"/>
+    /// </summary>
     public abstract class CrawlSyntaxNode
     {
         private readonly GreenNode _green;
@@ -45,9 +50,9 @@ namespace libcompiler.SyntaxTree.Nodes
         
         /// <summary>
         /// The <see cref="NodeType"/> of this <see cref="CrawlSyntaxNode"/>. 
-        /// It is unique to most <see cref="CrawlSyntaxNode"/> with the 
-        /// exception being <see cref="ExpressionNode"/> which also contains
-        /// an <see cref="ExpressionType"/>
+        /// It is unique to most types of <see cref="CrawlSyntaxNode"/> and in some
+        /// cases one <see cref="CrawlSyntaxNode"/> will represent different 
+        /// on what value <see cref="Type"/> has.
         /// </summary>
         public NodeType Type { get; }
 
@@ -57,6 +62,9 @@ namespace libcompiler.SyntaxTree.Nodes
         /// </summary>
         public Interval Interval => _green.Interval;
 
+        /// <summary>
+        /// The number of children this node has.
+        /// </summary>
         public int ChildCount => _green.ChildCount;
 
         protected internal CrawlSyntaxNode(CrawlSyntaxNode parent, GreenNode self, int slot)
@@ -66,11 +74,23 @@ namespace libcompiler.SyntaxTree.Nodes
             _green = self;
             //GreenNodes sometimes uses upper bits to encode extra information. Not allowed here
             // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
+            //TODO: I don't think this is used anymore
             Type = self.Type & (NodeType) 0xff;
             IndexInParent = slot;
 
         }
 
+        /// <summary>
+        /// This is one of the big pieces of the puzzle of how the Red side of the tree.
+        /// It tries to take the <paramref name="slot"/> child and either return the
+        /// coresponding child or create it. This value is cached in <paramref name="field"/>.
+        /// This would be rather simple to do, except that this needs to be done
+        /// <b>thread safe</b>.
+        /// </summary>
+        /// <typeparam name="T">The type of child</typeparam>
+        /// <param name="field">A field to cache the value in.</param>
+        /// <param name="slot">The index of the child</param>
+        /// <returns>A child node, either a new or from cache.</returns>
         protected T GetRed<T>(ref T field, int slot) where T : CrawlSyntaxNode
         {
             T result = field;

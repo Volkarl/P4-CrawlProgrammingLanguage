@@ -58,7 +58,7 @@ namespace libcompiler.SyntaxTree
                 case NodeType.Import:
                     throw new NotImplementedException();
                 case NodeType.CompilationUnit:
-                    VisitCompiliationUnit((CompiliationUnitNode) node);
+                    VisitCompiliationUnit((TranslationUnitNode) node);
                     break;
                 case NodeType.Literal:
                     VisitLiteral((LiteralNode) node);
@@ -170,7 +170,7 @@ namespace libcompiler.SyntaxTree
             
         }
 
-        protected virtual void VisitCompiliationUnit(CompiliationUnitNode node)
+        protected virtual void VisitCompiliationUnit(TranslationUnitNode node)
         {
             foreach (ImportNode nodeImport in node.Imports)
             {

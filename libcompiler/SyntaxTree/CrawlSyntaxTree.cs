@@ -30,7 +30,7 @@ namespace libcompiler.SyntaxTree
             //The translation_unit is the top rule in our grammar.
             //Asking the parser to match that from the token stream leaves us at the top of the parse tree.
             CrawlParser.Translation_unitContext rootContext = parser.translation_unit();
-            Nodes.CompiliationUnitNode node = ParseTreeParser.ParseTranslationUnit(rootContext);
+            Nodes.TranslationUnitNode node = ParseTreeParser.ParseTranslationUnit(rootContext);
 
             node.OwningTree.CompilationUnitName = compilationUnitName;
             return node.OwningTree;

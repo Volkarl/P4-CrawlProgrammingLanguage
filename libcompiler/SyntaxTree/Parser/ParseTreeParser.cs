@@ -311,7 +311,7 @@ namespace libcompiler.SyntaxTree.Parser
             return NodeFactory.Assignment(rule.SourceInterval, target, value);
         }
 
-        public static CompiliationUnitNode ParseTranslationUnit(CrawlParser.Translation_unitContext translationUnit)
+        public static TranslationUnitNode ParseTranslationUnit(CrawlParser.Translation_unitContext translationUnit)
         {
             CrawlParser.Import_directivesContext imports =
                 (CrawlParser.Import_directivesContext)translationUnit.GetChild(0);

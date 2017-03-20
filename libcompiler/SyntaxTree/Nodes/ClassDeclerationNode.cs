@@ -2,6 +2,9 @@
 
 namespace libcompiler.SyntaxTree.Nodes
 {
+    /// <summary>
+    /// This declares a class.
+    /// </summary>
     public class ClassDeclerationNode : DeclerationNode
     {
         private TokenNode _identifier;
@@ -9,7 +12,14 @@ namespace libcompiler.SyntaxTree.Nodes
 
         //TODO: List of constructors? Probably as extension method to not calculate unless required
 
+        /// <summary>
+        /// The name of this class.
+        /// </summary>
         public TokenNode Identifier => GetRed(ref _identifier, 0);
+
+        /// <summary>
+        /// All the contents inside the class (functions, variables and stuff)
+        /// </summary>
         public BlockNode BodyBlock => GetRed(ref _body, 1);
         
 
