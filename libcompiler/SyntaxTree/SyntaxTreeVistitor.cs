@@ -87,10 +87,7 @@ namespace libcompiler.SyntaxTree
 
         protected virtual  void VisitMulti(MultiChildExpressionNode node)
         {
-            foreach (ExpressionNode argument in node.Arguments)
-            {
-                Visit(argument);
-            }
+            Visit(node.Arguments);
         }
 
         protected virtual void VisitReturnStatement(ReturnStatement node)
@@ -135,10 +132,7 @@ namespace libcompiler.SyntaxTree
         {
             Visit(node.Target);
 
-            foreach (ExpressionNode expressionNode in node.Arguments)
-            {
-                Visit(expressionNode);
-            }
+            Visit(node.Arguments);
         }
 
         protected virtual void VisitFunctionDecleration(FunctionDeclerationNode node)
@@ -154,10 +148,7 @@ namespace libcompiler.SyntaxTree
 
         protected virtual void VisitVariableDecleration(VariableDeclerationNode node)
         {
-            foreach (SingleVariableDecleration decleration in node.Declerations)
-            {
-                Visit(decleration);
-            }
+            Visit(node.Declerations);
         }
 
         protected virtual void VisitClassDecleration(ClassDeclerationNode node)
