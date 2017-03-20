@@ -14,6 +14,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public UnaryNode(Interval interval, ExpressionType expressionType, ExpressionNode target) : base(interval, NodeType.UnaryExpression, expressionType)
         {
             Target = target;
+            ChildCount = 1;
         }
 
         public override GreenNode GetChildAt(int slot)

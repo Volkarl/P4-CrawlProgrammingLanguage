@@ -16,6 +16,13 @@ namespace libcompiler.SyntaxTree.Nodes
             
         }
 
+        public override string ToString()
+        {
+            if (DefaultValue == null)
+                return Identifier.Name;
+            else return Identifier.Name + " = ";
+        }
+
         public override CrawlSyntaxNode GetChildAt(int index)
         {
             switch (index)

@@ -57,7 +57,7 @@ namespace libcompiler.SyntaxTree
             //If this is root, no branch goes down to it
             if (node.Parent == null)
             {
-                _result.Append("│");
+                //_result.Append("");
             }
             //If this is not the last sibling, a branch continues downwards
             else if (node.Parent.ChildCount - 1 > node.IndexInParent)
