@@ -17,6 +17,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             InducedFieldName = inducedFieldName;
             Iteratior = iteratior;
             Block = block;
+            ChildCount = 4;
         }
 
         public override GreenNode GetChildAt(int slot)

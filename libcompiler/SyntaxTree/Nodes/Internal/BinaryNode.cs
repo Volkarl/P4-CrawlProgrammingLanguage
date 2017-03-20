@@ -15,12 +15,6 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             RightHandSide = rhs;
         }
 
-        private static NodeType HideExpressionType(ExpressionType type, NodeType nodeType)
-        {
-            // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
-            return (NodeType)((int)type << 8) | nodeType;
-        }
-
         public override GreenNode GetChildAt(int slot)
         {
             switch (slot)

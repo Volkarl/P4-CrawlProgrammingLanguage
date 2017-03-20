@@ -11,6 +11,9 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         {
             Identifier = identifier;
             DefaultValue = defaultValue;
+
+
+            ChildCount = defaultValue == null ? 1 : 2;
         }
 
         public override GreenNode GetChildAt(int slot)

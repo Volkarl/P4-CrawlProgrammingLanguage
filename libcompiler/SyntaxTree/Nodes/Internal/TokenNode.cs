@@ -10,6 +10,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public TokenNode(Interval interval, string value) : base(NodeType.Token, interval)
         {
             Value = value;
+            ChildCount = 0;
         }
 
         public override GreenNode GetChildAt(int slot)

@@ -16,6 +16,8 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             Check = check;
             Primary = primary;
             Alternative = alternative;
+
+            ChildCount = alternative == null ? 2 : 3;
         }
 
         private static NodeType MakeNodeType(FlowType type)

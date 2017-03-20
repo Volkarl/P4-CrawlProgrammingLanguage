@@ -10,6 +10,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             : base(interval, NodeType.Variable, SyntaxTree.ExpressionType.Variable)
         {
             Name = name;
+            ChildCount = 0;
         }
 
         public override string ToString()

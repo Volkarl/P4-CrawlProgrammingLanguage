@@ -10,6 +10,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             : base(NodeType.Import, interval)
         {
             Module = module;
+            ChildCount = 0;
         }
 
         public override GreenNode GetChildAt(int slot)

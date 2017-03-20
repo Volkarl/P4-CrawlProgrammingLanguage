@@ -10,6 +10,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public TypeNode(Interval interval, CrawlType expotedType) : base(NodeType.Type, interval)
         {
             ExportedType = expotedType;
+            ChildCount = 0;
         }
 
         public override GreenNode GetChildAt(int slot)

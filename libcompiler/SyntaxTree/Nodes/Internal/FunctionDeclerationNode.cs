@@ -16,6 +16,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             FunctionType = functionType;
             Identfier = identfier;
             BodyBlock = bodyBlock;
+            ChildCount = 3;
         }
 
         public override string ToString()

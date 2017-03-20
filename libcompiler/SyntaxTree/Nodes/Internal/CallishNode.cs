@@ -9,12 +9,12 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         public ListNode<Nodes.ExpressionNode> Arguments { get; }
 
 
-        public CallishNode(Interval interval, ExpressionNode target, ListNode<Nodes.ExpressionNode> arguments, ExpressionType expressionType) : base(interval, MakeNodeType(expressionType), expressionType)
-
+        public CallishNode(Interval interval, ExpressionNode target, ListNode<Nodes.ExpressionNode> arguments,
+            ExpressionType expressionType) : base(interval, MakeNodeType(expressionType), expressionType)
         {
-                Target = target;
-                Arguments = arguments;
-            }
+            Target = target;
+            Arguments = arguments;
+        }
 
         private static NodeType MakeNodeType(ExpressionType type)
         {

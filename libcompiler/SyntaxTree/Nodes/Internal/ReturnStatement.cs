@@ -10,6 +10,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             : base(NodeType.Return, interval)
         {
             ReturnValue = returnValue;
+            ChildCount = returnValue == null ? 0 : 1;
         }
 
         public override GreenNode GetChildAt(int slot)
