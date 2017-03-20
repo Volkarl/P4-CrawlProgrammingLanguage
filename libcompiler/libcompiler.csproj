@@ -50,145 +50,6 @@
     <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CallishNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\CompiliationUnitNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\CrawlSyntaxNode.cs" />
-    <Compile Include="SyntaxTree\CrawlSyntaxTree.cs" />
-    <Compile Include="ExtensionMethods\ListExtensions.cs" />
-    <Compile Include="GeneratedParser\CrawlBaseListener.cs" />
-    <Compile Include="GeneratedParser\CrawlLexer.cs" />
-    <Compile Include="GeneratedParser\CrawlListener.cs" />
-    <Compile Include="GeneratedParser\CrawlParser.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CrawlType.cs" />
-    <Compile Include="SyntaxTree\Nodes\DeclerationNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\ExpressionNode.cs" />
-    <Compile Include="SyntaxTree\ExpressionType.cs" />
-    <Compile Include="SyntaxTree\Nodes\FlowNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\ForLoopNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\FunctionDeclerationNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\ImportNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\AssignmentNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\BinaryNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\BlockNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\CallishNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\ClassDeclerationNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\CompiliationUnitNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\DeclerationNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\ExpressionNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\FlowNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\ForLoopNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\FunctionDeclerationNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\GreenNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\ImportNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\ListNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\LiteralNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\MultiChildExpressionNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\ReturnStatement.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\SelectiveFlowNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\SingleVariableDecleration.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\TokenNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\TypeNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\VariableDeclerationNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\VariableNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\ListNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\LiteralNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\LiteralType.cs" />
-    <Compile Include="SyntaxTree\Nodes\MultiChildExpressionNode.cs" />
-    <Compile Include="SyntaxTree\NodeFactory.cs" />
-    <Compile Include="CrawlImpossibleStateException.cs" />
-    <Compile Include="CrawlSyntaxException.cs" />
-    <Compile Include="SyntaxTree\Nodes\TokenNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\TypeNode.cs" />
-    <Compile Include="SyntaxTree\Parser\ExpressionParser.cs" />
-    <Compile Include="SyntaxTree\Parser\ParseTreeParser.cs" />
-    <Compile Include="SyntaxTree\ProtectionLevel.cs" />
-    <Compile Include="SyntaxTree\Nodes\ReturnStatement.cs" />
-    <Compile Include="SyntaxTree\Nodes\SelectiveFlowNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\SingleVariableDecleration.cs" />
-    <Compile Include="SyntaxTree\SyntaxTreeVistitor.cs" />
-    <Compile Include="SyntaxTree\NodeType.cs" />
-    <Compile Include="SyntaxTree\Nodes\VariableDeclerationNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\VariableNode.cs" />
-    <Compile Include="TraceListners.cs" />
-    <Compile Include="Utils.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Crawl.g4" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\external_dependencies\antlr4\runtime\CSharp\runtime\CSharp\Antlr4.Runtime\Antlr4.Runtime.vs2013.csproj">
-      <Project>{e1a46d9d-66cb-46e8-93b0-7fc87299abef}</Project>
-      <Name>Antlr4.Runtime.vs2013</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SyntaxTree\Internal\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent Condition=" '$(OS)' == 'Unix' ">java -jar /usr/local/lib/antlr-4.6-complete.jar "$(ProjectDir)Crawl.g4" -o  "$(ProjectDir)GeneratedParser" -Dlanguage=CSharp -package libcompiler.Parser -encoding utf8</PreBuildEvent>
-    <PreBuildEvent Condition=" '$(OS)' != 'Unix' ">java org.antlr.v4.Tool "$(ProjectDir)Crawl.g4" -o  "$(ProjectDir)GeneratedParser" -Dlanguage=CSharp -package libcompiler.Parser -encoding utf8</PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-</Project>
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{249AA939-BC96-470B-891F-CED708E7263C}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>libcompiler</RootNamespace>
-    <AssemblyName>libcompiler</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="CrawlCompiler.cs" />
-    <Compile Include="CrawlCompilerConfiguration.cs" />
-    <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
-    <Compile Include="ParseTreeHelper.cs" />
-    <Compile Include="PrettyPrintVisitor.cs" />
-    <Compile Include="SyntaxTree\Nodes\AssignmentNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\BinaryNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\CallishNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\TranslationUnitNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxTree.cs" />
@@ -240,11 +101,11 @@
     <Compile Include="SyntaxTree\Nodes\TypeNode.cs" />
     <Compile Include="SyntaxTree\Parser\ExpressionParser.cs" />
     <Compile Include="SyntaxTree\Parser\ParseTreeParser.cs" />
-    <Compile Include="SyntaxTree\SuperPrettyPrintVisitor.cs" />
     <Compile Include="SyntaxTree\ProtectionLevel.cs" />
     <Compile Include="SyntaxTree\Nodes\ReturnStatement.cs" />
     <Compile Include="SyntaxTree\Nodes\SelectiveFlowNode.cs" />
     <Compile Include="SyntaxTree\Nodes\SingleVariableDecleration.cs" />
+    <Compile Include="SyntaxTree\SuperPrettyPrintVisitor.cs" />
     <Compile Include="SyntaxTree\SyntaxTreeVistitor.cs" />
     <Compile Include="SyntaxTree\NodeType.cs" />
     <Compile Include="SyntaxTree\Nodes\VariableDeclerationNode.cs" />
@@ -269,3 +130,11 @@
     <PreBuildEvent Condition=" '$(OS)' == 'Unix' ">java -jar /usr/local/lib/antlr-4.6-complete.jar "$(ProjectDir)Crawl.g4" -o  "$(ProjectDir)GeneratedParser" -Dlanguage=CSharp -package libcompiler.Parser -encoding utf8</PreBuildEvent>
     <PreBuildEvent Condition=" '$(OS)' != 'Unix' ">java org.antlr.v4.Tool "$(ProjectDir)Crawl.g4" -o  "$(ProjectDir)GeneratedParser" -Dlanguage=CSharp -package libcompiler.Parser -encoding utf8</PreBuildEvent>
   </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
