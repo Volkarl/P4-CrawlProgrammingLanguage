@@ -131,12 +131,12 @@ using libcompiler.ExtensionMethods;
 
 //The acctual CFG. 
 //A translation unit is one source file for a program. First it contains imports of libraries, then the statements that make up the program
-translation_unit		: import_directives statements;  
+translation_unit		: import_directives statements;
 
 //////////////////////////////////////////////////////////////////////////////////
 //import_directive(s) is imports. Using from C# or import from python
 import_directives		: import_directive* ;
-import_directive		: IMPORT IDENTIFIER (ITEM_SEPARATOR IDENTIFIER)* END_OF_STATEMENT; 
+import_directive		: IMPORT IDENTIFIER (DOT IDENTIFIER)* END_OF_STATEMENT;
 
 //////////////////////////////////////////////////////////////////////////////////
 //Statements make up the program. Functions/Classes, function calls and general computation
