@@ -7,6 +7,12 @@ namespace libcompiler.SyntaxTree
     {
         private StringBuilder _result;
         private StringBuilder _indentation;
+        private readonly bool _singleLine;
+
+        public SuperPrettyPrintVisitor(bool singleLine)
+        {
+            _singleLine = singleLine;
+        }
 
         public string PrettyPrint(CrawlSyntaxNode node)
         {
@@ -18,15 +24,24 @@ namespace libcompiler.SyntaxTree
 
         public override void Visit(CrawlSyntaxNode node)
         {
-            _addIndentation(node);
+            addIndentation(node);
 
-            _addMiddleBit(node);
+            if (_singleLine)
+            {
+                addSingleLine(node);
+            }
+            else
+            {
+                addUpperPart(node);
+                addMiddlePart(node);
+                addLowerPart(node);
+            }
             base.Visit(node);
 
-            _removeIndentation();
+            removeIndentation();
         }
 
-        private void _addIndentation(CrawlSyntaxNode node)
+        private void addIndentation(CrawlSyntaxNode node)
         {
             //If this is root, add no indentation
             if (node.Parent == null)
@@ -40,11 +55,9 @@ namespace libcompiler.SyntaxTree
             {
                 _indentation.Append("  ");
             }
-
-            _result.Append(_indentation);
         }
 
-        private void _removeIndentation()
+        private void removeIndentation()
         {
             //Unless this is root...
             if(_indentation.Length>0)
@@ -52,12 +65,15 @@ namespace libcompiler.SyntaxTree
                 _indentation.Remove(_indentation.Length - 2, 2);
         }
 
-        private void _addMiddleBit(CrawlSyntaxNode node)
+        private void addSingleLine(CrawlSyntaxNode node)
         {
+            _result.Append(_indentation);
+            //├Foo
+
             //If this is root, no branch goes down to it
             if (node.Parent == null)
             {
-                _result.Append("│");
+                _result.Append("╾");
             }
             //If this is not the last sibling, a branch continues downwards
             else if (node.Parent.ChildCount - 1 > node.IndexInParent)
@@ -71,6 +87,77 @@ namespace libcompiler.SyntaxTree
 
             _result.Append(node);
             _result.Append('\n');
+        }
+
+        private void addUpperPart(CrawlSyntaxNode node)
+        {
+            _result.Append(_indentation);
+            //┌──────────────┐
+
+            //If this is root, no branch goes down to it.
+            if(node.Parent==null)
+                _result.Append(" ┌──");
+            else
+                _result.Append("│┌──");
+
+            for (int i = 0; i < node.ToString().Length; i++)
+                _result.Append("─");
+
+            _result.Append("┐\n");
+        }
+
+        private void addMiddlePart(CrawlSyntaxNode node)
+        {
+            _result.Append(_indentation);
+            //└┤foo  │
+
+            //If this is root, no branch goes down to it.
+            if (node.Parent == null)
+            {
+                _result.Append("╾┤");
+            }
+            //If this is not the last sibling, a branch continues downwards
+            else if (node.Parent.ChildCount - 1 > node.IndexInParent)
+            {
+                _result.Append("├┤");
+            }
+            else
+            {
+                _result.Append("└┤");
+            }
+
+            _result.Append(node.ToString());
+
+            _result.Append("  │\n");
+        }
+
+
+        private void addLowerPart(CrawlSyntaxNode node)
+        {
+            _result.Append(_indentation);
+            //└─┬─────┘
+
+
+            //If this is not the last sibling, a branch continues downwards
+           if (node.Parent?.ChildCount - 1 > node.IndexInParent)
+            {
+                _result.Append("│");
+            }
+            else
+            {
+                _result.Append(" ");
+            }
+            //If this is a leaf no branch down is needed.
+            if (node.ChildCount == 0)
+                _result.Append("└──");
+            else
+                _result.Append("└┬─");
+
+
+            for (int i = 0; i < node.ToString().Length; i++)
+                _result.Append("─");
+
+            _result.Append("┘\n");
         }
     }
 }

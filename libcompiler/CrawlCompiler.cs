@@ -23,7 +23,7 @@ namespace libcompiler
             {
                 foreach (CrawlSyntaxTree crawlSyntaxTree in parsedFiles)
                 {
-                    SuperPrettyPrintVisitor printer = new SuperPrettyPrintVisitor();
+                    SuperPrettyPrintVisitor printer = new SuperPrettyPrintVisitor(false);
                     string s = printer.PrettyPrint(crawlSyntaxTree.RootNode);
                     output.WriteLine("File {0}:", crawlSyntaxTree.CompilationUnitName);
                     output.WriteLine(s);

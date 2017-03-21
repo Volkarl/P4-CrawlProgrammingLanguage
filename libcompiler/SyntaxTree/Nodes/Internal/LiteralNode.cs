@@ -13,6 +13,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         {
             Value = value;
             LiteralType = literalType;
+            ChildCount = 0;
         }
 
         
