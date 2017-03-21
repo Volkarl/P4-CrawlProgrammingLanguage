@@ -49,10 +49,23 @@ namespace libcompiler.SyntaxTree.Parser
                 case CrawlParser.RULE_or_expression:
                 case CrawlParser.RULE_exponential_expression:
                     return ParseMultu(rule);
+                case CrawlParser.RULE_unary_expression:
+                    return ParseUnary(rule);
                 default:
                     throw new NotImplementedException("Some expression type is not handled");
                     
             }
+        }
+
+        private static ExpressionNode ParseUnary(RuleContext rule)
+        {
+            RuleContext tar = (RuleContext) rule.GetChild(1);
+            ExpressionNode target = ParseExpression(tar);
+
+            ITerminalNode symbol = (ITerminalNode) rule.GetChild(0).GetChild(0);
+            ExpressionType type = ParseUnaryOp(symbol);
+
+            return NodeFactory.UnaryExpression(rule.SourceInterval, type, target);
         }
 
         private static ExpressionNode ParseMultu(RuleContext rule)
@@ -136,6 +149,23 @@ namespace libcompiler.SyntaxTree.Parser
                 return et;
 
             throw new NotImplementedException($"There is no known multiop {nameof(ExpressionType)} for {textop}");
+        }
+
+        private static readonly Dictionary<string, ExpressionType> UnaryMap = new Dictionary<string, ExpressionType>
+        {
+            {"-", ExpressionType.Negate },
+            {"ikke", ExpressionType.Not},
+        };
+
+        private static ExpressionType ParseUnaryOp(ITerminalNode op)
+        {
+            string textop = op.GetText();
+            ExpressionType et;
+            if (UnaryMap.TryGetValue(textop, out et))
+                return et;
+
+
+            throw new NotImplementedException($"There is no known unary {nameof(ExpressionType)} for {textop}");
         }
 
         private static ExpressionNode ParsePostfix(RuleContext rule)

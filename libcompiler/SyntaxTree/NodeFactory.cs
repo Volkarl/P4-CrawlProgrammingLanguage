@@ -195,6 +195,13 @@ namespace libcompiler.SyntaxTree
                 new _.MultiChildExpressionNode(interval, type, List(sources)));
         }
 
+        public static ExpressionNode UnaryExpression(Interval interval, ExpressionType type, ExpressionNode target)
+        {
+            return (ExpressionNode)Wrap(
+                new _.UnaryNode(interval, type, Extract(target))
+                );
+        }
+
         //TODO: Also expose this as individual methods
         //TODO: Automatically catch invalid ExpressionTypes for this and delegate to relevant target
         public static ExpressionNode BinaryExpression(Interval interval, ExpressionType type, ExpressionNode leftHandSide, ExpressionNode rightHandSide)
