@@ -1,0 +1,7 @@
+heltal overspring = 3;
+tekst tekst = "Jeg er elite";
+heltal i=0;
+for tegn t fra tekst
+  i = i+1;
+  hvis i%overspring != 0
+    print(tegn);

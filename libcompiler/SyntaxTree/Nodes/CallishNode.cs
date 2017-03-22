@@ -21,7 +21,7 @@ namespace libcompiler.SyntaxTree.Nodes
         public ListNode<ExpressionNode> Arguments => GetRed(ref _arguments, 1);
 
 
-        public CallishNode(CrawlSyntaxNode parent, Internal.ExpressionNode self, int slot) : base(parent, self, slot)
+        public CallishNode(CrawlSyntaxNode parent, Internal.ExpressionNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             
         }

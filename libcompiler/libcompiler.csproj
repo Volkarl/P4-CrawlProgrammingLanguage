@@ -73,7 +73,7 @@
     <Compile Include="SyntaxTree\Nodes\Internal\BlockNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\CallishNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\ClassDeclerationNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\CompiliationUnitNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\TranslationUnitNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\DeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\ExpressionNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\FlowNode.cs" />
@@ -124,9 +124,6 @@
       <Project>{e1a46d9d-66cb-46e8-93b0-7fc87299abef}</Project>
       <Name>Antlr4.Runtime.vs2013</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SyntaxTree\Internal\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

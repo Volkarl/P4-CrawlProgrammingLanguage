@@ -23,7 +23,7 @@ namespace libcompiler.SyntaxTree.Nodes
         public BlockNode BodyBlock => GetRed(ref _body, 1);
         
 
-        public ClassDeclerationNode(CrawlSyntaxNode parent, GreenNode self, int slot) : base(parent, self, slot)
+        public ClassDeclerationNode(CrawlSyntaxNode parent, GreenNode self, int indexInParent) : base(parent, self, indexInParent)
            
         {
             

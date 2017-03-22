@@ -26,7 +26,7 @@ namespace libcompiler.SyntaxTree.Nodes
                 //If we already know what tree owns this node, great
                 if (_owningTree != null) return _owningTree;
 
-                //otherwise we to find it.
+                //otherwise we need to find it.
                 //If ask our parent for it. If we don't have a parent, make one up.
                 CrawlSyntaxTree newTree = Parent == null ? new CrawlSyntaxTree(this, "<Unknown>") : Parent.OwningTree;
 
@@ -44,20 +44,20 @@ namespace libcompiler.SyntaxTree.Nodes
         public CrawlSyntaxNode Parent { get; }
 
         /// <summary>
-        /// The position where this node appear in the parent
+        /// The position where this node appears in the parent
         /// </summary>
         public int IndexInParent { get; }
         
         /// <summary>
         /// The <see cref="NodeType"/> of this <see cref="CrawlSyntaxNode"/>. 
         /// It is unique to most types of <see cref="CrawlSyntaxNode"/> and in some
-        /// cases one <see cref="CrawlSyntaxNode"/> will represent different 
-        /// on what value <see cref="Type"/> has.
+        /// cases one <see cref="CrawlSyntaxNode"/> will represent itself differently
+        /// based on what value <see cref="Type"/> has.
         /// </summary>
         public NodeType Type { get; }
 
         /// <summary>
-        /// The Interval this <see cref="CrawlSyntaxNode"/> covers in the source code
+        /// The Interval this <see cref="CrawlSyntaxNode"/> covers in the source code.
         /// <b>NOTICE: This API element is not stable and might change</b>
         /// </summary>
         public Interval Interval => _green.Interval;
@@ -67,7 +67,10 @@ namespace libcompiler.SyntaxTree.Nodes
         /// </summary>
         public int ChildCount => _green.ChildCount;
 
-        protected internal CrawlSyntaxNode(CrawlSyntaxNode parent, GreenNode self, int slot)
+        /// <param name="parent">The parent of this node.</param>
+        /// <param name="self">The red counterpart of this node.</param>
+        /// <param name="indexInParent">The index this node has in its parent.</param>
+        protected internal CrawlSyntaxNode(CrawlSyntaxNode parent, GreenNode self, int indexInParent)
         {
             Parent = parent;
 
@@ -75,7 +78,7 @@ namespace libcompiler.SyntaxTree.Nodes
             //GreenNodes sometimes uses upper bits to encode extra information. Not allowed here
             // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
             Type = self.Type;
-            IndexInParent = slot;
+            IndexInParent = indexInParent;
 
         }
 

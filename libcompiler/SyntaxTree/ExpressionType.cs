@@ -22,6 +22,8 @@
         Constant,
         Variable,
         Negate,
-        Not
+        Not,
+        Divide,
+        Modulous
     }
 }

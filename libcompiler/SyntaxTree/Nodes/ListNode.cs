@@ -6,7 +6,7 @@ namespace libcompiler.SyntaxTree.Nodes
 {
     public class ListNode<T> : CrawlSyntaxNode, IReadOnlyList<T> where T : CrawlSyntaxNode
     {
-        public ListNode(CrawlSyntaxNode parent, GreenNode self, int slot) : base(parent, self, slot)
+        public ListNode(CrawlSyntaxNode parent, GreenNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             _childNodes = new T[self.ChildCount];
         }

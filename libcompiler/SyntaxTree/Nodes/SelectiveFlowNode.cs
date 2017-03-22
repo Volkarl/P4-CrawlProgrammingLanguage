@@ -12,7 +12,7 @@ namespace libcompiler.SyntaxTree.Nodes
         public BlockNode Primary => GetRed(ref _1, 1);
         public BlockNode Alternative => GetRed(ref _2, 2);
 
-        public SelectiveFlowNode(CrawlSyntaxNode parent, Internal.SelectiveFlowNode self, int slot) : base(parent, self, slot)
+        public SelectiveFlowNode(CrawlSyntaxNode parent, Internal.SelectiveFlowNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             
         }

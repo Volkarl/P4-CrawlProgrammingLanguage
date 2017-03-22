@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -12,6 +13,77 @@ namespace libcompiler.SyntaxTree.Parser
 {
     public static class ParseTreeParser
     {
+        public static TranslationUnitNode ParseTranslationUnit(CrawlParser.Translation_unitContext translationUnit)
+        {
+            CrawlParser.Import_directivesContext imports =
+                (CrawlParser.Import_directivesContext)translationUnit.GetChild(0);
+
+            CrawlParser.StatementsContext statements =
+                (CrawlParser.StatementsContext)translationUnit.GetChild(1);
+
+
+            ListNode<ImportNode> importNodes = ParseImports(imports);
+            BlockNode rootBlock = ParseBlockNode(statements);
+
+            return NodeFactory.TranslationUnit(translationUnit.SourceInterval, importNodes, rootBlock);
+        }
+
+        /// <summary>
+        /// Parse import directives
+        /// </summary>
+        private static ListNode<ImportNode> ParseImports(CrawlParser.Import_directivesContext imports)
+        {
+            List<ImportNode> children = new List<ImportNode>();
+
+            if(imports.ChildCount!=0)
+                foreach (RuleContext child in imports.children.Cast<RuleContext>())
+                    children.Add(ParseImportNode(child));
+
+            return NodeFactory.ImportsNode(imports.SourceInterval, children);
+        }
+
+        /// <summary>
+        /// Parse single import node
+        /// </summary>
+        public static ImportNode ParseImportNode(RuleContext rule)
+        {
+            StringBuilder path = new StringBuilder();
+
+
+            path.Append(rule.GetChild(1).GetText());
+            //Stride 2 to avoid dots.
+            for (int i = 3; i < rule.ChildCount; i=i+2)
+            {
+                path.Append(".");
+                path.Append(rule.GetChild(i).GetText());
+            }
+
+            return NodeFactory.ImportNode(rule.SourceInterval, path.ToString());
+        }
+
+        public static BlockNode ParseBlockNode(RuleContext rule)
+        {
+            System.Collections.IEnumerable meaningfullContent;
+
+            if (rule.RuleIndex == CrawlParser.RULE_statements)
+            {
+                meaningfullContent = rule.AsIEnumerable();
+            }
+            else if (rule.RuleIndex == CrawlParser.RULE_class_body)
+            {
+                meaningfullContent = rule.AsEdgeTrimmedIEnumerable();
+            }
+            else throw new NotImplementedException("Probably broken");
+
+            IEnumerable<CrawlSyntaxNode> contents =
+                meaningfullContent
+                    .OfType<RuleContext>() //FIXME! This can contain raw NEWLINE and END_OF_STATEMENT tokens which is TerminalNodeImpl not RuleContext. Not happy about discarding that trivia
+                    .Select(ParseStatement).ToList();
+
+            return NodeFactory.Block(rule.SourceInterval, contents);
+        }
+
+
         public static FlowNode ParseFlow(RuleContext rule)
         {
             if (rule.RuleIndex == CrawlParser.RULE_for_loop)
@@ -228,33 +300,6 @@ namespace libcompiler.SyntaxTree.Parser
             }   
         }
 
-        public static BlockNode ParseBlockNode(RuleContext rule)
-        {
-            System.Collections.IEnumerable meaningfullContent;
-
-            if (rule.RuleIndex == CrawlParser.RULE_statements)
-            {
-                meaningfullContent = rule.AsIEnumerable();
-            }
-            else if (rule.RuleIndex == CrawlParser.RULE_class_body)
-            {
-                meaningfullContent = rule.AsEdgeTrimmedIEnumerable();
-            }
-            else throw new NotImplementedException("Probably broken");
-
-            IEnumerable<CrawlSyntaxNode> contents =
-                meaningfullContent
-                    .OfType<RuleContext>() //FIXME! This can contain raw NEWLINE and END_OF_STATEMENT tokens which is TerminalNodeImpl not RuleContext. Not happy about discarding that trivia
-                    .Select(ParseStatement).ToList();
-
-            return NodeFactory.Block(rule.SourceInterval, contents);
-        }
-
-        public static ImportNode ParseImportNode(RuleContext rule)
-        {
-            throw new NotImplementedException();
-        }
-
         public static CrawlSyntaxNode ParseStatement(RuleContext rule)
         {
             switch (rule.RuleIndex)
@@ -309,20 +354,6 @@ namespace libcompiler.SyntaxTree.Parser
 
             ExpressionNode value = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(rule.ChildCount - 2));
             return NodeFactory.Assignment(rule.SourceInterval, target, value);
-        }
-
-        public static TranslationUnitNode ParseTranslationUnit(CrawlParser.Translation_unitContext translationUnit)
-        {
-            CrawlParser.Import_directivesContext imports =
-                (CrawlParser.Import_directivesContext)translationUnit.GetChild(0);
-
-            CrawlParser.StatementsContext statements =
-                (CrawlParser.StatementsContext)translationUnit.GetChild(1);
-
-
-            BlockNode rootBlock = ParseBlockNode(statements);
-
-            return NodeFactory.CompilationUnit(translationUnit.SourceInterval, new List<ImportNode>(), rootBlock);
         }
     }
 }

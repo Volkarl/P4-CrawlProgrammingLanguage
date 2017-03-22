@@ -8,9 +8,12 @@ namespace libcompiler.SyntaxTree
 {
     public static class NodeFactory
     {
-        private static CrawlSyntaxNode Wrap(_.GreenNode selectiveFlowNode)
+        /// <summary>
+        /// Returns red counterpart of node.
+        /// </summary>
+        private static CrawlSyntaxNode Wrap(_.GreenNode greenNode)
         {
-            return selectiveFlowNode.CreateRed(null, 0);
+            return greenNode.CreateRed(null, 0);
         }
 
         private static _.BlockNode Extract(BlockNode n)
@@ -38,9 +41,15 @@ namespace libcompiler.SyntaxTree
             return (_.TokenNode)CrawlSyntaxNode.ExtractGreenNode(n);
         }
 
+        /// <summary>
+        /// Create new Green ListNode from series of any kind of red nodes.
+        /// </summary>
+        /// <param name="i">Series of red nodes</param>
+        /// <typeparam name="T">Type of red node.</typeparam>
+        /// <returns>A new green ListNode</returns>
         private static _.ListNode<T> List<T>(IEnumerable<T> i) where T : CrawlSyntaxNode
         {
-            //FIXME INTERVAL
+            //TODO correct interval
             return new _.ListNode<T>(default(Interval), i.Select(CrawlSyntaxNode.ExtractGreenNode));
         }
 
@@ -179,13 +188,13 @@ namespace libcompiler.SyntaxTree
         public static AssignmentNode Assignment(Interval interval, ExpressionNode target, ExpressionNode value)
         {
             return (AssignmentNode) Wrap(
-                new _.GreenAssignmentNode(interval, Extract(target), Extract(value)));
+                new _.AssignmentNode(interval, Extract(target), Extract(value)));
         }
 
-        public static TranslationUnitNode CompilationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
+        public static TranslationUnitNode TranslationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
         {
             return (TranslationUnitNode) Wrap(
-                new _.CompiliationUnitNode(interval, List(importNodes), Extract(rootCode)));
+                new _.TranslationUnitNode(interval, List(importNodes), Extract(rootCode)));
         }
 
         //TODO: Also expose this as individual methods
@@ -247,6 +256,29 @@ namespace libcompiler.SyntaxTree
         public static TypeNode Type(Interval interval, CrawlType crawlType)
         {
             return (TypeNode) Wrap(new _.TypeNode(interval, crawlType));
+        }
+
+        /// <summary>
+        /// Makes ListNode representing a series of import directives.
+        /// </summary>
+        /// <param name="interval">Positions of start- and end-character in original source file. For debugging.</param>
+        /// <param name="children">Import directives.</param>
+        /// <returns>What was made. </returns>
+        // Green node created, red representation returned.
+        public static ListNode<ImportNode> ImportsNode(Interval interval, IEnumerable<ImportNode> children)
+        {
+            return (ListNode<ImportNode>) Wrap(List(children));
+        }
+
+        /// <summary>
+        /// Makes ImportNode representing a single import directive.
+        /// </summary>
+        /// <param name="interval">Positions of start- and end-character in original source file. For debugging.</param>
+        /// <param name="modulePath">A series of period-separated identifiers denoting the path to the module to be imported.</param>
+        /// <returns>What was made.</returns>
+        public static ImportNode ImportNode(Interval interval, string modulePath)
+        {
+            return (ImportNode) Wrap(new _.ImportNode(interval, modulePath));
         }
     }
 }

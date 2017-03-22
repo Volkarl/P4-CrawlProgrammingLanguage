@@ -6,7 +6,7 @@
 
         private ExpressionNode _target;
 
-        public UnaryNode(CrawlSyntaxNode parent, Internal.ExpressionNode self, int slot) : base(parent, self, slot)
+        public UnaryNode(CrawlSyntaxNode parent, Internal.ExpressionNode self, int indexInParent) : base(parent, self, indexInParent)
         {
 
         }

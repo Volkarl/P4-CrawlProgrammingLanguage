@@ -3,13 +3,13 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class CompiliationUnitNode : GreenNode
+    public class TranslationUnitNode : GreenNode
     {
         public ListNode<Nodes.ImportNode> Imports { get; }
         public BlockNode Body { get; }
 
-        public CompiliationUnitNode(Interval interval, ListNode<Nodes.ImportNode> imports,
-            BlockNode block) : base(NodeType.CompilationUnit, interval)
+        public TranslationUnitNode(Interval interval, ListNode<Nodes.ImportNode> imports,
+            BlockNode block) : base(NodeType.TranslationUnit, interval)
         {
             Imports = imports;
             Body = block;
@@ -26,17 +26,17 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             }
         }
 
-        public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int slot)
+        public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int indexInParent)
         {
-            return new Nodes.TranslationUnitNode(parent, this, slot);
+            return new Nodes.TranslationUnitNode(parent, this, indexInParent);
         }
 
         internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
         {
             if(index == 0)
-                return new CompiliationUnitNode(this.Interval, (ListNode<Nodes.ImportNode>)newChild, Body);
+                return new TranslationUnitNode(this.Interval, (ListNode<Nodes.ImportNode>)newChild, Body);
             else if(index == 1)
-                return new CompiliationUnitNode(this.Interval, Imports, (BlockNode)newChild);
+                return new TranslationUnitNode(this.Interval, Imports, (BlockNode)newChild);
 
             throw new ArgumentOutOfRangeException();
         }

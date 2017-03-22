@@ -136,6 +136,8 @@ namespace libcompiler.SyntaxTree.Parser
             {"-", ExpressionType.Subtract },
             {"+", ExpressionType.Add },
             {"*", ExpressionType.Multiply},
+            {"/", ExpressionType.Divide},
+            {"%", ExpressionType.Modulous},
             {"**", ExpressionType.Power },
             {"eller", ExpressionType.ShortCircuitOr },
             {"og", ExpressionType.ShortCircuitAnd}

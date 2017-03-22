@@ -55,10 +55,14 @@ namespace libcompiler.SyntaxTree
                 case NodeType.Block:
                     VisitBlock((BlockNode) node);
                     break;
+                case NodeType.Imports:
+                    VisitImports((ListNode<ImportNode>) node);
+                    break;
                 case NodeType.Import:
-                    throw new NotImplementedException();
-                case NodeType.CompilationUnit:
-                    VisitCompiliationUnit((TranslationUnitNode) node);
+                    VisitImport((ImportNode) node);
+                    break;
+                case NodeType.TranslationUnit:
+                    VisitTranslationUnit((TranslationUnitNode) node);
                     break;
                 case NodeType.Literal:
                     VisitLiteral((LiteralNode) node);
@@ -72,6 +76,19 @@ namespace libcompiler.SyntaxTree
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void VisitImports(ListNode<ImportNode> node)
+        {
+            foreach (ImportNode n in node)
+            {
+                Visit(n);
+            }
+        }
+
+        private void VisitImport(ImportNode node)
+        {
+
         }
 
         private void VisitUnary(UnaryNode node)
@@ -169,12 +186,9 @@ namespace libcompiler.SyntaxTree
             
         }
 
-        protected virtual void VisitCompiliationUnit(TranslationUnitNode node)
+        protected virtual void VisitTranslationUnit(TranslationUnitNode node)
         {
-            foreach (ImportNode nodeImport in node.Imports)
-            {
-                Visit(nodeImport);
-            }
+            Visit(node.Imports);
 
             Visit(node.Code);
         }

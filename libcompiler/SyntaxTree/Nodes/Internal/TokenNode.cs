@@ -18,9 +18,9 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return null;
         }
 
-        public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int slot)
+        public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int indexInParent)
         {
-            return new Nodes.TokenNode(parent, this, slot);
+            return new Nodes.TokenNode(parent, this, indexInParent);
         }
 
         internal override GreenNode WithReplacedChild(GreenNode newChild, int index)

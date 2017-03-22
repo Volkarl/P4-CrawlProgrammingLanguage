@@ -13,7 +13,7 @@ namespace libcompiler.SyntaxTree.Nodes
         public VariableNode Identfier => GetRed(ref _id, 1);
         public BlockNode BodyBlock => GetRed(ref _body, 2);
 
-        public FunctionDeclerationNode(CrawlSyntaxNode parent, GreenNode self, int slot) : base(parent, self, slot)
+        public FunctionDeclerationNode(CrawlSyntaxNode parent, GreenNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             
         }
