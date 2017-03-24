@@ -8,7 +8,7 @@ The advantages of red-green trees are that
 * Takes form of a tree.
 * Mostly reusable.
 
-This is archived by not using a tree.
+This is achieved by not using a single tree.
 Instead 2 trees are used. There are the red public tree and the green private tree.
 
 The *Green* tree is a true, immutable data structure that is build bottom up representing the ast. 
