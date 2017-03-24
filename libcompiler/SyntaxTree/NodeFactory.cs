@@ -179,7 +179,7 @@ namespace libcompiler.SyntaxTree
         public static AssignmentNode Assignment(Interval interval, ExpressionNode target, ExpressionNode value)
         {
             return (AssignmentNode) Wrap(
-                new _.GreenAssignmentNode(interval, Extract(target), Extract(value)));
+                new _.AssignmentNode(interval, Extract(target), Extract(value)));
         }
 
         public static TranslationUnitNode CompilationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)

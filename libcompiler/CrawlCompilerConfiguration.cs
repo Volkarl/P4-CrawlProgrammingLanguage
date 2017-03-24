@@ -108,6 +108,9 @@ namespace libcompiler
                         SetStage(crawlCompilerConfiguration, TargetStage.ParseTree);
                         break;
 
+                    case "typecheck":
+                        SetStage(crawlCompilerConfiguration, TargetStage.TypeCheck);
+                        break;
                     case "optimize":
                         if (parts.Length == 1)
                             crawlCompilerConfiguration.Optimizations.Add("*");
