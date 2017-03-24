@@ -46,10 +46,10 @@ namespace libcompiler
 
         private static string VerySimpleTypeCheck(CrawlSyntaxNode arg)
         {
-            if (arg.Type == NodeType.Literal)
-            {
-                return "t";
-            }
+            POCTypechecker poc = new POCTypechecker();
+            POCType type = poc.Visit(arg);
+            if (type != POCType.Notype)
+                return type.ToString();
             else return null;
         }
 

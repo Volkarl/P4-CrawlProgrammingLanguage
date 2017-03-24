@@ -69,12 +69,22 @@ namespace libcompiler.SyntaxTree
                     return VisitList((IEnumerable<CrawlSyntaxNode>)node);
                 case NodeType.UnaryExpression:
                     return VisitUnary((UnaryNode)node);
+
+                case NodeType.Type:
+                    return VisitType((TypeNode) node);
+
+                case NodeType.Token:
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        private T VisitUnary(UnaryNode node)
+        protected T VisitType(TypeNode node)
+        {
+            return default(T);
+        }
+
+        protected T VisitUnary(UnaryNode node)
         {
             return Visit(node.Target);
         }
