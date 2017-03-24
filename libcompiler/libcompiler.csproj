@@ -51,7 +51,9 @@
     <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CallishNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\ReferenceNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\UnaryNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\ReferenceNode.cs" />
     <Compile Include="SyntaxTree\Nodes\TranslationUnitNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxTree.cs" />

@@ -248,5 +248,10 @@ namespace libcompiler.SyntaxTree
         {
             return (TypeNode) Wrap(new _.TypeNode(interval, crawlType));
         }
+
+        public static ReferenceNode ReferenceNode(ExpressionNode target)
+        {
+            return (ReferenceNode) Wrap(new _.ReferenceNode(Extract(target)));
+        }
     }
 }

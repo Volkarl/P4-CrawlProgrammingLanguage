@@ -69,9 +69,17 @@ namespace libcompiler.SyntaxTree
                 case NodeType.UnaryExpression:
                     VisitUnary((UnaryNode) node);
                     break;
+                case NodeType.Reference:
+                    VisitReference((ReferenceNode) node);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void VisitReference(ReferenceNode node)
+        {
+            Visit(node.Target);
         }
 
         private void VisitUnary(UnaryNode node)

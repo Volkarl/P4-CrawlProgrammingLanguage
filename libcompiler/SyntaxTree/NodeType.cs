@@ -25,5 +25,6 @@ namespace libcompiler.SyntaxTree
         NodeList,
         Token,
         Type,
+        Reference
     }
 }
