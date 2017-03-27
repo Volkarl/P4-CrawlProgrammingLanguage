@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime;
+using libcompiler;
 using libcompiler.Parser;
+using libcompiler.SyntaxTree;
 
 namespace compilerconsolehost
 {
@@ -12,61 +15,43 @@ namespace compilerconsolehost
     {
         static void Main(string[] args)
         {
-            foreach (string s in args)
+            CrawlCompilerConfiguration configuration;
+            if (ParseOptions(args, out configuration))
             {
-                Console.WriteLine("Testing on {0}", s);
-                try
-                {
-                    AntlrFileStream fs = new AntlrFileStream(s, Encoding.UTF8);
-                    ITokenSource ts = new CrawlLexer(fs);
-                    ITokenStream tstream = new CommonTokenStream(ts);
-                    CrawlParser parser = new CrawlParser(tstream);
-
-                    CrawlParser.Translation_unitContext rootContext = parser.translation_unit();
-
-
-                    Console.WriteLine(Unfuck(rootContext.ToStringTree(parser)));
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
+                CrawlCompiler.Compile(configuration);
             }
-            Console.WriteLine("Finished parsing. Press enter to exit...");
+            Console.WriteLine("Press enter to exit...");
             Console.ReadLine();
         }
 
-        private static string Unfuck(string toStringTree)
+        private static bool ParseOptions(string[] args, out CrawlCompilerConfiguration crawlCompilerConfiguration)
         {
-            StringBuilder sb = new StringBuilder();
-            int indent = 0;
-            foreach (char c in toStringTree)
+            try
             {
-                if (c == '(')
+                crawlCompilerConfiguration = CrawlCompilerConfiguration.Parse(args);
+                if (crawlCompilerConfiguration.PrintHelp)
                 {
-                    indent++;
-                    sb.Append('\n');
-                    for (int i = 0; i < indent; i++)
-                    {
-                        sb.Append(' ');
-                    }
-                    sb.Append(c);
+                    Console.WriteLine(CrawlCompilerConfiguration.Instructions);
+                    return false;
                 }
-                else if (c == ')')
-                {
-                    indent--;
-                    sb.Append(c);
-                    sb.Append('\n');
-                    for (int i = 0; i < indent; i++)
-                    {
-                        sb.Append(' ');
-                    }
-                }
-                else
-                    sb.Append(c);
-            }
+                return true;
 
-            return sb.ToString();
+
+            }
+            catch (CrawlCompilerConfiguration.UnknownOption ex)  
+            {
+                Console.WriteLine("Unknown option {0}. See --help for all options", ex.Message);   
+            }
+            catch (CrawlCompilerConfiguration.MutalExcluseiveOptionsException ex)
+            {
+                Console.WriteLine("The 2 arguments {0} and {1} are mutally exclusive.", ex.FirstOption, ex.SecondOption);
+            }
+            catch (CrawlCompilerConfiguration.RequiresArgumentException ex)
+            {
+                Console.WriteLine("The option {0} requires an argument. See --help for details", ex.Message);
+            }
+            crawlCompilerConfiguration = null;
+            return false;
         }
     }
 }

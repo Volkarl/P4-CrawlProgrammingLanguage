@@ -1,0 +1,8 @@
+offentlig heltal(heltal værdi) PlusToer =
+    værdi = værdi + 2;
+    returner værdi;
+
+heltal værdi = 5;
+heltal nyværdi = PlusToer(reference værdi);
+
+bool success = værdi == nyværdi;

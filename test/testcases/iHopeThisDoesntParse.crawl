@@ -1,0 +1,2 @@
+(returner a == b)(a == b);
+bool c = ikke sand;

@@ -1,0 +1,13 @@
+offentlig klasse Liste <T> =
+  privat T[] indre;
+  privat tal index = 0;
+  offentlig intet(T ting) Tilføj =
+    hvis index > indre.Længde
+      gro();
+    indre[index] = ting;
+    index = index + 1;
+  
+  privat intet() gro =
+    //something here...
+
+Liste<tal> foo = Liste<tal>();

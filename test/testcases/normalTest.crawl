@@ -1,0 +1,10 @@
+main klasse()
+
+heltal a=5, b=6, c=a;
+
+mens c<b
+	skriv ("det købre");
+	
+	ellers
+		skriv("det køre ikke");
+		

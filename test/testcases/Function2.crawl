@@ -1,0 +1,19 @@
+import Consol;
+import Consol; 
+
+
+offentlige klasse frø= 
+
+	heltal resultat;
+
+	offentligt heltal ( heltal)foo=
+		resultat= resultat+heltal;
+	
+
+
+foo fii=foo(8);
+skriv(foo.resultat);
+
+	
+	
+	

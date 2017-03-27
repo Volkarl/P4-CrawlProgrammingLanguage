@@ -1,0 +1,26 @@
+importer standard.farvekonsol;
+
+intet(tekst t) RegnbuePrint =
+  heltal i = 0;
+  mens i < t.længde
+    hvis i < t.længde
+      farveprint(t[i], rød);
+      i = i +1;
+    hvis i < t.længde
+      farveprint(t[i], orange);
+      i = i +1;
+    hvis i < t.længde
+      farveprint(t[i], gul);
+      i = i +1;
+    hvis i < t.længde
+      farveprint(t[i], grøn);
+      i = i +1;
+    hvis i < t.længde
+      farveprint(t[i], blå);
+      i = i +1;
+    hvis i < t.længde
+      farveprint(t[i], indigo);
+      i = i +1;
+    hvis i < t.længde
+      farveprint(t[i], violet);
+      i = i +1;

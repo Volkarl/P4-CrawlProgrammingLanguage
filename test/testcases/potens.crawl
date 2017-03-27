@@ -1,0 +1,8 @@
+offentligt klasse potens=
+	
+	heltal a=4, b=2;
+
+heltal resultat=b**a;
+	
+print(resultat);
+	
