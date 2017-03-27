@@ -2,7 +2,7 @@
 {
     public abstract class FlowNode : CrawlSyntaxNode
     {
-        protected FlowNode(CrawlSyntaxNode parent, Internal.FlowNode self, int indexInParent) : base(parent, self, indexInParent)
+        protected FlowNode(CrawlSyntaxNode parent, Internal.GreenFlowNode self, int indexInParent) : base(parent, self, indexInParent)
         {
         }
     }

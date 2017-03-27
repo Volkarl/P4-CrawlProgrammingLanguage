@@ -3,13 +3,13 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    class CallishNode : ExpressionNode
+    class GreenCallishNode : GreenExpressionNode
     {
-        public ExpressionNode Target { get; }
-        public ListNode<Nodes.ExpressionNode> Arguments { get; }
+        public GreenExpressionNode Target { get; }
+        public GreenListNode<Nodes.ExpressionNode> Arguments { get; }
 
 
-        public CallishNode(Interval interval, ExpressionNode target, ListNode<Nodes.ExpressionNode> arguments,
+        public GreenCallishNode(Interval interval, GreenExpressionNode target, GreenListNode<Nodes.ExpressionNode> arguments,
             ExpressionType expressionType) : base(interval, MakeNodeType(expressionType), expressionType)
         {
             Target = target;
@@ -29,7 +29,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             }
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             switch (slot)
             {
@@ -45,12 +45,12 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.CallishNode(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
             if(index == 0)
-                return new CallishNode(this.Interval, (ExpressionNode)newChild, Arguments, ExpressionType);
+                return new GreenCallishNode(this.Interval, (GreenExpressionNode)newChild, Arguments, ExpressionType);
             else if(index == 1)
-                return new CallishNode(this.Interval, Target, (ListNode<Nodes.ExpressionNode>)newChild, ExpressionType);
+                return new GreenCallishNode(this.Interval, Target, (GreenListNode<Nodes.ExpressionNode>)newChild, ExpressionType);
 
             throw new ArgumentOutOfRangeException();
         }

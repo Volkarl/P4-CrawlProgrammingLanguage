@@ -5,7 +5,7 @@ namespace libcompiler.SyntaxTree.Nodes
         public string Value { get; }
         public LiteralType LiteralType { get; }
 
-        public LiteralNode(CrawlSyntaxNode parent, Internal.LiteralNode self, int indexInParent) : base(parent, self, indexInParent)
+        public LiteralNode(CrawlSyntaxNode parent, Internal.GreenLiteralNode self, int indexInParent) : base(parent, self, indexInParent)
         
         {
             Value = self.Value;

@@ -3,24 +3,38 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class ClassDeclerationNode : DeclerationNode
+    public class GreenClassDeclerationNode : GreenDeclerationNode
     {
-        public TokenNode Identifier { get; }
-        public BlockNode BodyBlock { get; }
+        public GreenIdentifierNode Identifier { get; }
+        public GreenListNode<GenericParameterNode> GenericParameters { get; }
+        public GreenBlockNode Body { get; }
 
-        public ClassDeclerationNode(Interval interval, ProtectionLevel protectionLevel, TokenNode identifier, BlockNode bodyBlock) : base(interval, NodeType.ClassDecleration, protectionLevel)
-            
+
+        public GreenClassDeclerationNode(
+            Interval interval,
+            ProtectionLevel protectionLevel,
+            GreenIdentifierNode identifier,
+            GreenListNode<GenericParameterNode> genericParameters,
+            GreenBlockNode body
+        )
+            : base(interval, NodeType.ClassDecleration, protectionLevel)
         {
+            ChildCount = 3;
             Identifier = identifier;
-            BodyBlock = bodyBlock;
+            GenericParameters = genericParameters;
+            Body = body;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             switch (slot)
             {
-                case 0: return Identifier;
-                case 1: return BodyBlock;
+                case 0:
+                    return Identifier;
+                case 1:
+                    return GenericParameters;
+                case 2:
+                    return Body;
                 default:
                     return null;
             }
@@ -31,14 +45,20 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.ClassDeclerationNode(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
-            if(index == 0)
-                return new ClassDeclerationNode(this.Interval, ProtectionLevel, (TokenNode)newChild, BodyBlock);
-            else if(index == 1)
-                return new ClassDeclerationNode(this.Interval, ProtectionLevel, Identifier, (BlockNode)newChild);
+            switch (index)
+            {
+                case 0:
+                    return new GreenClassDeclerationNode(this.Interval, ProtectionLevel, (GreenIdentifierNode)newChild, GenericParameters, Body);
+                case 1:
+                    return new GreenClassDeclerationNode(this.Interval, ProtectionLevel, Identifier, (GreenListNode<GenericParameterNode>) newChild, Body);
+                case 2:
+                    return new GreenClassDeclerationNode(this.Interval, ProtectionLevel, Identifier, GenericParameters, (GreenBlockNode)newChild);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
-            throw new ArgumentOutOfRangeException();
         }
     }
 }

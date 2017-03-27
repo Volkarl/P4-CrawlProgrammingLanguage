@@ -10,7 +10,7 @@ namespace libcompiler.SyntaxTree.Nodes
         public TypeNode DeclerationType => GetRed(ref _declType, 0);
         public ListNode<SingleVariableDecleration> Declerations => GetRed(ref _decls, 1);
 
-        public VariableDeclerationNode(CrawlSyntaxNode parent, GreenNode self, int indexInParent) : base(parent, self, indexInParent)
+        public VariableDeclerationNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             
         }

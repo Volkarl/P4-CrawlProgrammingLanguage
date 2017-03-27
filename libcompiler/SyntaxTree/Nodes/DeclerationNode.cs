@@ -6,9 +6,9 @@ namespace libcompiler.SyntaxTree.Nodes
     {
         public ProtectionLevel ProtectionLevel { get; }
 
-        protected DeclerationNode(CrawlSyntaxNode parent, GreenNode self, int indexInParent) : base(parent, self, indexInParent)
+        protected DeclerationNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent) : base(parent, self, indexInParent)
         {
-            Internal.DeclerationNode decl = ((Internal.DeclerationNode) self);
+            Internal.GreenDeclerationNode decl = ((Internal.GreenDeclerationNode) self);
             ProtectionLevel = decl.ProtectionLevel;
         }
 

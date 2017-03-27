@@ -3,19 +3,19 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class TypeNode : GreenNode
+    public class GreenTypeNode : GreenCrawlSyntaxNode
     {
         public CrawlType ExportedType { get; }
 
-        public TypeNode(Interval interval, CrawlType expotedType) : base(NodeType.Type, interval)
+        public GreenTypeNode(Interval interval, CrawlType expotedType) : base(NodeType.Type, interval)
         {
             ExportedType = expotedType;
             ChildCount = 0;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
-            return default(GreenNode);
+            return default(GreenCrawlSyntaxNode);
         }
 
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int indexInParent)
@@ -23,7 +23,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.TypeNode(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
             throw new ArgumentOutOfRangeException();
         }

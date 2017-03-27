@@ -4,7 +4,7 @@
     {
         public string Module { get; }
 
-        protected internal ImportNode(CrawlSyntaxNode parent, Internal.ImportNode self, int indexInParent) : base(parent, self, indexInParent)
+        protected internal ImportNode(CrawlSyntaxNode parent, Internal.GreenImportNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             Module = self.Module;
         }

@@ -2,11 +2,11 @@
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public abstract class ExpressionNode : GreenNode
+    public abstract class GreenExpressionNode : GreenCrawlSyntaxNode
     {
         public ExpressionType ExpressionType { get; }
 
-        protected ExpressionNode(Interval interval, NodeType type, ExpressionType expressionType)
+        protected GreenExpressionNode(Interval interval, NodeType type, ExpressionType expressionType)
             : base(type, interval)
         {
             ExpressionType = expressionType;

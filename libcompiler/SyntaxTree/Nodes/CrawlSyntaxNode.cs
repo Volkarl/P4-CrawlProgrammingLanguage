@@ -9,11 +9,11 @@ namespace libcompiler.SyntaxTree.Nodes
     /// <summary>
     /// The root class for all Red nodes (See redgreen.md). Most generic 
     /// functionality is located here. Rest is (at time of writing) in 
-    /// <see cref="ListNode{T}"/> and <see cref="ExpressionNode"/>
+    /// <see cref="GreenListNode{T}"/> and <see cref="ExpressionNode"/>
     /// </summary>
     public abstract class CrawlSyntaxNode
     {
-        private readonly GreenNode _green;
+        protected readonly GreenCrawlSyntaxNode Green;
         private CrawlSyntaxTree _owningTree;
 
         /// <summary>
@@ -60,21 +60,21 @@ namespace libcompiler.SyntaxTree.Nodes
         /// The Interval this <see cref="CrawlSyntaxNode"/> covers in the source code.
         /// <b>NOTICE: This API element is not stable and might change</b>
         /// </summary>
-        public Interval Interval => _green.Interval;
+        public Interval Interval => Green.Interval;
 
         /// <summary>
         /// The number of children this node has.
         /// </summary>
-        public int ChildCount => _green.ChildCount;
+        public int ChildCount => Green.ChildCount;
 
         /// <param name="parent">The parent of this node.</param>
         /// <param name="self">The red counterpart of this node.</param>
         /// <param name="indexInParent">The index this node has in its parent.</param>
-        protected internal CrawlSyntaxNode(CrawlSyntaxNode parent, GreenNode self, int indexInParent)
+        protected internal CrawlSyntaxNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent)
         {
             Parent = parent;
 
-            _green = self;
+            Green = self;
             //GreenNodes sometimes uses upper bits to encode extra information. Not allowed here
             // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
             Type = self.Type;
@@ -99,7 +99,7 @@ namespace libcompiler.SyntaxTree.Nodes
 
             if (result == null)
             {
-                GreenNode green = this._green.GetChildAt(slot);
+                GreenCrawlSyntaxNode green = this.Green.GetChildAt(slot);
                 if (green != null)
                 {
                     Interlocked.CompareExchange(ref field, (T)green.CreateRed(this, slot), null);
@@ -110,7 +110,7 @@ namespace libcompiler.SyntaxTree.Nodes
             return result;
         }
 
-        internal static GreenNode ExtractGreenNode(CrawlSyntaxNode node) => node?._green;
+        internal static GreenCrawlSyntaxNode ExtractGreenNode(CrawlSyntaxNode node) => node?.Green;
 
         public abstract CrawlSyntaxNode GetChildAt(int index);
 
@@ -119,12 +119,12 @@ namespace libcompiler.SyntaxTree.Nodes
 
             Stack<int> parrentIndex = new Stack<int>();
             int count = 0;
-            GreenNode toInsert = replacement._green;
+            GreenCrawlSyntaxNode toInsert = replacement.Green;
             CrawlSyntaxNode self = this;
             while (self.Parent != null)
             {
                 parrentIndex.Push(self.IndexInParent);
-                toInsert = self.Parent._green.WithReplacedChild(toInsert, self.IndexInParent);
+                toInsert = self.Parent.Green.WithReplacedChild(toInsert, self.IndexInParent);
                 self = self.Parent;
                 count++;
             }
@@ -141,7 +141,7 @@ namespace libcompiler.SyntaxTree.Nodes
 
         public override string ToString()
         {
-            return _green.Type.ToString();
+            return Green.Type.ToString();
         }
     }
 }

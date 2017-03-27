@@ -6,7 +6,7 @@ namespace libcompiler.SyntaxTree.Nodes
 {
     public class ListNode<T> : CrawlSyntaxNode, IReadOnlyList<T> where T : CrawlSyntaxNode
     {
-        public ListNode(CrawlSyntaxNode parent, GreenNode self, int indexInParent) : base(parent, self, indexInParent)
+        public ListNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             _childNodes = new T[self.ChildCount];
         }
@@ -42,6 +42,11 @@ namespace libcompiler.SyntaxTree.Nodes
         public override CrawlSyntaxNode GetChildAt(int index)
         {
             return this[index];
+        }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()} <{typeof(T).Name}>";
         }
     }
 }

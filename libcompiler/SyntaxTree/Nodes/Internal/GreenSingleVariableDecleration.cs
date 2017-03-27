@@ -3,12 +3,12 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class SingleVariableDecleration : GreenNode
+    public class GreenSingleVariableDecleration : GreenCrawlSyntaxNode
     {
-        public VariableNode Identifier { get; }
-        public ExpressionNode DefaultValue { get; }
+        public GreenVariableNode Identifier { get; }
+        public GreenExpressionNode DefaultValue { get; }
 
-        public SingleVariableDecleration(Interval interval, VariableNode identifier, ExpressionNode defaultValue = null) : base(NodeType.VariableDeclerationSingle, interval)
+        public GreenSingleVariableDecleration(Interval interval, GreenVariableNode identifier, GreenExpressionNode defaultValue = null) : base(NodeType.VariableDeclerationSingle, interval)
         {
             Identifier = identifier;
             DefaultValue = defaultValue;
@@ -17,7 +17,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             ChildCount = defaultValue == null ? 1 : 2;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             switch (slot)
             {
@@ -25,7 +25,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
                 case 1: return DefaultValue;
 
                 default:
-                    return default(GreenNode);
+                    return default(GreenCrawlSyntaxNode);
             }
         }
 
@@ -34,12 +34,12 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.SingleVariableDecleration(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
             switch (index)
             {
-                case 0: return new SingleVariableDecleration(Interval, (VariableNode) newChild, DefaultValue);
-                case 1: return new SingleVariableDecleration(Interval, Identifier, (ExpressionNode) newChild);
+                case 0: return new GreenSingleVariableDecleration(Interval, (GreenVariableNode) newChild, DefaultValue);
+                case 1: return new GreenSingleVariableDecleration(Interval, Identifier, (GreenExpressionNode) newChild);
                 default: throw new ArgumentOutOfRangeException();
             }
         }

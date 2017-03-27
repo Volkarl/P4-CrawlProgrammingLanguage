@@ -3,15 +3,15 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class SelectiveFlowNode : FlowNode
+    public class GreenSelectiveFlowNode : GreenFlowNode
     {
-        public ExpressionNode Check { get; }
-        public BlockNode Primary { get; }
-        public BlockNode Alternative { get; }
+        public GreenExpressionNode Check { get; }
+        public GreenBlockNode Primary { get; }
+        public GreenBlockNode Alternative { get; }
 
         
 
-        public SelectiveFlowNode(Interval interval, NodeType type, ExpressionNode check, BlockNode primary, BlockNode alternative) : base(type, interval)
+        public GreenSelectiveFlowNode(Interval interval, NodeType type, GreenExpressionNode check, GreenBlockNode primary, GreenBlockNode alternative) : base(type, interval)
         {
             Check = check;
             Primary = primary;
@@ -20,7 +20,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             ChildCount = alternative == null ? 2 : 3;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             switch (slot)
             {
@@ -29,7 +29,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
                 case 2: return Alternative;
 
                 default:
-                    return default(GreenNode);
+                    return default(GreenCrawlSyntaxNode);
             }
         }
 
@@ -38,13 +38,13 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.SelectiveFlowNode(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
             switch (index)
             {
-                case 0: return new SelectiveFlowNode(Interval, Type, (ExpressionNode) newChild, Primary, Alternative);
-                case 1: return new SelectiveFlowNode(Interval, Type, Check, (BlockNode) newChild, Alternative);
-                case 2: return new SelectiveFlowNode(Interval, Type, Check, Primary, (BlockNode) newChild);
+                case 0: return new GreenSelectiveFlowNode(Interval, Type, (GreenExpressionNode) newChild, Primary, Alternative);
+                case 1: return new GreenSelectiveFlowNode(Interval, Type, Check, (GreenBlockNode) newChild, Alternative);
+                case 2: return new GreenSelectiveFlowNode(Interval, Type, Check, Primary, (GreenBlockNode) newChild);
 
                 default:
                     throw new ArgumentOutOfRangeException();

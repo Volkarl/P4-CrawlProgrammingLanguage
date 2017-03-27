@@ -2,26 +2,26 @@
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public abstract class GreenNode
+    public abstract class GreenCrawlSyntaxNode
     {
         public NodeType Type { get; }
         public Interval Interval { get; }
 
         public int ChildCount { get; protected set; } = 2;
 
-        public abstract GreenNode GetChildAt(int slot);
+        public abstract GreenCrawlSyntaxNode GetChildAt(int slot);
 
         /// <summary>
         /// Create new red representation of node with specified parent.
         /// </summary>
         public abstract CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int indexInParent);
 
-        protected GreenNode(NodeType type, Interval interval)
+        protected GreenCrawlSyntaxNode(NodeType type, Interval interval)
         {
             Type = type;
             Interval = interval;
         }
 
-        internal abstract GreenNode WithReplacedChild(GreenNode newChild, int index);
+        internal abstract GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index);
     }
 }

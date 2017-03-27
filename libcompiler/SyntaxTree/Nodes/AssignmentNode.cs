@@ -20,7 +20,7 @@ namespace libcompiler.SyntaxTree.Nodes
         /// </summary>
         public ExpressionNode Value => GetRed(ref _value, 1);
 
-        public AssignmentNode(CrawlSyntaxNode parent, GreenNode self, int indexInParent) : base(parent, self, indexInParent)
+        public AssignmentNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent) : base(parent, self, indexInParent)
         {
 
         }

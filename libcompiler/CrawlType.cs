@@ -9,5 +9,10 @@
         {
             Textdef = textdef;
         }
+
+        public override string ToString()
+        {
+            return Textdef;
+        }
     }
 }

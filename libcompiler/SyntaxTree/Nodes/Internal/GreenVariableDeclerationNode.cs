@@ -3,18 +3,18 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class VariableDeclerationNode : DeclerationNode
+    public class GreenVariableDeclerationNode : GreenDeclerationNode
     {
-        public TypeNode DeclerationType { get; }
-        public ListNode<Nodes.SingleVariableDecleration> Declerations { get; }
+        public GreenTypeNode DeclerationType { get; }
+        public GreenListNode<Nodes.SingleVariableDecleration> Declerations { get; }
 
-        public VariableDeclerationNode(Interval interval, ProtectionLevel protectionLevel, TypeNode declerationType, ListNode<Nodes.SingleVariableDecleration> declerations) : base(interval, NodeType.VariableDecleration, protectionLevel)
+        public GreenVariableDeclerationNode(Interval interval, ProtectionLevel protectionLevel, GreenTypeNode declerationType, GreenListNode<Nodes.SingleVariableDecleration> declerations) : base(interval, NodeType.VariableDecleration, protectionLevel)
         {
             DeclerationType = declerationType;
             Declerations = declerations;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             switch (slot)
             {
@@ -22,7 +22,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
                 case 1: return Declerations;
 
                 default:
-                    return default(GreenNode);
+                    return default(GreenCrawlSyntaxNode);
             }
         }
 
@@ -31,12 +31,12 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.VariableDeclerationNode(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
             switch (index)
             {
-                case 0: return new VariableDeclerationNode(Interval, ProtectionLevel, (TypeNode) newChild, Declerations);
-                case 1: return new VariableDeclerationNode(Interval, ProtectionLevel, DeclerationType, (ListNode<Nodes.SingleVariableDecleration>) newChild);
+                case 0: return new GreenVariableDeclerationNode(Interval, ProtectionLevel, (GreenTypeNode) newChild, Declerations);
+                case 1: return new GreenVariableDeclerationNode(Interval, ProtectionLevel, DeclerationType, (GreenListNode<Nodes.SingleVariableDecleration>) newChild);
                 default: throw new ArgumentOutOfRangeException();
             }
         }

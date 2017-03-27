@@ -10,7 +10,7 @@ namespace libcompiler.SyntaxTree.Nodes
         private ListNode<ImportNode> _imports;
         private BlockNode _code;
 
-        public TranslationUnitNode(CrawlSyntaxNode parent, GreenNode self, int indexInParent) : base(parent, self, indexInParent)
+        public TranslationUnitNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             
         }

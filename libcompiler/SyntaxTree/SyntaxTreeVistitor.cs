@@ -50,7 +50,7 @@ namespace libcompiler.SyntaxTree
                     VisitVariableDeclerationSingle((SingleVariableDecleration) node);
                     break;
                 case NodeType.FunctionDecleration:
-                    VisitFunctionDecleration((FunctionDeclerationNode) node);
+                    VisitFunctionDecleration((MethodDeclerationNode) node);
                     break;
                 case NodeType.Block:
                     VisitBlock((BlockNode) node);
@@ -70,15 +70,38 @@ namespace libcompiler.SyntaxTree
                 case NodeType.NodeList:
                     VisitList((IEnumerable<CrawlSyntaxNode>) node);
                     break;
+                case NodeType.Type:
+                    VisitType((TypeNode) node);
+                    break;
                 case NodeType.UnaryExpression:
                     VisitUnary((UnaryNode) node);
                     break;
+                case NodeType.GenericUnpack:
+                    VisitGenericUnpack((GenericsUnpackNode) node);
+                    break;
+                case NodeType.GenericParametersNode:
+                    VisitGenericParameter((GenericParameterNode) node);
+                    break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(node.ToString());
             }
         }
 
-        private void VisitImports(ListNode<ImportNode> node)
+        private void VisitGenericParameter(GenericParameterNode node)
+        {
+        }
+
+        protected virtual void VisitType(TypeNode node)
+        {
+        }
+
+        protected virtual void VisitGenericUnpack(GenericsUnpackNode node)
+        {
+            Visit(node.Target);
+            Visit(node.Generics);
+        }
+
+        protected virtual void VisitImports(ListNode<ImportNode> node)
         {
             foreach (ImportNode n in node)
             {
@@ -160,13 +183,15 @@ namespace libcompiler.SyntaxTree
             Visit(node.Arguments);
         }
 
-        protected virtual void VisitFunctionDecleration(FunctionDeclerationNode node)
+        protected virtual void VisitFunctionDecleration(MethodDeclerationNode node)
         {
+            Visit(node.GenericParameters);
             Visit(node.BodyBlock);
         }
 
         protected virtual void VisitVariableDeclerationSingle(SingleVariableDecleration node)
         {
+            Visit(node.Identifier);
             if(node.DefaultValue != null)
                 Visit(node.DefaultValue);
         }
@@ -178,6 +203,7 @@ namespace libcompiler.SyntaxTree
 
         protected virtual void VisitClassDecleration(ClassDeclerationNode node)
         {
+            Visit(node.GenericParameters);
             Visit(node.BodyBlock);
         }
 

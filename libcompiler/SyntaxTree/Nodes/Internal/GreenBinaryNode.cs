@@ -3,19 +3,19 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class BinaryNode : ExpressionNode
+    public class GreenBinaryNode : GreenExpressionNode
     {
-        public ExpressionNode LeftHandSide { get; }
-        public ExpressionNode RightHandSide { get; }
+        public GreenExpressionNode LeftHandSide { get; }
+        public GreenExpressionNode RightHandSide { get; }
 
-        public BinaryNode(Interval interval, ExpressionNode lhs,
-            ExpressionNode rhs, ExpressionType type) : base(interval, NodeType.BinaryExpression, type)
+        public GreenBinaryNode(Interval interval, GreenExpressionNode lhs,
+            GreenExpressionNode rhs, ExpressionType type) : base(interval, NodeType.BinaryExpression, type)
         {
             LeftHandSide = lhs;
             RightHandSide = rhs;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             switch (slot)
             {
@@ -31,12 +31,12 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.BinaryNode(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
             if(index == 0)
-                return new BinaryNode(this.Interval, (ExpressionNode) newChild, RightHandSide, ExpressionType);
+                return new GreenBinaryNode(this.Interval, (GreenExpressionNode) newChild, RightHandSide, ExpressionType);
             else if(index == 1)
-                return new BinaryNode(this.Interval, LeftHandSide, (ExpressionNode)newChild, ExpressionType);
+                return new GreenBinaryNode(this.Interval, LeftHandSide, (GreenExpressionNode)newChild, ExpressionType);
 
             throw new ArgumentOutOfRangeException();
         }

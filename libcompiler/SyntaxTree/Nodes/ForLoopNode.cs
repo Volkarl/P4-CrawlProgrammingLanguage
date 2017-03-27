@@ -12,7 +12,7 @@
         public ExpressionNode Iteratior => GetRed(ref _iterator, 2);
         public BlockNode Block => GetRed(ref _block, 3);
 
-        public ForLoopNode(CrawlSyntaxNode parent, Internal.FlowNode self, int indexInParent) : base(parent, self, indexInParent) 
+        public ForLoopNode(CrawlSyntaxNode parent, Internal.GreenFlowNode self, int indexInParent) : base(parent, self, indexInParent) 
         {
             
         }

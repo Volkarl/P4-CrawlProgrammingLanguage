@@ -180,7 +180,7 @@ namespace libcompiler.SyntaxTree.Parser
             }
             if (declpart.RuleIndex == CrawlParser.RULE_function_decleration)
             {
-                return ParseFunctionDecleration(declpart, protectionLevel, rule.SourceInterval);
+                return ParseMethodDecleration(declpart, protectionLevel, rule.SourceInterval);
             }
             else if (declpart.RuleIndex == CrawlParser.RULE_variable_declerations)
             {
@@ -193,18 +193,40 @@ namespace libcompiler.SyntaxTree.Parser
         #region DeclerationSubs
 
 
-        private static DeclerationNode ParseFunctionDecleration(RuleContext classPart, ProtectionLevel protectionLevel, Interval interval)
+        private static DeclerationNode ParseMethodDecleration(RuleContext methodContext, ProtectionLevel protectionLevel, Interval interval)
         {
-            TypeNode type = ParseType((CrawlParser.TypeContext) classPart.GetChild(0));
-            ITerminalNode identifier = (ITerminalNode) classPart.GetChild(1);
-            ITerminalNode assignment = (ITerminalNode) classPart.GetChild(2);
-            RuleContext body = (RuleContext) classPart.GetChild(3).GetChild(1);
+            TypeNode type =
+                ParseType((CrawlParser.TypeContext) methodContext.GetChild(0));
 
-            //Not sure if this can ever happen, but if it happens something went really wrong
-            if (identifier.Symbol.Type != CrawlLexer.IDENTIFIER) throw new CrawlImpossibleStateException("Unexpected symbol", interval);
-            if (assignment.Symbol.Type != CrawlLexer.ASSIGNMENT_SYMBOL) throw new CrawlImpossibleStateException("Unexpected symbol", interval);
+            int identifierIndex =
+                methodContext.ChildCount - 2 -1;    //Identifier is always second last. And then one for the zero-indexed arrays.
 
-            return NodeFactory.Function(interval, protectionLevel, type, ParseVariableNode(identifier), ParseBlockNode(body));
+            ITerminalNode identifier =
+                (ITerminalNode) methodContext.GetChild(identifierIndex);
+
+            CrawlParser.Generic_parametersContext genericsContext =
+                methodContext.GetChild(2) as CrawlParser.Generic_parametersContext;
+
+            List<GenericParameterNode> genericParameters = new List<GenericParameterNode>();
+            if(genericsContext != null)
+                genericParameters.AddRange(ParseGenericParameters(genericsContext));
+            RuleContext body =
+                (RuleContext) methodContext.LastChild().GetChild(1);
+
+            return NodeFactory.Function(interval, protectionLevel, type, genericParameters, ParseVariableNode(identifier), ParseBlockNode(body));
+        }
+
+        private static IEnumerable<GenericParameterNode> ParseGenericParameters(CrawlParser.Generic_parametersContext genericsContext)
+        {
+            for (int i = 1; i < genericsContext.ChildCount; i += 2)
+            {
+                yield return ParseGenericParameter((CrawlParser.GenericContext)genericsContext.GetChild(i));
+            }
+        }
+
+        private static GenericParameterNode ParseGenericParameter(CrawlParser.GenericContext generic)
+        {
+            return NodeFactory.GenericsParameterNode(generic.SourceInterval, generic.GetChild(0).GetText(), generic.GetChild(2)?.GetText());
         }
 
         private static VariableNode ParseVariableNode(ITerminalNode node)
@@ -212,7 +234,7 @@ namespace libcompiler.SyntaxTree.Parser
             return NodeFactory.VariableNode(node.SourceInterval, node.GetText());
         }
 
-        private static TokenNode ParseTokenNode(ITerminalNode node)
+        private static IdentifierNode ParseTokenNode(ITerminalNode node)
         {
             return NodeFactory.TokenNode(node.SourceInterval, node.GetText());
         }
@@ -259,22 +281,33 @@ namespace libcompiler.SyntaxTree.Parser
 
         private static DeclerationNode ParseClassDecleration(RuleContext classPart, ProtectionLevel protectionLevel, Interval interval)
         {
+            //The second last child. And one for the zero-indexing.
+            int genericParametersIndex = classPart.ChildCount - 2 -1;
+
             ITerminalNode tn1 = (ITerminalNode)classPart.GetChild(0);
+
             ITerminalNode tn2 = (ITerminalNode)classPart.GetChild(1);
-            RuleContext body = (RuleContext) classPart.GetChild(3);
 
+            CrawlParser.Generic_parametersContext genericParametersContext =
+                classPart.GetChild(genericParametersIndex) as CrawlParser.Generic_parametersContext;
 
-            if(classPart.ChildCount != 4) throw new NotImplementedException("No class inheritance");
+            RuleContext body = (RuleContext) classPart.LastChild();
+
+            List<GenericParameterNode> genericParameters = new List<GenericParameterNode>();
+
+            if (genericParametersContext != null)
+                genericParameters.AddRange(ParseGenericParameters(genericParametersContext));
+
             if(tn1.Symbol.Type != CrawlLexer.CLASS) throw new CrawlImpossibleStateException("Trying to parse a class that is not a class", interval);
 
             BlockNode bodyBlock = ParseBlockNode(body);
 
-            return NodeFactory.ClassDecleration(interval, protectionLevel, ParseTokenNode(tn2), bodyBlock);
+            return NodeFactory.ClassDecleration(interval, protectionLevel, ParseTokenNode(tn2), genericParameters, bodyBlock);
         }
 
         #endregion
 
-        private static TypeNode ParseType(CrawlParser.TypeContext type)
+        public static TypeNode ParseType(CrawlParser.TypeContext type)
         {
            return NodeFactory.Type(type.SourceInterval, new CrawlType(type.GetText()));
         }

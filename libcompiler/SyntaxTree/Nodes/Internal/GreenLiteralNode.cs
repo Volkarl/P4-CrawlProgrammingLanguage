@@ -3,12 +3,12 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class LiteralNode : ExpressionNode
+    public class GreenLiteralNode : GreenExpressionNode
     {
         public string Value { get; }
         public LiteralType LiteralType { get; }
 
-        public LiteralNode(Interval interval, string value, LiteralType literalType)
+        public GreenLiteralNode(Interval interval, string value, LiteralType literalType)
             : base(interval, NodeType.Literal, ExpressionType.Constant)
         {
             Value = value;
@@ -23,9 +23,9 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return Value;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
-            return default(GreenNode);
+            return default(GreenCrawlSyntaxNode);
         }
 
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int indexInParent)
@@ -33,7 +33,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.LiteralNode(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
             throw new ArgumentOutOfRangeException();
         }

@@ -3,11 +3,11 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class MultiChildExpressionNode : ExpressionNode
+    public class GreenMultiChildExpressionNode : GreenExpressionNode
     {
-        public ListNode<Nodes.ExpressionNode> Arguments { get; }
+        public GreenListNode<Nodes.ExpressionNode> Arguments { get; }
 
-        public MultiChildExpressionNode(Interval interval, ExpressionType expressionType, ListNode<Nodes.ExpressionNode> arguments) : base(interval, NodeType.MultiExpression, expressionType)
+        public GreenMultiChildExpressionNode(Interval interval, ExpressionType expressionType, GreenListNode<Nodes.ExpressionNode> arguments) : base(interval, NodeType.MultiExpression, expressionType)
         {
             Arguments = arguments;
             ChildCount = 1;
@@ -18,11 +18,11 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return ExpressionType.ToString();
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             if (slot == 0) return Arguments;
 
-            return default(GreenNode);
+            return default(GreenCrawlSyntaxNode);
         }
 
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int indexInParent)
@@ -30,10 +30,10 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.MultiChildExpressionNode(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
             if(index == 0)
-                return new MultiChildExpressionNode(this.Interval, ExpressionType, (ListNode<Nodes.ExpressionNode>) newChild);
+                return new GreenMultiChildExpressionNode(this.Interval, ExpressionType, (GreenListNode<Nodes.ExpressionNode>) newChild);
 
             throw new ArgumentOutOfRangeException();
         }

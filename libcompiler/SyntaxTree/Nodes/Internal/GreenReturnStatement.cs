@@ -3,21 +3,21 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class ReturnStatement : GreenNode
+    public class GreenReturnStatement : GreenCrawlSyntaxNode
     {
-        public ExpressionNode ReturnValue { get; }
+        public GreenExpressionNode ReturnValue { get; }
 
-        public ReturnStatement(Interval interval, ExpressionNode returnValue = null)
+        public GreenReturnStatement(Interval interval, GreenExpressionNode returnValue = null)
             : base(NodeType.Return, interval)
         {
             ReturnValue = returnValue;
             ChildCount = returnValue == null ? 0 : 1;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             if(slot == 0) return ReturnValue;
-            return default(GreenNode);
+            return default(GreenCrawlSyntaxNode);
         }
 
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int indexInParent)
@@ -25,11 +25,11 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.ReturnStatement(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
             switch (index)
             {
-                case 0: return new ReturnStatement(Interval, (ExpressionNode) newChild);
+                case 0: return new GreenReturnStatement(Interval, (GreenExpressionNode) newChild);
                 default: throw new ArgumentOutOfRangeException();
             }
         }

@@ -11,16 +11,9 @@ namespace libcompiler.SyntaxTree.Nodes
         public VariableNode Identifier => GetRed(ref _id, 0);
         public ExpressionNode DefaultValue => GetRed(ref _default, 1);
 
-        public SingleVariableDecleration(CrawlSyntaxNode parent, GreenNode self, int indexInParent) : base(parent, self, indexInParent)
+        public SingleVariableDecleration(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             
-        }
-
-        public override string ToString()
-        {
-            if (DefaultValue == null)
-                return Identifier.Name;
-            else return Identifier.Name + " = ";
         }
 
         public override CrawlSyntaxNode GetChildAt(int index)

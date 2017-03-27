@@ -5,7 +5,7 @@ namespace libcompiler.SyntaxTree.Nodes
         private ExpressionNode _retval;
         public ExpressionNode ReturnValue => GetRed(ref _retval, 0);
 
-        public ReturnStatement(CrawlSyntaxNode parent, Internal.ReturnStatement self, int indexInParent) : base(parent, self, indexInParent)
+        public ReturnStatement(CrawlSyntaxNode parent, Internal.GreenReturnStatement self, int indexInParent) : base(parent, self, indexInParent)
         {
             
         }

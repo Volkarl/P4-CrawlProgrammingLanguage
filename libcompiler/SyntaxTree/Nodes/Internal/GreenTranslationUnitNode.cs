@@ -3,19 +3,19 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class TranslationUnitNode : GreenNode
+    public class GreenTranslationUnitNode : GreenCrawlSyntaxNode
     {
-        public ListNode<Nodes.ImportNode> Imports { get; }
-        public BlockNode Body { get; }
+        public GreenListNode<Nodes.ImportNode> Imports { get; }
+        public GreenBlockNode Body { get; }
 
-        public TranslationUnitNode(Interval interval, ListNode<Nodes.ImportNode> imports,
-            BlockNode block) : base(NodeType.TranslationUnit, interval)
+        public GreenTranslationUnitNode(Interval interval, GreenListNode<Nodes.ImportNode> imports,
+            GreenBlockNode greenBlock) : base(NodeType.TranslationUnit, interval)
         {
             Imports = imports;
-            Body = block;
+            Body = greenBlock;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             switch (slot)
             {
@@ -31,12 +31,12 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.TranslationUnitNode(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
             if(index == 0)
-                return new TranslationUnitNode(this.Interval, (ListNode<Nodes.ImportNode>)newChild, Body);
+                return new GreenTranslationUnitNode(this.Interval, (GreenListNode<Nodes.ImportNode>)newChild, Body);
             else if(index == 1)
-                return new TranslationUnitNode(this.Interval, Imports, (BlockNode)newChild);
+                return new GreenTranslationUnitNode(this.Interval, Imports, (GreenBlockNode)newChild);
 
             throw new ArgumentOutOfRangeException();
         }

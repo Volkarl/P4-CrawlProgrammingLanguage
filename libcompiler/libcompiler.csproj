@@ -45,11 +45,16 @@
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
+    <Compile Include="SyntaxTree\INodeThatTakesGenericParameters.cs" />
     <Compile Include="SyntaxTree\Nodes\AssignmentNode.cs" />
     <Compile Include="SyntaxTree\Nodes\BinaryNode.cs" />
     <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CallishNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\GenericParameterNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\GenericsUnpackNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\GreenGenericParameterNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\GreenGenericUnpackNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenUnaryNode.cs" />
     <Compile Include="SyntaxTree\Nodes\TranslationUnitNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CrawlSyntaxNode.cs" />
@@ -66,7 +71,7 @@
     <Compile Include="SyntaxTree\ExpressionType.cs" />
     <Compile Include="SyntaxTree\Nodes\FlowNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ForLoopNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\FunctionDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\MethodDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ImportNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenAssignmentNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenBinaryNode.cs" />
@@ -78,7 +83,7 @@
     <Compile Include="SyntaxTree\Nodes\Internal\GreenExpressionNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenFlowNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenForLoopNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\GreenFunctionDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\GreenMethodDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenCrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenImportNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenListNode.cs" />
@@ -87,7 +92,7 @@
     <Compile Include="SyntaxTree\Nodes\Internal\GreenReturnStatement.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenSelectiveFlowNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenSingleVariableDecleration.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\GreenTokenNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\GreenIdentifierNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenTypeNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenVariableDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenVariableNode.cs" />
@@ -98,7 +103,7 @@
     <Compile Include="SyntaxTree\NodeFactory.cs" />
     <Compile Include="CrawlImpossibleStateException.cs" />
     <Compile Include="CrawlSyntaxException.cs" />
-    <Compile Include="SyntaxTree\Nodes\TokenNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\IdentifierNode.cs" />
     <Compile Include="SyntaxTree\Nodes\TypeNode.cs" />
     <Compile Include="SyntaxTree\Nodes\UnaryNode.cs" />
     <Compile Include="SyntaxTree\Parser\ExpressionParser.cs" />

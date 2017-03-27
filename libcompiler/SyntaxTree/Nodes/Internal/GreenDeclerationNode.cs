@@ -2,11 +2,11 @@
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public abstract class DeclerationNode : GreenNode
+    public abstract class GreenDeclerationNode : GreenCrawlSyntaxNode
     {
         public ProtectionLevel ProtectionLevel { get; }
 
-        protected DeclerationNode(Interval interval, NodeType type, ProtectionLevel protectionLevel) : base(type, interval)
+        protected GreenDeclerationNode(Interval interval, NodeType type, ProtectionLevel protectionLevel) : base(type, interval)
         {
             ProtectionLevel = protectionLevel;
         }

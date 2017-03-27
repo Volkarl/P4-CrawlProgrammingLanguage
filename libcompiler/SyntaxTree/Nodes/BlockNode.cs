@@ -9,7 +9,7 @@ namespace libcompiler.SyntaxTree.Nodes
     {
         //TODO: This would be a good place to save scope information.
         
-        public BlockNode(CrawlSyntaxNode parent, GreenNode self, int indexInParent)
+        public BlockNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent)
             : base(parent, self, indexInParent)
         {
         }

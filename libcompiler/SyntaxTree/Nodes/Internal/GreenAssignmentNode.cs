@@ -3,19 +3,19 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    class AssignmentNode : GreenNode
+    class GreenAssignmentNode : GreenCrawlSyntaxNode
     {
-        public ExpressionNode Target { get; }
-        public ExpressionNode Value { get; }
+        public GreenExpressionNode Target { get; }
+        public GreenExpressionNode Value { get; }
 
-        public AssignmentNode(Interval interval, ExpressionNode target,
-            ExpressionNode block) : base(NodeType.Assignment, interval)
+        public GreenAssignmentNode(Interval interval, GreenExpressionNode target,
+            GreenExpressionNode block) : base(NodeType.Assignment, interval)
         {
             Target = target;
             Value = block;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             switch (slot)
             {
@@ -31,12 +31,12 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.AssignmentNode(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
             if(index == 0)
-                return new AssignmentNode(this.Interval, (ExpressionNode) newChild, Value);
+                return new GreenAssignmentNode(this.Interval, (GreenExpressionNode) newChild, Value);
             else if(index == 1)
-                return new AssignmentNode(this.Interval, Target, (ExpressionNode) newChild);
+                return new GreenAssignmentNode(this.Interval, Target, (GreenExpressionNode) newChild);
 
             throw new IndexOutOfRangeException();
         }

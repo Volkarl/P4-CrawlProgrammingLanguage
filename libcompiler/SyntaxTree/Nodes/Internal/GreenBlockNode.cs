@@ -4,9 +4,9 @@ using Antlr4.Runtime.Misc;
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
     
-    public class BlockNode : ListNode<CrawlSyntaxNode>
+    public class GreenBlockNode : GreenListNode<CrawlSyntaxNode>
     {   
-        public BlockNode(Interval interval, IEnumerable<GreenNode> children) : base(interval, children)
+        public GreenBlockNode(Interval interval, IEnumerable<GreenCrawlSyntaxNode> children) : base(interval, children)
         {
             
         }
@@ -16,13 +16,13 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.BlockNode(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
-            GreenNode[] newArray = ChildCopy();
+            GreenCrawlSyntaxNode[] newArray = ChildCopy();
 
             newArray[index] = newChild;
 
-            return new BlockNode(Interval, newArray);
+            return new GreenBlockNode(Interval, newArray);
         }
     }
 }

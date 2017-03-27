@@ -24,6 +24,7 @@
         Negate,
         Not,
         Divide,
-        Modulous
+        Modulous,
+        GenericUnpack
     }
 }

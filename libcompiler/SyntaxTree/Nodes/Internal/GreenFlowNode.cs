@@ -2,9 +2,9 @@
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public abstract class FlowNode : GreenNode
+    public abstract class GreenFlowNode : GreenCrawlSyntaxNode
     {
-        protected FlowNode(NodeType type, Interval interval)
+        protected GreenFlowNode(NodeType type, Interval interval)
             : base(type, interval)
         {
         }

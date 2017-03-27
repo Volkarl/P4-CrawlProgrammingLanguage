@@ -2,7 +2,7 @@
 {
     public class TypeNode : CrawlSyntaxNode
     {
-        public TypeNode(CrawlSyntaxNode parent, Internal.TypeNode self, int indexInParent) : base(parent, self, indexInParent)
+        public TypeNode(CrawlSyntaxNode parent, Internal.GreenTypeNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             ExportedType = self.ExportedType;
         }
@@ -11,6 +11,11 @@
         public override CrawlSyntaxNode GetChildAt(int index)
         {
             return default(CrawlSyntaxNode);
+        }
+
+        public override string ToString()
+        {
+            return ExportedType.ToString();
         }
     }
 }

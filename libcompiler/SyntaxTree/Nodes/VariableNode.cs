@@ -4,7 +4,7 @@
     {
         public string Name { get; }
 
-        public VariableNode(CrawlSyntaxNode parent, Internal.VariableNode self, int indexInParent) : base(parent, self, indexInParent)
+        public VariableNode(CrawlSyntaxNode parent, Internal.GreenVariableNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             Name = self.Name;
         }

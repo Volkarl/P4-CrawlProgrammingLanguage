@@ -15,7 +15,7 @@
         public ExpressionNode LeftHandSide => GetRed(ref _lhs, 0);
         public ExpressionNode RightHandSide => GetRed(ref _rhs, 1);
 
-        public BinaryNode(CrawlSyntaxNode parent, Internal.ExpressionNode self, int indexInParent)
+        public BinaryNode(CrawlSyntaxNode parent, Internal.GreenExpressionNode self, int indexInParent)
             : base(parent, self, indexInParent)
         {
             

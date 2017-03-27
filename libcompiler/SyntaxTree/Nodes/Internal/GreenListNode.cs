@@ -5,37 +5,37 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class ListNode<T> : GreenNode where T : CrawlSyntaxNode
+    public class GreenListNode<T> : GreenCrawlSyntaxNode where T : CrawlSyntaxNode
     {
-        private readonly GreenNode[] _children;
+        private readonly GreenCrawlSyntaxNode[] _children;
 
-        public ListNode(Interval interval, IEnumerable<GreenNode> children) : base(NodeType.NodeList, interval)
+        public GreenListNode(Interval interval, IEnumerable<GreenCrawlSyntaxNode> children) : base(NodeType.NodeList, interval)
         {
             _children = children.ToArray();
             ChildCount = _children.Length;
         }
 
-        protected ListNode(Interval interval, GreenNode[] children) : base(NodeType.NodeList, interval)
+        protected GreenListNode(Interval interval, GreenCrawlSyntaxNode[] children) : base(NodeType.NodeList, interval)
         {
             _children = children;
             ChildCount = _children.Length;
         }
 
-        protected GreenNode[] ChildCopy()
+        protected GreenCrawlSyntaxNode[] ChildCopy()
         {
-            GreenNode[] newArray = new GreenNode[ChildCount];
+            GreenCrawlSyntaxNode[] newArray = new GreenCrawlSyntaxNode[ChildCount];
             Array.Copy(_children, newArray, ChildCount);
 
             return newArray;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             if (slot >= 0 || ChildCount > slot)
             {
                 return _children[slot];
             }
-            return default(GreenNode);
+            return default(GreenCrawlSyntaxNode);
         }
 
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int indexInParent)
@@ -43,13 +43,13 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.ListNode<T>(parent, this, indexInParent);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
-            GreenNode[] newArray = ChildCopy();
+            GreenCrawlSyntaxNode[] newArray = ChildCopy();
 
             newArray[index] = newChild;
 
-            return new ListNode<T>(Interval, newArray);
+            return new GreenListNode<T>(Interval, newArray);
         }
     }
 }

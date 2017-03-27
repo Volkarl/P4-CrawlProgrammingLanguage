@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Runtime.InteropServices;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -100,7 +102,13 @@ namespace libcompiler.SyntaxTree.Parser
             if (rule.ChildCount != 3) throw new CrawlImpossibleStateException("SHOULD NOT HAPPEN", rule.SourceInterval);
 
             RuleContext lhs = (RuleContext)rule.GetChild(0);
-            ITerminalNode op = (ITerminalNode)rule.GetChild(1);
+
+            IParseTree opChild = rule.GetChild(1);
+            if (opChild is RuleContext)
+            {
+                opChild = opChild.GetChild(0);
+            }
+            ITerminalNode op = (ITerminalNode)opChild;
             RuleContext rhs = (RuleContext)rule.GetChild(2);
 
             ExpressionNode lhsNode = ParseExpression(lhs);
@@ -189,6 +197,14 @@ namespace libcompiler.SyntaxTree.Parser
                 {
                     VariableNode sub = NodeFactory.VariableAccess(post.GetChild(1).SourceInterval, post.GetChild(1).GetText());
                     node = NodeFactory.MemberAccess(post.SourceInterval, node, sub);
+                }
+                else if (post.RuleIndex == CrawlParser.RULE_generic_unpack_expression)
+                {
+                    List<TypeNode> generics = new List<TypeNode>();
+                    for (int j = 1; j < post.ChildCount; j += 2)
+                        generics.Add(ParseTreeParser.ParseType((CrawlParser.TypeContext) post.GetChild(j)));
+                    node = NodeFactory.GenericsUnpackNode(post.SourceInterval, node, generics);
+
                 }
                 else throw new NotImplementedException("Strange postfix expression");
 

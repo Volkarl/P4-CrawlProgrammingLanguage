@@ -167,31 +167,12 @@ return_statement		: RETURN expression? END_OF_STATEMENT;
 //But this section deals with declearation of anything you can access at a later time
 declaration				: protection_level? (class_declaration | function_decleration | variable_declerations) ;
 
-//The decleartion of a function, or the decleartion of one or more variables and possibly initializing them to a value.
-//It is supposed to be read as 
-//the type, the name
-//  end of statement -> a variable of some type
-//  assignment symbol
-//	  function body  -> its a function;
-//    expression	 -> its a variable with a default value
-//      then read more identifiers, and give them a default value if said exists
-//function_or_variable	: type IDENTIFIER 
-  //                      (
-    //                      END_OF_STATEMENT
-      //                    | 
-        //                  (
-          //                  ASSIGNMENT_SYMBOL 
-            //                (
-              //                function_body 
-                //              | 
-                  //            expression (ITEM_SEPARATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT 
-                    //        ) 
-                      //    ) 
-                        //  |
-                          //(ITEM_SEPARATOR IDENTIFIER (ASSIGNMENT_SYMBOL expression)? )* END_OF_STATEMENT 
-                        //);
 
-function_decleration	: type IDENTIFIER ASSIGNMENT_SYMBOL function_body;
+function_decleration	: type parameters generic_parameters? IDENTIFIER ASSIGNMENT_SYMBOL function_body;
+parameters              : LPARENTHESIS (type IDENTIFIER ( ITEM_SEPARATOR type IDENTIFIER )* )?  RPARENTHESIS;
+generic_parameters      : LANGLEBRACKET generic ( ITEM_SEPARATOR generic )* RANGLEBRACKET;
+generic                 : IDENTIFIER ( INHERITANCE_OPERATOR IDENTIFIER )?;
+
 variable_declerations	: type variable_decl (ITEM_SEPARATOR variable_decl)* END_OF_STATEMENT;
 variable_decl			: IDENTIFIER (ASSIGNMENT_SYMBOL expression)? ;
 
@@ -200,7 +181,7 @@ function_body			: INDENT statements DEDENT;
 
 //Decleartion of a class. A class starts with 'class' (well, translated) then its name, 
 //then plausibly a list of things to inherit from. 
-class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? ASSIGNMENT_SYMBOL class_body;
+class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? generic_parameters? ASSIGNMENT_SYMBOL class_body;
 inheritances			: inheritance (ITEM_SEPARATOR inheritance)* ;
 inheritance				: IDENTIFIER;
 //The class body only allows decleartions, not the broader statements, we don't want to define wth happens with general computation in a class body
@@ -217,14 +198,14 @@ assignment				: (postfix_expression (subfield_expression | index_expression) | a
 //Antlr can maybe acctually deal with this, but we just rewrite it
 //Its a * and not a ? as a function can return a function, ad infinitum....
 
-type					: IDENTIFIER function_type? array_type?;
+type					: IDENTIFIER function_type? array_type? generic_unpack_expression?;
 
 
 //The tailing part if you define a function. ( argument type, optional name, repeat)
 //type_tail			:  | array_type ;
-array_type			: (LBRACKET ITEM_SEPARATOR* RBRACKET)+ ;
-function_type			: (LPARANTHESIS function_arguments?  RPARANTHESIS)+ ;
-function_arguments	: (type IDENTIFIER?) ( ITEM_SEPARATOR type IDENTIFIER? ) *;
+array_type			: (LSQUAREBRACKET ITEM_SEPARATOR* RSQUAREBRACKET)+ ;
+function_type			: (LPARENTHESIS function_type_arguments?  RPARENTHESIS)+ ;
+function_type_arguments	: type ( ITEM_SEPARATOR type ) *;
 
 //Protection level. Just stolen from .NET, as we target CLR
 protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL ;
@@ -245,7 +226,7 @@ or_expression			: and_expression ( OR and_expression )* ;
 
 and_expression			: comparison_expression ( AND comparison_expression )* ;
 
-comparison_expression	: additive_expression (COMPARISON_SYMBOL additive_expression)? ;  //?
+comparison_expression	: additive_expression (comparison_symbol additive_expression)? ;  //?
 
 additive_expression		: multiplicative_expression (ADDITIVE_SYMBOL multiplicative_expression )* ;
 
@@ -253,28 +234,30 @@ multiplicative_expression: exponential_expression (MULTIPLICATIVE_SYMBOL exponen
 
 exponential_expression	: cast_expression (EXPONENT cast_expression)* ;
 
-cast_expression			: ( LPARANTHESIS type RPARANTHESIS ) * unary_expression ;
+cast_expression			: ( LPARENTHESIS type RPARENTHESIS ) * unary_expression ;
 
 unary_expression		: ( unary_symbol )* postfix_expression ;
 
-postfix_expression		: atom ( call_expression | subfield_expression | index_expression )* ;
+postfix_expression		: atom ( call_expression | subfield_expression | index_expression | generic_unpack_expression)* ;
 
-call_expression			: LPARANTHESIS expression_list? RPARANTHESIS ;
+call_expression			: LPARENTHESIS expression_list? RPARENTHESIS ;
 
 subfield_expression		: DOT IDENTIFIER ;
 
-index_expression		: LBRACKET	expression_list RBRACKET ;
+index_expression		: LSQUAREBRACKET	expression_list RSQUAREBRACKET ;
+
+generic_unpack_expression   : LANGLEBRACKET type ( ITEM_SEPARATOR type )* RANGLEBRACKET;
 
 //An atom is an atom, a part that cannot be broken in smaller parts.
 atom					: IDENTIFIER
 						| literal
-						| LPARANTHESIS expression RPARANTHESIS ;
+						| LPARENTHESIS expression RPARENTHESIS ;
 
 ///////////////////////////////////////////////////////////////////////////////
 
 //More nuts and bolts
 //Symbols used for different things. Should maybe be changed to tokens, but Antlr does magic and I don't.
-COMPARISON_SYMBOL		: '>' | '>=' | '==' | '!=' | '<=' | '<' ;
+comparison_symbol		: RANGLEBRACKET | '>=' | '==' | '!=' | '<=' | LANGLEBRACKET ;
 ADDITIVE_SYMBOL			: '+' |MINUS ;
 MULTIPLICATIVE_SYMBOL	: '*' | '/' | '%' ;
 unary_symbol			: INVERT | MINUS;
@@ -327,10 +310,12 @@ FOR_LOOP_SEPERATOR		: 'fra' ;
 ITEM_SEPARATOR			: ',' ;
 ASSIGNMENT_SYMBOL		: '=' ;
 END_OF_STATEMENT		: ';' ;
-LPARANTHESIS			: '(' {opened++;} ;
-RPARANTHESIS			: ')'  {opened--;};
-LBRACKET				: '['  {opened++;};
-RBRACKET				: ']'  {opened--;};
+LPARENTHESIS			: '(' {opened++;} ;
+RPARENTHESIS			: ')'  {opened--;};
+LSQUAREBRACKET			: '['  {opened++;};
+RSQUAREBRACKET			: ']'  {opened--;};
+LANGLEBRACKET           : '<' ;
+RANGLEBRACKET           : '>' ;
 INVERT					: 'ikke' ;
 DOT						: '.' ;
 EXPONENT				: '**' ;

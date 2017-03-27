@@ -7,7 +7,7 @@
         /// </summary>
         public ExpressionType ExpressionType { get; }
 
-        protected ExpressionNode(CrawlSyntaxNode parent, Internal.ExpressionNode self, int indexInParent) : base(parent, self, indexInParent)
+        protected ExpressionNode(CrawlSyntaxNode parent, Internal.GreenExpressionNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             ExpressionType = self.ExpressionType;
         }

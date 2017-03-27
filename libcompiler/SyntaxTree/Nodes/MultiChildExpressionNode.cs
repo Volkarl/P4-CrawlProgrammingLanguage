@@ -5,7 +5,7 @@
         private ListNode<ExpressionNode> _args;
         public ListNode<ExpressionNode> Arguments => GetRed(ref _args, 0);
 
-        public MultiChildExpressionNode(CrawlSyntaxNode parent, Internal.MultiChildExpressionNode self, int indexInParent) : base(parent, self, indexInParent)
+        public MultiChildExpressionNode(CrawlSyntaxNode parent, Internal.GreenMultiChildExpressionNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             
         }
