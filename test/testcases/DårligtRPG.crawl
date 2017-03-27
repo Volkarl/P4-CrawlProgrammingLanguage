@@ -1,6 +1,6 @@
 importer Console;
 
-offentlig klasse Helt = 
+offentlig klasse Helt =
   offentlig tekst Navn;
   offentlig bool ErILive;
   offentligt heltal Sytrke;
@@ -8,13 +8,13 @@ offentlig klasse Helt =
   offentligt heltal Intellligens;
   offentligt heltal Hygiejne;
 
-offentlig klasse Sted = 
+offentlig klasse Sted =
   offentlig tekst() Hændelse;
   offentlig tekst[] MulighederNavne;
   offentlig tekst()[] Muligheder;
 
 offentlig intet(Sted sted) PrintMuligheder =
-  PrintLinje("Du kan:");
+  //PrintLinje("Du kan:");
   for tekst t fra sted.Muligheder
     Print(">>  ");
     PrintLinje(t);
@@ -94,4 +94,3 @@ offentlig tekst() StenSkred =
   for Helt h fra Helte
     h.ErILive = falsk;
   returner "Der sker stenskred. Alle dør.";
-

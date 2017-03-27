@@ -27,7 +27,7 @@ namespace libcompiler.SyntaxTree
         Token,
         Type,
         GenericUnpack,
-        GenericParametersNode
+        GenericParametersNode,
         Reference
     }
 }

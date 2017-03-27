@@ -53,9 +53,12 @@
     <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GenericParameterNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GenericsUnpackNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\GreenAssignmentNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenGenericParameterNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenGenericUnpackNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenUnaryNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\GreenReferenceNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\ReferenceNode.cs" />
     <Compile Include="SyntaxTree\Nodes\TranslationUnitNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxTree.cs" />
@@ -73,7 +76,6 @@
     <Compile Include="SyntaxTree\Nodes\ForLoopNode.cs" />
     <Compile Include="SyntaxTree\Nodes\MethodDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ImportNode.cs" />
-    <Compile Include="SyntaxTree\Nodes\Internal\GreenAssignmentNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenBinaryNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenBlockNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenCallishNode.cs" />
@@ -132,10 +134,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent Condition=" '$(OS)' == 'Unix' ">java -jar /usr/local/lib/antlr-4.6-complete.jar "$(ProjectDir)Crawl.g4" -o  "$(ProjectDir)GeneratedParser" -Dlanguage=CSharp -package libcompiler.Parser -encoding utf8</PreBuildEvent>
-    <PreBuildEvent Condition=" '$(OS)' != 'Unix' ">java org.antlr.v4.Tool "$(ProjectDir)Crawl.g4" -o  "$(ProjectDir)GeneratedParser" -Dlanguage=CSharp -package libcompiler.Parser -encoding utf8</PreBuildEvent>
+    <PreBuildEvent Condition=" '$(OS)' == 'Unix' ">java -jar /usr/local/lib/antlr-4.6-complete.jar "$(ProjectDir)Crawl.g4" -o  "$(ProjectDir)GeneratedParser" -Dlanguage=CSharp -package libcompiler.Parser -encoding utf8 -Werror</PreBuildEvent>
+    <PreBuildEvent Condition=" '$(OS)' != 'Unix' ">java org.antlr.v4.Tool "$(ProjectDir)Crawl.g4" -o  "$(ProjectDir)GeneratedParser" -Dlanguage=CSharp -package libcompiler.Parser -encoding utf8 -Werror</PreBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

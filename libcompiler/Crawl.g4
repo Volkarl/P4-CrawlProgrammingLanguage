@@ -169,7 +169,7 @@ declaration				: protection_level? (class_declaration | function_decleration | v
 
 
 function_decleration	: type parameters generic_parameters? IDENTIFIER ASSIGNMENT_SYMBOL function_body;
-parameters              : LPARENTHESIS (type IDENTIFIER ( ITEM_SEPARATOR type IDENTIFIER )* )?  RPARENTHESIS;
+parameters              : LPARENTHESIS (REFERENCE? type IDENTIFIER ( ITEM_SEPARATOR REFERENCE? type IDENTIFIER )* )?  RPARENTHESIS;
 generic_parameters      : LANGLEBRACKET generic ( ITEM_SEPARATOR generic )* RANGLEBRACKET;
 generic                 : IDENTIFIER ( INHERITANCE_OPERATOR IDENTIFIER )?;
 
@@ -203,8 +203,8 @@ type					: IDENTIFIER function_type? array_type? generic_unpack_expression?;
 
 //The tailing part if you define a function. ( optional reference, argument type, optional name, repeat)
 //type_tail			:  | array_type ;
-array_type			: (LBRACKET ITEM_SEPARATOR* RBRACKET)+ ;
-function_type		: (LPARANTHESIS function_arguments?  RPARANTHESIS)+ ;
+array_type			: (LSQUAREBRACKET ITEM_SEPARATOR* RSQUAREBRACKET)+ ;
+function_type		: (LPARENTHESIS function_arguments?  RPARENTHESIS)+ ;
 function_arguments	: (REFERENCE? type IDENTIFIER?) ( ITEM_SEPARATOR REFERENCE? type IDENTIFIER? ) *;
 
 //Protection level. Just stolen from .NET, as we target CLR
@@ -216,7 +216,7 @@ protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL
 //I don't think i can explain it better, you really need the revelation yourself.
 
 //A list of expressions (function calls ect)
-ref_expression_list		: REFERENCE? expression (ITEM_SEPARATOR REFERENCE expression)* ;
+ref_expression_list		: REFERENCE? expression (ITEM_SEPARATOR REFERENCE? expression)* ;
 
 expression_list			: expression ( ITEM_SEPARATOR expression )* ;
 
@@ -242,7 +242,7 @@ unary_expression		: ( unary_symbol )* postfix_expression ;
 
 postfix_expression		: atom ( call_expression | subfield_expression | index_expression | generic_unpack_expression)* ;
 
-call_expression			: LPARANTHESIS ref_expression_list? RPARANTHESIS ;
+call_expression			: LPARENTHESIS ref_expression_list? RPARENTHESIS ;
 
 subfield_expression		: DOT IDENTIFIER ;
 

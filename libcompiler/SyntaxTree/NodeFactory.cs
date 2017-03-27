@@ -206,7 +206,7 @@ namespace libcompiler.SyntaxTree
         public static AssignmentNode Assignment(Interval interval, ExpressionNode target, ExpressionNode value)
         {
             return (AssignmentNode) Wrap(
-                new _.AssignmentNode(interval, Extract(target), Extract(value)));
+                new _.GreenAssignmentNode(interval, Extract(target), Extract(value)));
         }
 
         public static TranslationUnitNode TranslationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
@@ -311,7 +311,7 @@ namespace libcompiler.SyntaxTree
 
         public static ReferenceNode ReferenceNode(ExpressionNode target)
         {
-            return (ReferenceNode) Wrap(new _.ReferenceNode(Extract(target)));
+            return (ReferenceNode) Wrap(new _.GreenReferenceNode(Extract(target)));
         }
     }
 }

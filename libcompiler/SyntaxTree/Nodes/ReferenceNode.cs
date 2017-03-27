@@ -11,7 +11,7 @@ namespace libcompiler.SyntaxTree.Nodes
         private ExpressionNode _target;
         public ExpressionNode Target => GetRed(ref _target, 0);
 
-        public ReferenceNode(CrawlSyntaxNode parent, Internal.ExpressionNode self, int slot) : base(parent, self, slot)
+        public ReferenceNode(CrawlSyntaxNode parent, Internal.GreenExpressionNode self, int slot) : base(parent, self, slot)
         {
         }
 

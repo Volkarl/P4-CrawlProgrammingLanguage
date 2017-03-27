@@ -7,19 +7,19 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class ReferenceNode : ExpressionNode
+    public class GreenReferenceNode : GreenExpressionNode
     {
-        public ExpressionNode Target { get; }
+        public GreenExpressionNode Target { get; }
 
-        public ReferenceNode(ExpressionNode target) : base(target.Interval, NodeType.Reference, target.ExpressionType)
+        public GreenReferenceNode(GreenExpressionNode target) : base(target.Interval, NodeType.Reference, target.ExpressionType)
         {
             Target = target;
         }
 
-        public override GreenNode GetChildAt(int slot)
+        public override GreenCrawlSyntaxNode GetChildAt(int slot)
         {
             if (slot == 0) return Target;
-            return default(GreenNode);
+            return default(GreenCrawlSyntaxNode);
         }
 
         public override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int slot)
@@ -27,9 +27,9 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             return new Nodes.ReferenceNode(parent, this, slot);
         }
 
-        internal override GreenNode WithReplacedChild(GreenNode newChild, int index)
+        internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
         {
-            if (index == 0) return new ReferenceNode((ExpressionNode) newChild);
+            if (index == 0) return new GreenReferenceNode((GreenExpressionNode) newChild);
             throw new ArgumentOutOfRangeException();
         }
     }
