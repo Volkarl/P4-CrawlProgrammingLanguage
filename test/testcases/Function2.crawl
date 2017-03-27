@@ -2,11 +2,11 @@ import Consol;
 import Consol; 
 
 
-offentlige klasse frø= 
+offentlig klasse frø= 
 
-	heltal resultat;
+	tal resultat;
 
-	offentligt heltal ( heltal)foo=
+	offentligt tal (tal heltal)foo=
 		resultat= resultat+heltal;
 	
 
