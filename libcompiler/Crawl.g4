@@ -201,11 +201,11 @@ assignment				: (postfix_expression (subfield_expression | index_expression) | a
 type					: IDENTIFIER function_type? array_type? generic_unpack_expression?;
 
 
-//The tailing part if you define a function. ( argument type, optional name, repeat)
+//The tailing part if you define a function. ( optional reference, argument type, optional name, repeat)
 //type_tail			:  | array_type ;
-array_type			: (LSQUAREBRACKET ITEM_SEPARATOR* RSQUAREBRACKET)+ ;
-function_type			: (LPARENTHESIS function_type_arguments?  RPARENTHESIS)+ ;
-function_type_arguments	: type ( ITEM_SEPARATOR type ) *;
+array_type			: (LBRACKET ITEM_SEPARATOR* RBRACKET)+ ;
+function_type		: (LPARANTHESIS function_arguments?  RPARANTHESIS)+ ;
+function_arguments	: (REFERENCE? type IDENTIFIER?) ( ITEM_SEPARATOR REFERENCE? type IDENTIFIER? ) *;
 
 //Protection level. Just stolen from .NET, as we target CLR
 protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL ;
@@ -216,6 +216,8 @@ protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL
 //I don't think i can explain it better, you really need the revelation yourself.
 
 //A list of expressions (function calls ect)
+ref_expression_list		: REFERENCE? expression (ITEM_SEPARATOR REFERENCE expression)* ;
+
 expression_list			: expression ( ITEM_SEPARATOR expression )* ;
 
 expression				: range_expression;
@@ -240,7 +242,7 @@ unary_expression		: ( unary_symbol )* postfix_expression ;
 
 postfix_expression		: atom ( call_expression | subfield_expression | index_expression | generic_unpack_expression)* ;
 
-call_expression			: LPARENTHESIS expression_list? RPARENTHESIS ;
+call_expression			: LPARANTHESIS ref_expression_list? RPARANTHESIS ;
 
 subfield_expression		: DOT IDENTIFIER ;
 
@@ -304,6 +306,7 @@ TO						: 'til';
 AND						: 'og' ;
 OR						: 'eller' ;
 IMPORT					: 'importer' ;
+REFERENCE				: 'reference' ;
 
 //Symbols with meaning
 FOR_LOOP_SEPERATOR		: 'fra' ;

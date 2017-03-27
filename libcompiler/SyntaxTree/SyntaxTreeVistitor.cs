@@ -76,6 +76,9 @@ namespace libcompiler.SyntaxTree
                 case NodeType.UnaryExpression:
                     VisitUnary((UnaryNode) node);
                     break;
+                case NodeType.Reference:
+                    VisitReference((ReferenceNode) node);
+                    break;
                 case NodeType.GenericUnpack:
                     VisitGenericUnpack((GenericsUnpackNode) node);
                     break;
@@ -85,6 +88,11 @@ namespace libcompiler.SyntaxTree
                 default:
                     throw new ArgumentOutOfRangeException(node.ToString());
             }
+        }
+
+        private void VisitReference(ReferenceNode node)
+        {
+            Visit(node.Target);
         }
 
         private void VisitGenericParameter(GenericParameterNode node)

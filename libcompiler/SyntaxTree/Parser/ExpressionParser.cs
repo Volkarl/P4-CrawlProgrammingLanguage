@@ -187,7 +187,7 @@ namespace libcompiler.SyntaxTree.Parser
                 RuleContext post = (RuleContext)rule.GetChild(i);
                 if (post.RuleIndex == CrawlParser.RULE_call_expression)
                 {
-                    node = NodeFactory.Call(post.SourceInterval, node, ParseCallTail(post));
+                    node = NodeFactory.Call(post.SourceInterval, node, ParseRefCallTail(post));
                 }
                 else if (post.RuleIndex == CrawlParser.RULE_index_expression)
                 {
@@ -242,7 +242,7 @@ namespace libcompiler.SyntaxTree.Parser
             RuleContext toCall = (RuleContext) rule.GetChild(0);
             RuleContext invocation = (RuleContext) rule.GetChild(1);
 
-            List<ExpressionNode> args = ParseCallTail(invocation);
+            List<ExpressionNode> args = ParseRefCallTail(invocation);
             ExpressionNode target = ParseExpression(toCall);
 
             return NodeFactory.Call(rule.SourceInterval, target, args);
@@ -263,6 +263,21 @@ namespace libcompiler.SyntaxTree.Parser
             throw new NotImplementedException("Not sure when this could happen....");
         }
 
+        public static List<ExpressionNode> ParseRefCallTail(RuleContext rule)
+        {
+            if (rule.ChildCount == 2)
+            {
+                return new List<ExpressionNode>();
+            }
+            else if (rule.ChildCount == 3)
+            {
+                RuleContext expList = (RuleContext)rule.GetChild(1);
+                return ParseRefExpressionList(expList);
+            }
+
+            throw new NotImplementedException("Not sure when this could happen....");
+        }
+
         private static List<ExpressionNode> ParseExpressionList(RuleContext expList)
         {
             List<ExpressionNode> n = new List<ExpressionNode>(expList.ChildCount / 2);
@@ -276,7 +291,35 @@ namespace libcompiler.SyntaxTree.Parser
                     if(itemsep.Symbol.Type != CrawlLexer.ITEM_SEPARATOR) throw new NotImplementedException("Strange stuff in expression list");
                 }
             }
+            return n;
+        }
 
+        private static List<ExpressionNode> ParseRefExpressionList(RuleContext refExpList)
+        {
+            List<ExpressionNode> n = new List<ExpressionNode>();
+            for (int i = 0; i < refExpList.ChildCount; i += 2)
+            {
+                var refTerminalNode = refExpList.GetChild(i) as ITerminalNode;
+                //Console.WriteLine(refTerminalNode);
+                if (refTerminalNode == null) // If there is no reference, then the child is an expression
+                {
+                    n.Add(ParseExpression((RuleContext) refExpList.GetChild(i)));
+                }
+                else if (refTerminalNode.Symbol.Type == CrawlLexer.REFERENCE)
+                {
+                    // If first child is a reference terminal, then the second one is an expression
+                    i = i + 1;
+                    ExpressionNode target = ParseExpression((RuleContext) refExpList.GetChild(i));
+                    n.Add(NodeFactory.ReferenceNode(target));
+                }
+
+                if (i != refExpList.ChildCount - 1) 
+                {
+                    // If there are any additional children, then the next one has to be an item separator
+                    ITerminalNode itemsep = (ITerminalNode) refExpList.GetChild(i + 1);
+                    if (itemsep.Symbol.Type != CrawlLexer.ITEM_SEPARATOR) throw new NotImplementedException("Strange stuff in reference expression list");
+                }
+            }
             return n;
         }
     }

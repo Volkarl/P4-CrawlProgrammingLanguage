@@ -5,4 +5,4 @@ offentlig heltal(heltal værdi) PlusToer =
 heltal værdi = 5;
 heltal nyværdi = PlusToer(reference værdi);
 
-bool success = værdi == reference nyværdi;
+bool success = værdi == nyværdi;

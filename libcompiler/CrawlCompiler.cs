@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using libcompiler.SyntaxTree;
+using libcompiler.SyntaxTree.Nodes;
 
 namespace libcompiler
 {
@@ -23,12 +24,33 @@ namespace libcompiler
             {
                 foreach (CrawlSyntaxTree crawlSyntaxTree in parsedFiles)
                 {
-                    SuperPrettyPrintVisitor printer = new SuperPrettyPrintVisitor(false);
+                    SuperPrettyPrintVisitor printer = new SuperPrettyPrintVisitor(true);
                     string s = printer.PrettyPrint(crawlSyntaxTree.RootNode);
                     output.WriteLine("File {0}:", crawlSyntaxTree.CompilationUnitName);
                     output.WriteLine(s);
                 }
             }
+
+            if (configuration.TargetStage == TargetStage.TypeCheck)
+            {
+                foreach (CrawlSyntaxTree syntaxTree in parsedFiles)
+                {
+                    SuperPrettyPrintVisitor printer = new SuperPrettyPrintVisitor(false, VerySimpleTypeCheck);
+                    string s = printer.PrettyPrint(syntaxTree.RootNode);
+                    output.WriteLine("File {0}:", syntaxTree.CompilationUnitName);
+                    output.WriteLine(s);
+                }
+            }
+
+        }
+
+        private static string VerySimpleTypeCheck(CrawlSyntaxNode arg)
+        {
+            POCTypechecker poc = new POCTypechecker();
+            POCType type = poc.Visit(arg);
+            if (type != POCType.Notype)
+                return type.ToString();
+            else return null;
         }
 
         //TODO: A method that takes same arguments as compile but returns set of decorated ast instead of writing to file
