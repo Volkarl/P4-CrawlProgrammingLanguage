@@ -139,11 +139,11 @@ import_directives		: import_directive* ;
 import_directive		: IMPORT IDENTIFIER (DOT IDENTIFIER)* END_OF_STATEMENT;
 
 //////////////////////////////////////////////////////////////////////////////////
-//Statements make up the program. Functions/Classes, function calls and general computation
+//Statements make up the program. methods/Classes, method calls and general computation
 statements				: ( if_selection | for_loop | while_loop | declaration | assignment | return_statement | side_effect_stmt | END_OF_STATEMENT | NEWLINE ) *;
 
 //////////////////////////////////////////////////////////////////////////////////
-//A side effect statement is a statement with a side effect. Aka a function call. 
+//A side effect statement is a statement with a side effect. Aka a method call. 
 //A later part of the compiler needs to ensure it acctually ends with a call_expression
 //Could _maybe_ be done in the parser, but it requires a lot of lookahead.
 side_effect_stmt		: postfix_expression call_expression END_OF_STATEMENT;
@@ -159,16 +159,16 @@ for_loop				: FOR type IDENTIFIER FOR_LOOP_SEPERATOR expression INDENT statement
 //Plain and simple while loop. While expression is true, whatever
 while_loop				: WHILE expression INDENT statements DEDENT;
 
-//Returns from a function. Optionally return a value
+//Returns from a method. Optionally return a value
 return_statement		: RETURN expression? END_OF_STATEMENT;
-	
+		
 ///////////////////////////////////////////////////////////////////////////////
-//Since we try and treat functions as any other type, we can't quite see if it is a function or variable definiton before we read it.
+//Since we try and treat methods as any other type, we can't quite see if it is a method or variable definiton before we read it.
 //But this section deals with declearation of anything you can access at a later time
-declaration				: protection_level? (class_declaration | function_decleration | variable_declerations) ;
+declaration				: protection_level? (class_declaration | method_decleration | variable_declerations) ;
 
 
-function_decleration	: type parameters generic_parameters? IDENTIFIER ASSIGNMENT_SYMBOL function_body;
+method_decleration	: type parameters generic_parameters? IDENTIFIER ASSIGNMENT_SYMBOL method_body;
 parameters              : LPARENTHESIS (REFERENCE? type IDENTIFIER ( ITEM_SEPARATOR REFERENCE? type IDENTIFIER )* )?  RPARENTHESIS;
 generic_parameters      : LANGLEBRACKET generic ( ITEM_SEPARATOR generic )* RANGLEBRACKET;
 generic                 : IDENTIFIER ( INHERITANCE_OPERATOR IDENTIFIER )?;
@@ -176,11 +176,11 @@ generic                 : IDENTIFIER ( INHERITANCE_OPERATOR IDENTIFIER )?;
 variable_declerations	: type variable_decl (ITEM_SEPARATOR variable_decl)* END_OF_STATEMENT;
 variable_decl			: IDENTIFIER (ASSIGNMENT_SYMBOL expression)? ;
 
-//The body of a function. No great secrets hidden here
-function_body			: INDENT statements DEDENT;
+//The body of a method. No great secrets hidden here
+method_body			: INDENT statements DEDENT;
 
 //Decleartion of a class. A class starts with 'class' (well, translated) then its name, 
-//then plausibly a list of things to inherit from. 
+//then plausibly a list of things to inherit f rom. 
 class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? generic_parameters? ASSIGNMENT_SYMBOL class_body;
 inheritances			: inheritance (ITEM_SEPARATOR inheritance)* ;
 inheritance				: IDENTIFIER;
@@ -194,18 +194,18 @@ class_body				: INDENT declaration* DEDENT;
 //Save some value in a variable
 assignment				: (postfix_expression (subfield_expression | index_expression) | atom) ASSIGNMENT_SYMBOL expression END_OF_STATEMENT;
 
-//A type. As a function is a type with "return_type (argument types)" the real decleartion of type is "type (list of types)?" but that is left recursive type : 
+//A type. As a method is a type with "return_type (argument types)" the real decleartion of type is "type (list of types)?" but that is left recursive type : 
 //Antlr can maybe acctually deal with this, but we just rewrite it
-//Its a * and not a ? as a function can return a function, ad infinitum....
+//Its a * and not a ? as a method can return a method, ad infinitum....
 
-type					: IDENTIFIER function_type? array_type? generic_unpack_expression?;
+type					: IDENTIFIER method_type? array_type? generic_unpack_expression?;
 
 
-//The tailing part if you define a function. ( optional reference, argument type, optional name, repeat)
+//The tailing part if you define a method. ( optional reference, argument type, optional name, repeat)
 //type_tail			:  | array_type ;
 array_type			: (LSQUAREBRACKET ITEM_SEPARATOR* RSQUAREBRACKET)+ ;
-function_type		: (LPARENTHESIS function_arguments?  RPARENTHESIS)+ ;
-function_arguments	: (REFERENCE? type IDENTIFIER?) ( ITEM_SEPARATOR REFERENCE? type IDENTIFIER? ) *;
+method_type		: (LPARENTHESIS method_arguments?  RPARENTHESIS)+ ;
+method_arguments	: (REFERENCE? type IDENTIFIER?) ( ITEM_SEPARATOR REFERENCE? type IDENTIFIER? ) *;
 
 //Protection level. Just stolen from .NET, as we target CLR
 protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL ;
@@ -215,7 +215,7 @@ protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL
 //This ensures that anything between OR is parsed independently (higher priorty, more grouped)
 //I don't think i can explain it better, you really need the revelation yourself.
 
-//A list of expressions (function calls ect)
+//A list of expressions (method calls ect)
 ref_expression_list		: REFERENCE? expression (ITEM_SEPARATOR REFERENCE? expression)* ;
 
 expression_list			: expression ( ITEM_SEPARATOR expression )* ;

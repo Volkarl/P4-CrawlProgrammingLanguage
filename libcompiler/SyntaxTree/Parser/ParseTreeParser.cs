@@ -178,7 +178,7 @@ namespace libcompiler.SyntaxTree.Parser
             {
                 return ParseClassDecleration(declpart, protectionLevel, rule.SourceInterval);
             }
-            if (declpart.RuleIndex == CrawlParser.RULE_function_decleration)
+            if (declpart.RuleIndex == CrawlParser.RULE_method_decleration)
             {
                 return ParseMethodDecleration(declpart, protectionLevel, rule.SourceInterval);
             }
