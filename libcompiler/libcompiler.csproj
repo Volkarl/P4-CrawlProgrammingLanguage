@@ -120,6 +120,8 @@
     <Compile Include="SyntaxTree\Nodes\VariableDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\VariableNode.cs" />
     <Compile Include="TraceListners.cs" />
+    <Compile Include="TypeChecker\BlockScope.cs" />
+    <Compile Include="TypeChecker\IScope.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

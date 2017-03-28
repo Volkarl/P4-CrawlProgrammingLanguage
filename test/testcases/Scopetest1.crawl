@@ -1,0 +1,5 @@
+tal abe = 6, gorrila = 4;
+
+tal() UdregnOrangutanger =
+	tal orangutanger = abe - gorrila;
+	returner orangutanger;
