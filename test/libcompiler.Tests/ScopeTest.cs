@@ -111,6 +111,15 @@ namespace libcompiler.Tests
             Assert.Inconclusive("No way to check classes for stuff");
         }
 
+        [TestCase]
+        public void TestFindingParametersInScope()
+        {
+            TranslationUnitNode tree = ReadTestFile("scopetest11.crawl");
+            MethodDeclerationNode method = (MethodDeclerationNode) tree.Code[0];
+            Assert.NotNull(method.GetScope("a"));
+
+        }
+
         /// <summary>
         /// Test that a missing symbol returns null
         /// </summary>

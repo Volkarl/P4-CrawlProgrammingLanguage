@@ -49,8 +49,8 @@ namespace libcompiler.SyntaxTree
                 case NodeType.VariableDeclerationSingle:
                     VisitVariableDeclerationSingle((SingleVariableDecleration) node);
                     break;
-                case NodeType.FunctionDecleration:
-                    VisitFunctionDecleration((MethodDeclerationNode) node);
+                case NodeType.MethodDecleration:
+                    VisitMethodDecleration((MethodDeclerationNode) node);
                     break;
                 case NodeType.Block:
                     VisitBlock((BlockNode) node);
@@ -85,17 +85,25 @@ namespace libcompiler.SyntaxTree
                 case NodeType.GenericParametersNode:
                     VisitGenericParameter((GenericParameterNode) node);
                     break;
+                case NodeType.Parameter:
+                    VisitParameter((ParameterNode) node);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(node.ToString());
             }
         }
 
-        private void VisitReference(ReferenceNode node)
+        protected virtual void VisitParameter(ParameterNode node)
+        {
+            Visit(node.ParameterType);
+        }
+
+        protected virtual void VisitReference(ReferenceNode node)
         {
             Visit(node.Target);
         }
 
-        private void VisitGenericParameter(GenericParameterNode node)
+        protected virtual void VisitGenericParameter(GenericParameterNode node)
         {
         }
 
@@ -191,8 +199,9 @@ namespace libcompiler.SyntaxTree
             Visit(node.Arguments);
         }
 
-        protected virtual void VisitFunctionDecleration(MethodDeclerationNode node)
+        protected virtual void VisitMethodDecleration(MethodDeclerationNode node)
         {
+            Visit(node.Parameters);
             Visit(node.GenericParameters);
             Visit(node.BodyBlock);
         }
@@ -235,8 +244,4 @@ namespace libcompiler.SyntaxTree
             }
         }
     }
-
-    public class FooVisitor : SyntaxTreeVistitor
-    { }
-    
 }

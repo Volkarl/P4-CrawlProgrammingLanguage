@@ -31,7 +31,7 @@ namespace libcompiler.TypeChecker
                     string name = classNode.Identifier.Value;
                     scopeDictionary.Add(name, new TypeInformation[1]);
                 }
-                else if(child.Type == NodeType.FunctionDecleration)
+                else if(child.Type == NodeType.MethodDecleration)
                 {
                     MethodDeclerationNode methodNode = (MethodDeclerationNode) child;
                     string name = methodNode.Identfier.Name;

@@ -1,23 +1,28 @@
 ﻿using libcompiler.SyntaxTree.Nodes.Internal;
+using libcompiler.TypeChecker;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
-    public class MethodDeclerationNode : DeclerationNode, INodeThatTakesGenericParameters
+    public class MethodDeclerationNode : DeclerationNode, INodeThatTakesGenericParameters, IScope
     {
+        private MethodScope _scope;
+
         private TypeNode _type;
         private VariableNode _id;
+        private ListNode<ParameterNode> _parameters;
         private ListNode<GenericParameterNode> _genericParameters;
         private BlockNode _body;
 
         //TODO: Needs to save parameters' identifiers.
         public TypeNode FunctionType => GetRed(ref _type, 0);
         public VariableNode Identfier => GetRed(ref _id, 1);
-        public ListNode<GenericParameterNode> GenericParameters => GetRed(ref _genericParameters, 2);
-        public BlockNode BodyBlock => GetRed(ref _body, 3);
+        public ListNode<ParameterNode> Parameters => GetRed(ref _parameters, 2);
+        public ListNode<GenericParameterNode> GenericParameters => GetRed(ref _genericParameters, 3);
+        public BlockNode BodyBlock => GetRed(ref _body, 4);
 
         public MethodDeclerationNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent) : base(parent, self, indexInParent)
         {
-            
+            _scope = new MethodScope(this);
         }
 
         public override string ToString()
@@ -40,6 +45,11 @@ namespace libcompiler.SyntaxTree.Nodes
                 default:
                     return default(CrawlSyntaxNode);
             }
+        }
+
+        public TypeInformation[] GetScope(string symbol)
+        {
+            return  _scope.GetScope(symbol) ?? Parent.FindFirstScope()?.GetScope(symbol);
         }
     }
 }

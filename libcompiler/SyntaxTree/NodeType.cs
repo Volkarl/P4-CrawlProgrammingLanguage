@@ -17,7 +17,7 @@ namespace libcompiler.SyntaxTree
         ClassDecleration,
         VariableDecleration,
         VariableDeclerationSingle,
-        FunctionDecleration,
+        MethodDecleration,
         Block,
         Imports,
         Import,
@@ -28,6 +28,7 @@ namespace libcompiler.SyntaxTree
         Type,
         GenericUnpack,
         GenericParametersNode,
-        Reference
+        Reference,
+        Parameter
     }
 }

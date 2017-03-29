@@ -8,7 +8,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
     {
         //TODO: do something about parameters
         public GreenTypeNode ReturnType { get; }
-
+        public GreenListNode<ParameterNode> Parameters { get; }
         public GreenListNode<GenericParameterNode> GenericParameters { get; }
         public GreenVariableNode Identfier { get; }
         public GreenBlockNode Body { get; }
@@ -17,17 +17,19 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             Interval interval,
             ProtectionLevel protectionLevel,
             GreenTypeNode returnType,
+            GreenListNode<ParameterNode> parameters,
             GreenListNode<GenericParameterNode> genericParameters,
             GreenVariableNode identfier,
             GreenBlockNode body
         )
-            : base(interval, NodeType.FunctionDecleration,  protectionLevel)
+            : base(interval, NodeType.MethodDecleration,  protectionLevel)
         {
             ReturnType = returnType;
+            Parameters = parameters;
             GenericParameters = genericParameters;
             Identfier = identfier;
             Body = body;
-            ChildCount = 4;
+            ChildCount = 5;
         }
 
         public override string ToString()
@@ -44,8 +46,10 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
                 case 1:
                     return Identfier;
                 case 2:
-                    return GenericParameters;
+                    return Parameters;
                 case 3:
+                    return GenericParameters;
+                case 4:
                     return Body;
                 default:
                     return default(GreenCrawlSyntaxNode);
@@ -62,13 +66,16 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             switch (index)
             {
                 case 0:
-                    return new GreenMethodDeclerationNode(Interval, ProtectionLevel, (GreenTypeNode) newChild, GenericParameters, Identfier, Body);
+                    return new GreenMethodDeclerationNode(Interval, ProtectionLevel, (GreenTypeNode) newChild, Parameters, GenericParameters, Identfier, Body);
                 case 1:
-                    return new GreenMethodDeclerationNode(Interval, ProtectionLevel, ReturnType, (GreenListNode<GenericParameterNode>) newChild, Identfier, Body);
+                    return new GreenMethodDeclerationNode(Interval, ProtectionLevel, ReturnType, Parameters, (GreenListNode<GenericParameterNode>) newChild, Identfier, Body);
                 case 2:
-                    return new GreenMethodDeclerationNode(Interval, ProtectionLevel, ReturnType, GenericParameters, (GreenVariableNode) newChild, Body);
+                    throw new NotImplementedException();
+
                 case 3:
-                    return new GreenMethodDeclerationNode(Interval, ProtectionLevel, ReturnType, GenericParameters, Identfier, (GreenBlockNode) newChild);
+                    return new GreenMethodDeclerationNode(Interval, ProtectionLevel, ReturnType, Parameters, GenericParameters, (GreenVariableNode) newChild, Body);
+                case 4:
+                    return new GreenMethodDeclerationNode(Interval, ProtectionLevel, ReturnType, Parameters, GenericParameters, Identfier, (GreenBlockNode) newChild);
 
                 default:
                     throw new ArgumentOutOfRangeException();

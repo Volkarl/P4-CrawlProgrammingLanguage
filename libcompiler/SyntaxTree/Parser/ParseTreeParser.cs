@@ -198,22 +198,49 @@ namespace libcompiler.SyntaxTree.Parser
             TypeNode type =
                 ParseType((CrawlParser.TypeContext) methodContext.GetChild(0));
 
-            int identifierIndex =
-                methodContext.ChildCount - 2 -1;    //Identifier is always second last. And then one for the zero-indexed arrays.
+            CrawlParser.ParametersContext parametersContext = 
+                (CrawlParser.ParametersContext) methodContext.GetChild(1);
+            List<ParameterNode> parameters = ParseParameters(parametersContext).ToList();
 
-            ITerminalNode identifier =
-                (ITerminalNode) methodContext.GetChild(identifierIndex);
-
+            
             CrawlParser.Generic_parametersContext genericsContext =
                 methodContext.GetChild(2) as CrawlParser.Generic_parametersContext;
-
             List<GenericParameterNode> genericParameters = new List<GenericParameterNode>();
             if(genericsContext != null)
                 genericParameters.AddRange(ParseGenericParameters(genericsContext));
+
+            int identifierIndex =
+                methodContext.ChildCount - 2 - 1;    //Identifier is always second last. And then one for the zero-indexed arrays.
+            ITerminalNode identifier =
+                (ITerminalNode)methodContext.GetChild(identifierIndex);
+
+
             RuleContext body =
                 (RuleContext) methodContext.LastChild().GetChild(1);
 
-            return NodeFactory.Function(interval, protectionLevel, type, genericParameters, ParseVariableNode(identifier), ParseBlockNode(body));
+            return NodeFactory.Function(interval, protectionLevel, type, parameters, genericParameters, ParseVariableNode(identifier), ParseBlockNode(body));
+        }
+
+        private static IEnumerable<ParameterNode> ParseParameters(CrawlParser.ParametersContext parametersContext)
+        {
+            if (parametersContext.ChildCount == 2) yield break;
+
+            for (int i = 1; i < parametersContext.ChildCount; i += 2)
+            {
+                yield return ParseParameter((CrawlParser.ParameterContext)parametersContext.GetChild(i));
+            }
+        }
+
+        private static ParameterNode ParseParameter(CrawlParser.ParameterContext parameterContext)
+        {
+            //A parameter can either start with REFERENCE or a type. If its a reference its a terminal, that is afaik the easiest way to check
+            bool reference = parameterContext.GetChild(0) is ITerminalNode;
+            int typeindex = reference ? 1 : 0;
+
+            TypeNode type = ParseType((CrawlParser.TypeContext) parameterContext.GetChild(typeindex));
+            string identifier = parameterContext.LastChild().GetText();
+
+            return NodeFactory.Parameter(parameterContext.SourceInterval, reference, type, identifier);
         }
 
         private static IEnumerable<GenericParameterNode> ParseGenericParameters(CrawlParser.Generic_parametersContext genericsContext)

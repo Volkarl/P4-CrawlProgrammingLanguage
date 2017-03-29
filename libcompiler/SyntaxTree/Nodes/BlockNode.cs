@@ -19,32 +19,15 @@ namespace libcompiler.SyntaxTree.Nodes
         //Checks if the symbol is in this block node scope or the nodes predecessor
         public TypeInformation[] GetScope(string symbol)
         {
-            TypeInformation[] typeInformations = scopeInfo.GetScope(symbol);
+            TypeInformation[] typeInformation = scopeInfo.GetScope(symbol);
             
-            if (typeInformations == null)
+            if (typeInformation == null)
             {
                 IScope scope;
-                scope = FindScopeParent(this);
+                scope = Parent.FindFirstScope();
                 return scope?.GetScope(symbol);
             }
-            return scopeInfo.GetScope(symbol);
-        }
-        // checks if the parent inherites from IScope, if it inherities it return the node as an IScope,
-        // if the node do not inherites from IScope we check the parents parent.
-        public IScope FindScopeParent(CrawlSyntaxNode node)
-        {
-            if (node.Parent is IScope)
-            {
-                return node.Parent as IScope;
-            }
-            else if (node.Parent == null)
-            {
-                return null;
-            }
-            else
-            {
-                return FindScopeParent(node.Parent);
-            }
+            return typeInformation;
         }
     }
 }

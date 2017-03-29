@@ -98,6 +98,7 @@ namespace libcompiler.SyntaxTree
             Interval interval,
             ProtectionLevel protectionLevel,
             TypeNode returnType,
+            IEnumerable<ParameterNode> parameters,
             IEnumerable<GenericParameterNode> genericParameterNodes,
             VariableNode identifier,
             BlockNode block
@@ -108,6 +109,7 @@ namespace libcompiler.SyntaxTree
                     interval,
                     protectionLevel,
                     Extract(returnType),
+                    List(parameters),
                     List(genericParameterNodes),
                     Extract(identifier),
                     Extract(block)
@@ -312,6 +314,11 @@ namespace libcompiler.SyntaxTree
         public static ReferenceNode ReferenceNode(ExpressionNode target)
         {
             return (ReferenceNode) Wrap(new _.GreenReferenceNode(Extract(target)));
+        }
+
+        public static ParameterNode Parameter(Interval interval, bool isReference, TypeNode type, string identifier)
+        {
+            return (ParameterNode) Wrap(new _.GreenParameterNode(interval, isReference, Extract(type), identifier));
         }
     }
 }

@@ -45,6 +45,7 @@
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
+    <Compile Include="SyntaxTree\CrawlSyntaxNodeExtensions.cs" />
     <Compile Include="SyntaxTree\INodeThatTakesGenericParameters.cs" />
     <Compile Include="SyntaxTree\Nodes\AssignmentNode.cs" />
     <Compile Include="SyntaxTree\Nodes\BinaryNode.cs" />
@@ -56,8 +57,10 @@
     <Compile Include="SyntaxTree\Nodes\Internal\GreenAssignmentNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenGenericParameterNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenGenericUnpackNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\GreenParameterNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenUnaryNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenReferenceNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\ParameterNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ReferenceNode.cs" />
     <Compile Include="SyntaxTree\Nodes\TranslationUnitNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CrawlSyntaxNode.cs" />
@@ -122,6 +125,7 @@
     <Compile Include="TraceListners.cs" />
     <Compile Include="TypeChecker\BlockScope.cs" />
     <Compile Include="TypeChecker\IScope.cs" />
+    <Compile Include="TypeChecker\MethodScope.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
