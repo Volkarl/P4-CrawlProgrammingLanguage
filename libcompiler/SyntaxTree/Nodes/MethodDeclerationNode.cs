@@ -27,7 +27,7 @@ namespace libcompiler.SyntaxTree.Nodes
 
         public override string ToString()
         {
-            return $"decl {FunctionType.ExportedType.Textdef} {Identfier} =";
+            return $"decl {FunctionType.ExportedType} {Identfier} =";
         }
 
         public override CrawlSyntaxNode GetChildAt(int index)
