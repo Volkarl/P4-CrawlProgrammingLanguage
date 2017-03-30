@@ -118,6 +118,7 @@
     <Compile Include="SyntaxTree\Nodes\SelectiveFlowNode.cs" />
     <Compile Include="SyntaxTree\Nodes\SingleVariableDecleration.cs" />
     <Compile Include="SyntaxTree\SuperPrettyPrintVisitor.cs" />
+    <Compile Include="SyntaxTree\SyntaxTreeVisitorT.cs" />
     <Compile Include="SyntaxTree\SyntaxTreeVistitor.cs" />
     <Compile Include="SyntaxTree\NodeType.cs" />
     <Compile Include="SyntaxTree\Nodes\VariableDeclerationNode.cs" />
