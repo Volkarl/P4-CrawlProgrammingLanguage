@@ -187,9 +187,6 @@ inheritance				: IDENTIFIER;
 //The class body only allows decleartions, not the broader statements, we don't want to define wth happens with general computation in a class body
 class_body				: INDENT declaration* DEDENT;
 
-///////////////////////////////////////////////////////////////////////////////
-constructor				: protection_level LPARENTHESIS(type IDENTIFIER (ITEM_SEPARATOR  type IDENTIFIER )*)?RPARENTHESIS CONSTRUCT ASSIGNMENT_SYMBOL method_body; 
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //A few nuts and bolts that is also needed.
@@ -310,7 +307,6 @@ AND						: 'og' ;
 OR						: 'eller' ;
 IMPORT					: 'importer' ;
 REFERENCE				: 'reference' ;
-CONSTRUCT				: 'opret' ;
 
 //Symbols with meaning
 FOR_LOOP_SEPERATOR		: 'fra' ;
