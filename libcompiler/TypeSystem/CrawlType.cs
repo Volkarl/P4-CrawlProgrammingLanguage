@@ -11,5 +11,6 @@ namespace libcompiler.TypeSystem
         public abstract bool IsBuildInType { get; }
 
         public abstract TypeInformation[] GetScope(string symbol);
+        public abstract bool IsAssignableTo(CrawlType type);
     }
 }

@@ -84,6 +84,7 @@ namespace libcompiler
                 case 'a':
                     SetStage(crawlCompilerConfiguration, TargetStage.AbstractSyntaxTree);
                     break;
+
                 default:
                     throw new UnknownOption(c.ToString());
             }

@@ -46,7 +46,7 @@ namespace libcompiler.SyntaxTree
         /// Create new Green GreenListNode from series of any kind of red nodes.
         /// </summary>
         /// <param name="i">Series of red nodes</param>
-        /// <typeparam name="T">Type of red node.</typeparam>
+        /// <typeparam name="T">RepresentedType of red node.</typeparam>
         /// <returns>A new green GreenListNode</returns>
         private static _.GreenListNode<T> List<T>(IEnumerable<T> i) where T : CrawlSyntaxNode
         {
@@ -274,9 +274,9 @@ namespace libcompiler.SyntaxTree
             return (IdentifierNode) Wrap(new _.GreenIdentifierNode(interval, name));
         }
 
-        public static TypeNode Type(Interval interval, CrawlType crawlType)
+        public static TypeNode Type(Interval interval, string typeName)
         {
-            return (TypeNode) Wrap(new _.GreenTypeNode(interval, crawlType));
+            return (TypeNode) Wrap(new _.GreenTypeNode(interval, typeName));
         }
 
         /// <summary>

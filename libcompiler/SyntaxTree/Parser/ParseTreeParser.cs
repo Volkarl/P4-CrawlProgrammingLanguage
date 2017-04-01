@@ -337,7 +337,7 @@ namespace libcompiler.SyntaxTree.Parser
 
         public static TypeNode ParseType(CrawlParser.TypeContext type)
         {
-           return NodeFactory.Type(type.SourceInterval, CrawlType.ParseDecleration(type.GetText()));
+           return NodeFactory.Type(type.SourceInterval, type.GetText());
         }
 
         private static ProtectionLevel ParseProtectionLevel(CrawlParser.Protection_levelContext protectionLevel)

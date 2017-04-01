@@ -72,8 +72,9 @@
     <Compile Include="GeneratedParser\CrawlListener.cs" />
     <Compile Include="GeneratedParser\CrawlParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeChecker\TypeChecker.cs" />
     <Compile Include="TypeSystem\ArrayType.cs" />
-    <Compile Include="TypeSystem\BuildInType.cs" />
+    <Compile Include="TypeSystem\ClrType.cs" />
     <Compile Include="TypeSystem\CrawlType.cs" />
     <Compile Include="SyntaxTree\Nodes\DeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ExpressionNode.cs" />

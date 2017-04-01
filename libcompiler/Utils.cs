@@ -66,5 +66,12 @@ namespace libcompiler
                 return input.Select(transform);
             }
         }
+
+        public static bool ThrowFatal()
+        {
+            //Don't change this except what
+            //its supposed to throw something, this makes it easy to throw an exception if a method returned an unexpted boolean value by codition chaining
+            throw new NotImplementedException();
+        }
     }
 }

@@ -22,5 +22,10 @@ namespace libcompiler.TypeSystem
         {
             throw new System.NotImplementedException();
         }
+
+        public override bool IsAssignableTo(CrawlType type)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

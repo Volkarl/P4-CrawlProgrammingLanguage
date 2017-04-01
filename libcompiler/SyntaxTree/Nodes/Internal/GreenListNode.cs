@@ -9,7 +9,10 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
     {
         private readonly GreenCrawlSyntaxNode[] _children;
 
-        public GreenListNode(Interval interval, IEnumerable<GreenCrawlSyntaxNode> children) : base(NodeType.NodeList, interval)
+        public GreenListNode(Interval interval, IEnumerable<GreenCrawlSyntaxNode> children) : this(interval, children, NodeType.NodeList)
+        { }
+
+        protected GreenListNode(Interval interval, IEnumerable<GreenCrawlSyntaxNode> children, NodeType nodeType) : base(nodeType, interval)
         {
             _children = children.ToArray();
             ChildCount = _children.Length;

@@ -6,7 +6,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
     
     public class GreenBlockNode : GreenListNode<CrawlSyntaxNode>
     {   
-        public GreenBlockNode(Interval interval, IEnumerable<GreenCrawlSyntaxNode> children) : base(interval, children)
+        public GreenBlockNode(Interval interval, IEnumerable<GreenCrawlSyntaxNode> children) : base(interval, children, NodeType.Block)
         {
             
         }

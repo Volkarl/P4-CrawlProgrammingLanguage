@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.TypeChecker
 {
@@ -13,5 +14,6 @@ namespace libcompiler.TypeChecker
 
     public class TypeInformation
     {
+        public CrawlType Type { get; set; }
     }
 }

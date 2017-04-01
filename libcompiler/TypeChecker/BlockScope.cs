@@ -19,10 +19,14 @@ namespace libcompiler.TypeChecker
                 if(child.Type == NodeType.VariableDecleration)
                 {
                     VariableDeclerationNode variableNode = (VariableDeclerationNode)child;
+
                     foreach (var Decleration in variableNode.Declerations)
                     {
                         string name = Decleration.Identifier.Name;
-                        scopeDictionary.Add(name, new TypeInformation[1]);
+                        scopeDictionary.Add(
+                            name,
+                            new TypeInformation[1]
+                                {new TypeInformation {Type = variableNode.DeclerationType.ExportedType}});
                     }
                 }
                 else if(child.Type == NodeType.ClassDecleration)

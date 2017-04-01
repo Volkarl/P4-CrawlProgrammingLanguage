@@ -7,11 +7,11 @@ namespace libcompiler.Tests
     public class StringExtensionTests
     {
         [Test]
-        [TestCase("[]",'[', Result=0)]
-        [TestCase(" []",'[', Result=1)]
-        [TestCase("  [  ]",'[', Result=2)]
-        [TestCase("[[]]",'[', Result=0)]
-        [TestCase("asdas]",'[', Result=-1)]
+        [TestCase("[]",'[', ExpectedResult=0)]
+        [TestCase(" []",'[', ExpectedResult=1)]
+        [TestCase("  [  ]",'[', ExpectedResult=2)]
+        [TestCase("[[]]",'[', ExpectedResult=0)]
+        [TestCase("asdas]",'[', ExpectedResult=-1)]
         public int TestFromBackGetMatchingIndex(string s, char o) => s.FromBackGetMatchingIndex(o);
 
     }

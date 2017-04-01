@@ -34,7 +34,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
 
         public override string ToString()
         {
-            return $"decl {ReturnType.ExportedType} {Identfier} =";
+            return $"decl {ReturnType.TypeName} {Identfier} =";
         }
 
         public override GreenCrawlSyntaxNode GetChildAt(int slot)
