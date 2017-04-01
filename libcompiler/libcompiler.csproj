@@ -43,6 +43,7 @@
     <Compile Include="CrawlCompiler.cs" />
     <Compile Include="CrawlCompilerConfiguration.cs" />
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
+    <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxNodeExtensions.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="GeneratedParser\CrawlListener.cs" />
     <Compile Include="GeneratedParser\CrawlParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeSystem\ArrayType.cs" />
     <Compile Include="TypeSystem\BuildInType.cs" />
     <Compile Include="TypeSystem\CrawlType.cs" />
     <Compile Include="SyntaxTree\Nodes\DeclerationNode.cs" />
@@ -128,6 +130,7 @@
     <Compile Include="TypeChecker\BlockScope.cs" />
     <Compile Include="TypeChecker\IScope.cs" />
     <Compile Include="TypeChecker\MethodScope.cs" />
+    <Compile Include="TypeSystem\CrawlTypeStaticFunctions.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

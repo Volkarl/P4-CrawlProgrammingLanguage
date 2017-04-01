@@ -1,13 +1,15 @@
-﻿using System;
+﻿using libcompiler.TypeChecker;
 
-namespace libcompiler
+namespace libcompiler.TypeSystem
 {
     //TODO: Should probably be in a TypeSystem folder
-    public abstract class CrawlType
+    public abstract partial class CrawlType : IScope
     {
-        public static CrawlType ParseDecleration(string text)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool IsArrayType { get; }
+        public abstract bool IsGenericType { get; }
+        public abstract bool IsValueType { get; }
+        public abstract bool IsBuildInType { get; }
+
+        public abstract TypeInformation[] GetScope(string symbol);
     }
 }

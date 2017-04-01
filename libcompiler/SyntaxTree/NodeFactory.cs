@@ -2,6 +2,7 @@
 using System.Linq;
 using Antlr4.Runtime.Misc;
 using libcompiler.SyntaxTree.Nodes;
+using libcompiler.TypeSystem;
 using _ = libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree

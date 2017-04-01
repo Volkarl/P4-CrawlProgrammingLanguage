@@ -8,6 +8,7 @@ using Antlr4.Runtime.Tree;
 using libcompiler.ExtensionMethods;
 using libcompiler.Parser;
 using libcompiler.SyntaxTree.Nodes;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.SyntaxTree.Parser
 {

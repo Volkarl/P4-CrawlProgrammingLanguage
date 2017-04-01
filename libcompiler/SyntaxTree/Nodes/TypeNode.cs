@@ -1,4 +1,6 @@
-﻿namespace libcompiler.SyntaxTree.Nodes
+﻿using libcompiler.TypeSystem;
+
+namespace libcompiler.SyntaxTree.Nodes
 {
     public class TypeNode : CrawlSyntaxNode
     {

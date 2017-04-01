@@ -1,5 +1,6 @@
 ﻿using System;
 using Antlr4.Runtime.Misc;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
