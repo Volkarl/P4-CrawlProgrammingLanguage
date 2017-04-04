@@ -64,7 +64,7 @@ namespace libcompiler.SyntaxTree.Parser
             RuleContext tar = (RuleContext) rule.GetChild(1);
             ExpressionNode target = ParseExpression(tar);
 
-            ITerminalNode symbol = (ITerminalNode) rule.GetChild(0).GetChild(0);
+            ITerminalNode symbol = (ITerminalNode) rule.GetChild(0);
             ExpressionType type = ParseUnaryOp(symbol);
 
             return NodeFactory.UnaryExpression(rule.SourceInterval, type, target);
