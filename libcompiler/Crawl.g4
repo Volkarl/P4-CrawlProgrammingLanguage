@@ -321,7 +321,7 @@ RANGLEBRACKET           : '>' ;
 INVERT					: 'ikke' ;
 DOT						: '.' ;
 EXPONENT				: '**' ;
-INHERITANCE_OPERATOR	: ':';
+INHERITANCE_OPERATOR	: 'er';
 
 ///////////////////////////////////////////////////////////////////////////////
 //Finally some tokens that is more than just a specific string.
