@@ -1,1 +1,5 @@
 *.cs text=auto
+*.csproj text=auto
+*.g4 text=auto
+*.md text=auto
+*.crawl text=auto
