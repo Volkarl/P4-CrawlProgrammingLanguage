@@ -231,7 +231,7 @@ and_expression			: comparison_expression ( AND comparison_expression )* ;
 
 comparison_expression	: additive_expression (comparison_symbol additive_expression)? ;  //?
 
-additive_expression		: multiplicative_expression (ADDITIVE_SYMBOL multiplicative_expression )* ;
+additive_expression		: multiplicative_expression ((PLUS | MINUS) multiplicative_expression )* ;
 
 multiplicative_expression: exponential_expression (MULTIPLICATIVE_SYMBOL exponential_expression )* ;
 
@@ -239,7 +239,7 @@ exponential_expression	: cast_expression (EXPONENT cast_expression)* ;
 
 cast_expression			: ( LPARENTHESIS type RPARENTHESIS ) * unary_expression ;
 
-unary_expression		: ( unary_symbol )* postfix_expression ;
+unary_expression		: ( INVERT | MINUS )* postfix_expression ;
 
 postfix_expression		: atom ( call_expression | subfield_expression | index_expression | generic_unpack_expression)* ;
 
@@ -261,11 +261,10 @@ atom					: IDENTIFIER
 //More nuts and bolts
 //Symbols used for different things. Should maybe be changed to tokens, but Antlr does magic and I don't.
 comparison_symbol		: RANGLEBRACKET | '>=' | '==' | '!=' | '<=' | LANGLEBRACKET ;
-ADDITIVE_SYMBOL			: '+' |MINUS ;
 MULTIPLICATIVE_SYMBOL	: '*' | '/' | '%' ;
-unary_symbol			: INVERT | MINUS;
-
 MINUS					: '-' ;
+PLUS					: '+' ;
+
 //All the literals. Values
 literal					: boolean_literal 
 						| integer_literal
@@ -346,7 +345,7 @@ fragment DIGIT 			: '0' .. '9' ;
 
 fragment STRING_ESCAPE_SEQ : '\\' . ;
 
-fragment EXPONENT_END	: ('e' |'E' ) (ADDITIVE_SYMBOL)? NUMBER ;
+fragment EXPONENT_END	: ('e' |'E' ) (PLUS | MINUS)? NUMBER ;
 
 
 //Code used to handle emitting DEDENT/INDENT after newlines. Newlines itself is hidden (ignored by the parser unless told not to)
