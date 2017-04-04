@@ -9,16 +9,38 @@ using libcompiler.TypeChecker;
 
 namespace libcompiler.TypeSystem
 {
+    // This file contains the static part of CrawlType, methods to create Types and static data.
     public abstract partial class CrawlType
     {
+        /// <summary>
+        /// Represents a type error
+        /// </summary>
         public static CrawlType Error = ErrorType.Instance;
+
+        /// <summary>
+        /// Represents the lack of a type
+        /// </summary>
         public static CrawlType Void = new ClrType(typeof(void), "intet", new KeyValuePair<string, string>[0]);
 
+        /// <summary>
+        /// Represents the string type. This is the same as the System.String
+        /// </summary>
         public static CrawlType String;
+
+        /// <summary>
+        /// Represents the integer type. This is (most likely) the same type as System.Int32
+        /// </summary>
         public static CrawlType Int;
 
-        public static CrawlType ParseDecleration(CrawlSyntaxNode context, string name)
+        /// <summary>
+        /// Parses the decleration of a type based on its decleration.
+        /// </summary>
+        /// <param name="context">The IScope this type is decleared in. Types are not globally visible so this is required</param>
+        /// <param name="name">The string containing the type. This is most often just the name, but can contain other details, such as []</param>
+        /// <returns>A CrawlType representing name</returns>
+        public static CrawlType ParseDecleration(IScope context, string name)
         {
+            //Parse [] and count ,, inside, then create array with remaning parts
             if (name.Last() == ']')
             {
                 int arrayEnd = name.FromBackGetMatchingIndex('[');
@@ -36,7 +58,7 @@ namespace libcompiler.TypeSystem
                 return returnvalue;
             }
 
-            TypeInformation[] info = context.FindFirstScope().GetScope(name);
+            TypeInformation[] info = context.GetScope(name);
 
             throw new NotImplementedException();
         }

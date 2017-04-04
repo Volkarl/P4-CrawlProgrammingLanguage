@@ -7,6 +7,19 @@ using libcompiler.TypeSystem;
 
 namespace libcompiler.TypeChecker
 {
+    /* 
+     * The main class of type checking. The basis principle of working is simple, but due the amount of details
+     * it needs to keep track of, it gets a little bit big. (Or will grow)
+     * 
+     * The basic principle works by moving downwards, until it reaches the leaves. Here it either asks the scope 
+     * checker for the type, or simply examines the literals.
+     * 
+     * From here on it moves up. Every VisitXXX method checks if there is a compatible operation between each
+     * of its child types. Then it returns the type of the result.
+     * 
+     * It uses the 2 objects, CrawlType.Void and CrawlType.Error to represent the lack of any type and an error
+     * in the type system respectively. Void can be expected sometimes, Error is supposed to propegate upwards.
+     */
     public class TypeChecker : BaseSyntaxTreeVisitor<CrawlType>
     {
         //TODO: should be TypeErrorInformation : ErrorInformation
@@ -14,6 +27,8 @@ namespace libcompiler.TypeChecker
 
         protected override CrawlType VisitList(IEnumerable<CrawlSyntaxNode> node)
         {
+            //Visits a list. Behavour is simple, check if all children has same type.
+            //This won't be sufficent for real code, but it is a decent way of making it "mostly work"
             //TODO: make this throw. I don't think there are any _real_ case where this is correct behavour. Just about everything with lots of children needs special handling...
             CrawlType accomulator = null;
             foreach (CrawlSyntaxNode syntaxNode in node)
