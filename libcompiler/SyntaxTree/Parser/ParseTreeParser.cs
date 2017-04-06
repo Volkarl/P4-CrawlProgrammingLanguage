@@ -61,6 +61,9 @@ namespace libcompiler.SyntaxTree.Parser
             return NodeFactory.ImportNode(rule.SourceInterval, path.ToString());
         }
 
+        //public static ConstructNode ParseConstruct(RuleContext rule)
+        
+
         public static BlockNode ParseBlockNode(RuleContext rule)
         {
             System.Collections.IEnumerable meaningfullContent;

@@ -179,7 +179,7 @@ variable_decl			: IDENTIFIER (ASSIGNMENT_SYMBOL expression)? ;
 //The body of a method. No great secrets hidden here
 method_body			: INDENT statements DEDENT;
 
-//Decleartion of a class. A class starts with 'class' (well, translated) then its name, 
+//Declearation of a class. A class starts with 'class' (well, translated) then its name, 
 //then plausibly a list of things to inherit f rom. 
 class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? generic_parameters? ASSIGNMENT_SYMBOL class_body;
 inheritances			: inheritance (ITEM_SEPARATOR inheritance)* ;
@@ -188,7 +188,11 @@ inheritance				: IDENTIFIER;
 class_body				: INDENT declaration* DEDENT;
 
 
-///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+constructor				: protection_level LPARENTHESIS(type IDENTIFIER (ITEM_SEPARATOR  type IDENTIFIER )*)?RPARENTHESIS CONSTRUCT ASSIGNMENT_SYMBOL method_body; 
+
+/////////////////////////////////////////////////////
+//////////////////////////
 //A few nuts and bolts that is also needed.
 
 //Save some value in a variable
@@ -307,6 +311,7 @@ AND						: 'og' ;
 OR						: 'eller' ;
 IMPORT					: 'importer' ;
 REFERENCE				: 'reference' ;
+CONSTRUCT				: 'opret' ;
 
 //Symbols with meaning
 FOR_LOOP_SEPERATOR		: 'fra' ;

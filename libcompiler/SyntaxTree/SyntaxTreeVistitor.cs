@@ -85,9 +85,17 @@ namespace libcompiler.SyntaxTree
                 case NodeType.GenericParametersNode:
                     VisitGenericParameter((GenericParameterNode) node);
                     break;
+                case NodeType.ConstructorNode:
+                    VisitConstruct((ConstructNode)node);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(node.ToString());
             }
+        }
+
+        private void VisitConstruct(ConstructNode node)
+        {
+           
         }
 
         private void VisitReference(ReferenceNode node)

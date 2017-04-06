@@ -51,6 +51,7 @@
     <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CallishNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\ConstructNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GenericParameterNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GenericsUnpackNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenAssignmentNode.cs" />
