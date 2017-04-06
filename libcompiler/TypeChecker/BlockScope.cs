@@ -10,44 +10,46 @@ namespace libcompiler.TypeChecker
 {
     class BlockScope : IScope
     {
-        Dictionary<string, TypeInformation[]> scopeDictionary = new Dictionary<string, TypeInformation[]>();
-        //checks if the blockNode is a variable, class or method decleration and adds them to the scopeDictionary    
+        private readonly Dictionary<string, TypeInformation[]> _scopeDictionary =
+            new Dictionary<string, TypeInformation[]>();
+
+        //checks subnodes to see if they are variable-, class- or method-declerations and adds them to the _scopeDictionary
         public BlockScope(BlockNode node)
         {
             foreach (var child in node)
             {
                 if(child.Type == NodeType.VariableDecleration)
                 {
-                    VariableDeclerationNode variableNode = (VariableDeclerationNode)child;
+                    VariableDeclerationNode variableDeclerationNode = (VariableDeclerationNode)child;
 
-                    foreach (var Decleration in variableNode.Declerations)
+                    foreach (var decleration in variableDeclerationNode.Declerations)
                     {
-                        string name = Decleration.Identifier.Name;
-                        scopeDictionary.Add(
-                            name,
-                            new TypeInformation[1]
-                                {new TypeInformation {Type = variableNode.DeclerationType.ExportedType}});
+                        string name = decleration.Identifier.Name;
+                        TypeInformation[] typeInformation = new TypeInformation[1]
+                            {new TypeInformation(variableDeclerationNode.DeclerationType.ExportedType)};
+
+                        _scopeDictionary.Add(name, typeInformation);
                     }
                 }
                 else if(child.Type == NodeType.ClassDecleration)
                 {
                     ClassDeclerationNode classNode = (ClassDeclerationNode) child;
                     string name = classNode.Identifier.Value;
-                    scopeDictionary.Add(name, new TypeInformation[1]);
+                    _scopeDictionary.Add(name, new TypeInformation[1]);
                 }
                 else if(child.Type == NodeType.MethodDecleration)
                 {
                     MethodDeclerationNode methodNode = (MethodDeclerationNode) child;
                     string name = methodNode.Identfier.Name;
-                    scopeDictionary.Add(name, new TypeInformation[1]);
+                    _scopeDictionary.Add(name, new TypeInformation[1]);
                 }
             }
         }
-        //checks if the symbol is in the scopeDictionary else return null
-        public TypeInformation[] GetScope(string symbol)
+        //checks if the identifier is in the _scopeDictionary else return null
+        public TypeInformation[] GetScope(string identifier)
         {
             TypeInformation[] typeArray;
-            if (scopeDictionary.TryGetValue(symbol, out typeArray) == true)
+            if (_scopeDictionary.TryGetValue(identifier, out typeArray) == true)
             {
                 return typeArray;
             }

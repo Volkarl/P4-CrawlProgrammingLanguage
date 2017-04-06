@@ -9,7 +9,7 @@ using libcompiler.TypeChecker;
 
 namespace libcompiler.TypeSystem
 {
-    // This file contains the static part of CrawlType, methods to create Types and static data.
+    // This file contains the static part of CrawlType: Methods to create Types and static data.
     public abstract partial class CrawlType
     {
         /// <summary>
@@ -20,7 +20,7 @@ namespace libcompiler.TypeSystem
         /// <summary>
         /// Represents the lack of a type
         /// </summary>
-        public static CrawlType Void = new ClrType(typeof(void), "intet", new KeyValuePair<string, string>[0]);
+        public static CrawlType Void;
 
         /// <summary>
         /// Represents the string type. This is the same as the System.String
@@ -33,14 +33,14 @@ namespace libcompiler.TypeSystem
         public static CrawlType Int;
 
         /// <summary>
-        /// Parses the decleration of a type based on its decleration.
+        /// Parses the decleration of a type from the string the programmer has written for the type, taking into consideriation in which scope it was declared.
         /// </summary>
         /// <param name="context">The IScope this type is decleared in. Types are not globally visible so this is required</param>
-        /// <param name="name">The string containing the type. This is most often just the name, but can contain other details, such as []</param>
+        /// <param name="name">The string the programmer has written for the type. This is most often just the name, but can contain other details, such as []</param>
         /// <returns>A CrawlType representing name</returns>
         public static CrawlType ParseDecleration(IScope context, string name)
         {
-            //Parse [] and count ,, inside, then create array with remaning parts
+            //Parse [] and count ,, inside, then create array with remaining parts
             if (name.Last() == ']')
             {
                 int arrayEnd = name.FromBackGetMatchingIndex('[');
@@ -63,11 +63,15 @@ namespace libcompiler.TypeSystem
             throw new NotImplementedException();
         }
 
-        private static readonly ConcurrentDictionary<string, ClrType> TranslatedTypes = new ConcurrentDictionary<string, ClrType>();
-        private static readonly ConcurrentDictionary<Type, ClrType> TypeCache = new ConcurrentDictionary<Type, ClrType>();
+        private static readonly ConcurrentDictionary<string, ClrType> TranslatedTypes =
+            new ConcurrentDictionary<string, ClrType>();
+
+        private static readonly ConcurrentDictionary<Type, ClrType> TypeCache =
+            new ConcurrentDictionary<Type, ClrType>();
 
         static CrawlType()
         {
+            Void = new ClrType(typeof(void), "intet", new KeyValuePair<string, string>[0]);
 
             String = new ClrType(typeof(String), "tekst", new[]
             {
@@ -86,7 +90,7 @@ namespace libcompiler.TypeSystem
 
             foreach (ClrType type in translatedTypes)
             {
-                if (!TranslatedTypes.TryAdd(type.NameForUser, type)) {throw new Exception();}
+                if(!TranslatedTypes.TryAdd(type.NameForUser, type)) {throw new Exception();}
                 if(!TypeCache.TryAdd(type.RepresentedType, type)) {throw new Exception();}
             }
         }
@@ -98,10 +102,10 @@ namespace libcompiler.TypeSystem
             public override bool IsArrayType => false;
             public override bool IsGenericType => false;
             public override bool IsValueType => false;
-            public override bool IsBuildInType => false;
+            public override bool IsBuiltInType => false;
             public static CrawlType Instance { get; } = new ErrorType();
 
-            public override TypeInformation[] GetScope(string symbol)
+            public override TypeInformation[] GetScope(string identifier)
             {
                 return new TypeInformation[0];
             }

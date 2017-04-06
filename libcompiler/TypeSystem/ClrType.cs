@@ -18,27 +18,33 @@ namespace libcompiler.TypeSystem
         public override bool IsArrayType => false;
         public override bool IsGenericType => false;
         public override bool IsValueType { get; }
-        public override bool IsBuildInType => true;
+        public override bool IsBuiltInType => true;
         public string NameForUser { get; }
         public Type RepresentedType{ get; }
 
-        private readonly ConcurrentDictionary<string, TypeInformation[]> SymbolCache = new ConcurrentDictionary<string, TypeInformation[]>();
-        private readonly Dictionary<string, string> translations = new Dictionary<string, string>();
+        private readonly ConcurrentDictionary<string, TypeInformation[]> _symbolCache =
+            new ConcurrentDictionary<string, TypeInformation[]>();
 
-        public override TypeInformation[] GetScope(string symbol)
+        private readonly Dictionary<string, string> _translations =
+            new Dictionary<string, string>();
+
+        /// <summary>
+        /// Searches for identifier from what is available in this type.
+        /// </summary>
+        public override TypeInformation[] GetScope(string identifier)
         {
             TypeInformation[] info;
-            if (SymbolCache.TryGetValue(symbol, out info))
+            if (_symbolCache.TryGetValue(identifier, out info))
             {
                 return info;
             }
 
             string translated;
-            translations.TryGetValue(symbol, out translated);
+            _translations.TryGetValue(identifier, out translated);
 
-            string use = translated ?? symbol;
+            string use = translated ?? identifier;
             info = ExtractFromRepresentedType(use);
-            return SymbolCache.GetOrAdd(use, info);
+            return _symbolCache.GetOrAdd(use, info);
         }
 
         public override bool IsAssignableTo(CrawlType type)
@@ -56,7 +62,7 @@ namespace libcompiler.TypeSystem
 
             foreach (KeyValuePair<string,string> pair in translations)
             {
-                this.translations.Add(pair.Key, pair.Value);
+                this._translations.Add(pair.Key, pair.Value);
             }
 
         }
@@ -67,12 +73,11 @@ namespace libcompiler.TypeSystem
             TypeInformation[] inf = new TypeInformation[members.Length];
             for (int i = 0; i < members.Length; i++)
             {
-                inf[i] = new TypeInformation();
                 PropertyInfo propertyInfo = members[i] as PropertyInfo;
                 if (propertyInfo != null)
                 {
                     PropertyInfo property = propertyInfo;
-                    inf[i].Type = CrawlType.FromClrType(property.PropertyType);
+                    inf[i] = new TypeInformation(CrawlType.FromClrType(property.PropertyType));
                 }
                 else throw new NotImplementedException();
             }

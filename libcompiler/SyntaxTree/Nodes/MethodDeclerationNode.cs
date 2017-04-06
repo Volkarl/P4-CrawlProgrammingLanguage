@@ -47,9 +47,9 @@ namespace libcompiler.SyntaxTree.Nodes
             }
         }
 
-        public TypeInformation[] GetScope(string symbol)
+        public TypeInformation[] GetScope(string identifier)
         {
-            return  _scope.GetScope(symbol) ?? Parent.FindFirstScope()?.GetScope(symbol);
+            return  _scope.GetScope(identifier) ?? Parent.FindFirstScope()?.GetScope(identifier);
         }
     }
 }

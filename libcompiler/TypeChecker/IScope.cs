@@ -9,11 +9,16 @@ namespace libcompiler.TypeChecker
 {
     public interface IScope
     {
-        TypeInformation[] GetScope(string symbol);
+        TypeInformation[] GetScope(string identifier);
     }
 
     public class TypeInformation
     {
         public CrawlType Type { get; set; }
+
+        public TypeInformation(CrawlType type)
+        {
+            Type = type;
+        }
     }
 }

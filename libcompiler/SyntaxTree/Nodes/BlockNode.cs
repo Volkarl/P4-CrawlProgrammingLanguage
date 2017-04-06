@@ -16,16 +16,16 @@ namespace libcompiler.SyntaxTree.Nodes
         {
             scopeInfo = new BlockScope(this);
         }
-        //Checks if the symbol is in this block node scope or the nodes predecessor
-        public TypeInformation[] GetScope(string symbol)
+        //Checks if the identifier is in this block node scope or the nodes predecessor
+        public TypeInformation[] GetScope(string identifier)
         {
-            TypeInformation[] typeInformation = scopeInfo.GetScope(symbol);
+            TypeInformation[] typeInformation = scopeInfo.GetScope(identifier);
             
             if (typeInformation == null)
             {
                 IScope scope;
                 scope = Parent.FindFirstScope();
-                return scope?.GetScope(symbol);
+                return scope?.GetScope(identifier);
             }
             return typeInformation;
         }

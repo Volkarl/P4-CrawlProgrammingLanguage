@@ -13,12 +13,12 @@ namespace libcompiler.TypeSystem
         public override bool IsArrayType => true;
         public override bool IsGenericType => false;
         public override bool IsValueType => false;
-        public override bool IsBuildInType => false; //TODO: I think this is right but...
+        public override bool IsBuiltInType => false; //TODO: I think this is right but...
 
         public CrawlType Contains { get; }
         public int Dimensions { get; }
 
-        public override TypeInformation[] GetScope(string symbol)
+        public override TypeInformation[] GetScope(string identifier)
         {
             throw new System.NotImplementedException();
         }

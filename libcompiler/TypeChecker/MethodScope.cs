@@ -16,10 +16,10 @@ namespace libcompiler.TypeChecker
             _scopeInfo = m.Parameters.ToDictionary(x => x.Identifier, y => new TypeInformation[1]);
         }
 
-        public TypeInformation[] GetScope(string symbol)
+        public TypeInformation[] GetScope(string identifier)
         {
             TypeInformation[] typeArray;
-            if (_scopeInfo.TryGetValue(symbol, out typeArray) == true)
+            if (_scopeInfo.TryGetValue(identifier, out typeArray) == true)
             {
                 return typeArray;
             }
