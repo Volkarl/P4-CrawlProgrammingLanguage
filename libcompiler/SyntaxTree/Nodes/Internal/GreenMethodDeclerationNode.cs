@@ -4,15 +4,11 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class GreenMethodDeclerationNode : GreenDeclerationNode
+    public class GreenMethodDeclerationNode : GreeenCallableDeclarationNode
     {
-        //TODO: do something about parameters
-        public GreenTypeNode ReturnType { get; }
-
+  
         public GreenListNode<GenericParameterNode> GenericParameters { get; }
-        public GreenVariableNode Identfier { get; }
-        public GreenBlockNode Body { get; }
-
+        
         public GreenMethodDeclerationNode(
             Interval interval,
             ProtectionLevel protectionLevel,
@@ -21,13 +17,12 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             GreenVariableNode identfier,
             GreenBlockNode body
         )
-            : base(interval, NodeType.FunctionDecleration,  protectionLevel)
+            : base(interval, protectionLevel, returnType,identfier, body,NodeType.FunctionDecleration )
         {
-            ReturnType = returnType;
+            
             GenericParameters = genericParameters;
-            Identfier = identfier;
-            Body = body;
             ChildCount = 4;
+            
         }
 
         public override string ToString()

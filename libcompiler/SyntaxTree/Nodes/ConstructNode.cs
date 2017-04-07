@@ -7,27 +7,12 @@ using libcompiler.SyntaxTree.Nodes.Internal;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
-    public class ConstructNode : CrawlSyntaxNode
+    public class ConstructNode : CallableDeclarationNode
     {
-        private ProtectionLevel Protectionlevel { get; }
-        private TypeNode type;
-        private BlockNode body;
-
-
-        public ProtectionLevel Acceslevel => GetRed(ref Acceslevel);
-        public TypeNode ConstructorType => GetRed(ref type, 0);
-        public BlockNode BlockBody => GetRed(ref body, 2);
-
         public ConstructNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent) : base(parent, self, indexInParent)
         {
-
+                        
         }
-        public void Construct(TypeNode type, VariableNode vn, BlockNode body)
-        {
-            
-        }
-
-        //public ProtectionLevel
 
 
         public override CrawlSyntaxNode GetChildAt(int index)
@@ -35,11 +20,11 @@ namespace libcompiler.SyntaxTree.Nodes
             switch (index)
             {
                 case 0:
-                    return ConstructorType;
+                    throw new NotImplementedException();
                 case 1:
-                    return Identifier;
+                    throw new NotImplementedException();
                 case 2:
-                    return BlockBody;
+                    return BodyBlock;
                 default:
                     return default(CrawlSyntaxNode);
             }

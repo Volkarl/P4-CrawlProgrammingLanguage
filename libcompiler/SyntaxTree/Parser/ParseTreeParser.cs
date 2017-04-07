@@ -185,6 +185,11 @@ namespace libcompiler.SyntaxTree.Parser
             {
                 return ParseMethodDecleration(declpart, protectionLevel, rule.SourceInterval);
             }
+            if (declpart.RuleIndex == CrawlParser.RULE_constructor_declaration)
+            {
+                return ParseConstruct(declpart, rule.SourceInterval, protectionLevel);
+                
+            }
             else if (declpart.RuleIndex == CrawlParser.RULE_variable_declerations)
             {
                 return ParseVariableDecleration(declpart, protectionLevel, rule.SourceInterval);
@@ -194,6 +199,18 @@ namespace libcompiler.SyntaxTree.Parser
         }
 
         #region DeclerationSubs
+
+        private static ConstructNode ParseConstruct(RuleContext ConstructContex, Interval interval, ProtectionLevel protectionlevel)
+        {
+
+
+            BlockNode body = ParseBlockNode((RuleContext)ConstructContex.GetChild(3).GetChild(1));
+
+            return NodeFactory.Constructor(interval,protectionlevel,body); 
+                
+                
+        }
+
 
 
         private static DeclerationNode ParseMethodDecleration(RuleContext methodContext, ProtectionLevel protectionLevel, Interval interval)
@@ -218,6 +235,8 @@ namespace libcompiler.SyntaxTree.Parser
 
             return NodeFactory.Function(interval, protectionLevel, type, genericParameters, ParseVariableNode(identifier), ParseBlockNode(body));
         }
+
+       
 
         private static IEnumerable<GenericParameterNode> ParseGenericParameters(CrawlParser.Generic_parametersContext genericsContext)
         {

@@ -95,6 +95,8 @@ namespace libcompiler.SyntaxTree
 
         private void VisitConstruct(ConstructNode node)
         {
+            //Visit(node.FunctionType);
+            Visit(node.BodyBlock);
            
         }
 
@@ -245,6 +247,7 @@ namespace libcompiler.SyntaxTree
     }
 
     public class FooVisitor : SyntaxTreeVistitor
-    { }
+    {
+    }
     
 }

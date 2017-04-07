@@ -165,7 +165,7 @@ return_statement		: RETURN expression? END_OF_STATEMENT;
 ///////////////////////////////////////////////////////////////////////////////
 //Since we try and treat methods as any other type, we can't quite see if it is a method or variable definiton before we read it.
 //But this section deals with declearation of anything you can access at a later time
-declaration				: protection_level? (class_declaration | method_decleration | variable_declerations) ;
+declaration				: protection_level? (class_declaration | method_decleration | variable_declerations|constructor_declaration) ;
 
 
 method_decleration	: type parameters generic_parameters? IDENTIFIER ASSIGNMENT_SYMBOL method_body;
@@ -189,7 +189,7 @@ class_body				: INDENT declaration* DEDENT;
 
 
 //////////////////////////////////////////////////////////////////////////////////
-constructor				: protection_level LPARENTHESIS(type IDENTIFIER (ITEM_SEPARATOR  type IDENTIFIER )*)?RPARENTHESIS CONSTRUCT ASSIGNMENT_SYMBOL method_body; 
+constructor_declaration	: parameters CONSTRUCT ASSIGNMENT_SYMBOL method_body; 
 
 /////////////////////////////////////////////////////
 //////////////////////////

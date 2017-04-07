@@ -15,6 +15,7 @@ namespace libcompiler.SyntaxTree
         {
             return greenNode.CreateRed(null, 0);
         }
+ 
 
         private static _.GreenBlockNode Extract(BlockNode n)
         {
@@ -93,6 +94,12 @@ namespace libcompiler.SyntaxTree
         {
             return (FlowNode) Wrap(new _.GreenSelectiveFlowNode(interval, NodeType.While, Extract(condition), Extract(block), null));
         }
+
+        public static ConstructNode Constructor (Interval interval, ProtectionLevel protectionlevel, BlockNode body)
+        {
+            return (ConstructNode)Wrap(new _.GreenConstructNode(interval, protectionlevel, null, Extract(body)));
+        }
+
 
         public static MethodDeclerationNode Function(
             Interval interval,
