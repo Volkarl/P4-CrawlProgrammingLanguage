@@ -3,19 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libcompiler", "libcompiler\libcompiler.csproj", "{249AA939-BC96-470B-891F-CED708E7263C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libcompiler", "src\libcompiler\libcompiler.csproj", "{249AA939-BC96-470B-891F-CED708E7263C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external_dependencies", "external_dependencies", "{3B07992D-CDF8-422D-8C0E-F21583A506E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Antlr4.Runtime.vs2013", "external_dependencies\antlr4\runtime\CSharp\runtime\CSharp\Antlr4.Runtime\Antlr4.Runtime.vs2013.csproj", "{E1A46D9D-66CB-46E8-93B0-7FC87299ABEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "compilerconsolehost", "compilerconsolehost\compilerconsolehost.csproj", "{3596D894-5514-41C4-AE2C-EE366E355A8A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "compilerconsolehost", "src\compilerconsolehost\compilerconsolehost.csproj", "{3596D894-5514-41C4-AE2C-EE366E355A8A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{498E6B78-FE8E-4D47-BC35-593513DD2BA6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libcompiler.Tests", "test\libcompiler.Tests\libcompiler.Tests.csproj", "{3FA1FF1D-D721-4AC0-8EEA-26FE12EAA25C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGeneratorDriver", "CodeGeneratorDriver\CodeGeneratorDriver.csproj", "{37AFC830-20A2-4392-AFEF-A24C12471588}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGeneratorDriver", "tools\CodeGeneratorDriver\CodeGeneratorDriver.csproj", "{37AFC830-20A2-4392-AFEF-A24C12471588}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1D3CC72E-ED86-4669-8515-5C5058E5610E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{2B86D824-2B49-4CC8-833B-643DF89A806D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,7 +52,10 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{249AA939-BC96-470B-891F-CED708E7263C} = {1D3CC72E-ED86-4669-8515-5C5058E5610E}
 		{E1A46D9D-66CB-46E8-93B0-7FC87299ABEF} = {3B07992D-CDF8-422D-8C0E-F21583A506E8}
+		{3596D894-5514-41C4-AE2C-EE366E355A8A} = {1D3CC72E-ED86-4669-8515-5C5058E5610E}
 		{3FA1FF1D-D721-4AC0-8EEA-26FE12EAA25C} = {498E6B78-FE8E-4D47-BC35-593513DD2BA6}
+		{37AFC830-20A2-4392-AFEF-A24C12471588} = {2B86D824-2B49-4CC8-833B-643DF89A806D}
 	EndGlobalSection
 EndGlobal

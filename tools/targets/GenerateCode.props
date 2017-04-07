@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<ToolOutputDir>$(SolutionDir)build\Tools\</ToolOutputDir>
+		<CodeGeneratorFile>CodeGenerator</CodeGeneratorFile>
+	</PropertyGroup>
+
+  <!-- The syntax generation actually outputs three files: .Syntax, .Internal and .Main -->
+	<PropertyGroup>
+		<CodeGeneratorDriverProject>$(SolutionDir)tools\CodeGeneratorDriver\CodeGeneratorDriver.csproj</CodeGeneratorDriverProject>
+		<CodeGeneratorExe Condition="'$(OS)' == 'Windows_NT'">$(ToolOutputDir)$(CodeGeneratorFile).exe</CodeGeneratorExe>
+		<CodeGeneratorExe Condition="'$(OS)' != 'Windows_NT'">$(ToolOutputDir)$(CodeGeneratorFile)</CodeGeneratorExe>
+	</PropertyGroup>
+
+</Project>

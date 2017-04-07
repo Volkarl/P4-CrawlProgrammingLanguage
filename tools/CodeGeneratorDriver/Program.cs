@@ -7,7 +7,6 @@ using System.Xml.Serialization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.MSBuild;
 
 namespace CodeGeneratorDriver
 {
@@ -34,8 +33,7 @@ namespace CodeGeneratorDriver
 
                 Console.WriteLine(file);
             }
-
-            Console.ReadLine();
+            
 
         }
 
