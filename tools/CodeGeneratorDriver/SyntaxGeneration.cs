@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodeGeneratorDriver
 {
@@ -32,6 +34,9 @@ namespace CodeGeneratorDriver
         [XmlElement("createred")]
         public string CreateRed {get; set;}
 
+        [XmlElement("getred")]
+        public string GetRed { get; set; }
+
         [XmlElement("index")]
         public string Index {get; set;}
         
@@ -49,6 +54,22 @@ namespace CodeGeneratorDriver
 
         [XmlElement("new_child")]
         public string NewChild { get; set; }
+
+        [XmlElement("self")]
+        public string Self { get; set; }
+
+        [XmlElement("visit")]
+        public string Visit { get; set; }
+
+        [XmlElement("node")]
+        public string Node { get; set; }
+
+
+        [XmlElement("combine")]
+        public string Combine { get; set; }
+
+        [XmlElement("update")]
+        public string Update { get; set; }
     }
 
     public class Node

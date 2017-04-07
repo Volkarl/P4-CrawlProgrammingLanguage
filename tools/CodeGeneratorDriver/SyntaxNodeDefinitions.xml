@@ -5,12 +5,18 @@
         <namespace>Crawlpiler.SyntaxNodes</namespace>
         <parent>parent</parent>
         <createred>CreateRed</createred>
+        <getred>GetRed</getred>
         <index>index</index>
         <indexinparent>indexInParent</indexinparent>
         <getchildat>GetChildAt</getchildat>
         <invalidchildreplace>ArgumentOutOfRangeException</invalidchildreplace>
         <with_replaced_child>WithReplacedChild</with_replaced_child>
         <new_child>newChild</new_child>
+        <self>self</self>
+        <visit>Visit</visit>
+        <node>Node</node>
+        <combine>Combine</combine>
+        <update>Update</update>
     </options>
     <nodes>
         <node>
@@ -60,5 +66,15 @@
                 </child>
             </children>
         </node>
+      <node>
+        <name>ReturnStatement</name>
+        <baseclass>CrawlSyntax</baseclass>
+        <children>
+          <child>
+            <name>Value</name>
+            <type>Expression</type>
+          </child>
+        </children>
+      </node>
     </nodes>
 </syntaxnodes>
