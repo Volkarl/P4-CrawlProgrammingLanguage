@@ -272,6 +272,8 @@ namespace libcompiler.SyntaxTree.Parser
             //This is the whole variable decleration. First the type, then individual variables of that type, with an optional initialization value
             //Each individual identifier is parsed in ParseSingleVariable
             ITerminalNode eos =  classPart.LastChild() as ITerminalNode;
+
+            //The nescessity for this check is dubious. Surely the parser has already done its job.
             if(eos == null || eos.Symbol.Type != CrawlLexer.END_OF_STATEMENT) throw new NotImplementedException("Something strange happened");
 
             TypeNode type = ParseType((CrawlParser.TypeContext) classPart.GetChild(0));
@@ -319,7 +321,7 @@ namespace libcompiler.SyntaxTree.Parser
             CrawlParser.Generic_parametersContext genericParametersContext =
                 classPart.GetChild(genericParametersIndex) as CrawlParser.Generic_parametersContext;
 
-            RuleContext body = (RuleContext) classPart.LastChild();
+            RuleContext bodyContext = (RuleContext) classPart.LastChild();
 
             List<GenericParameterNode> genericParameters = new List<GenericParameterNode>();
 
@@ -328,7 +330,7 @@ namespace libcompiler.SyntaxTree.Parser
 
             if(tn1.Symbol.Type != CrawlLexer.CLASS) throw new CrawlImpossibleStateException("Trying to parse a class that is not a class", interval);
 
-            BlockNode bodyBlock = ParseBlockNode(body);
+            BlockNode bodyBlock = ParseBlockNode(bodyContext);
 
             return NodeFactory.ClassDecleration(interval, protectionLevel, ParseTokenNode(tn2), genericParameters, bodyBlock);
         }

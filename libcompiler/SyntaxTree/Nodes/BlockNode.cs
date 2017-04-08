@@ -1,4 +1,5 @@
-﻿using libcompiler.SyntaxTree.Nodes.Internal;
+﻿using libcompiler.ExtensionMethods;
+using libcompiler.SyntaxTree.Nodes.Internal;
 using libcompiler.TypeChecker;
 
 namespace libcompiler.SyntaxTree.Nodes
