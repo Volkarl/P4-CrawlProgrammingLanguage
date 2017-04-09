@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Threading;
 using Antlr4.Runtime.Misc;
-using libcompiler.SyntaxTree.Nodes.Internal;
 using libcompiler.TypeChecker;
 
-namespace libcompiler.SyntaxTree.Nodes
+namespace libcompiler.SyntaxTree
 {
     /// <summary>
     /// The root class for all Red nodes (See redgreen.md). Most generic 
     /// functionality is located here. Rest is (at time of writing) in 
     /// <see cref="GreenListNode{T}"/> and <see cref="ExpressionNode"/>
     /// </summary>
-    public abstract class CrawlSyntaxNode
+    public abstract partial class CrawlSyntaxNode
     {
         protected readonly GreenCrawlSyntaxNode Green;
         private CrawlSyntaxTree _owningTree;

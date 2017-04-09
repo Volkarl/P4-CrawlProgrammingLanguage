@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from D:\Data\Documents\Visual Studio 2015\Projects\Crawl\src\libcompiler\Crawl.g4 by ANTLR 4.6
+// Generated from /dataa/home/joha/src/csharp/crawl/src/libcompiler/Crawl.g4 by ANTLR 4.6
 
 // Unreachable code detected
 #pragma warning disable 0162

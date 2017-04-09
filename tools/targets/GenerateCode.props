@@ -5,13 +5,21 @@
 	<PropertyGroup>
 		<ToolOutputDir>$(SolutionDir)build\Tools\</ToolOutputDir>
 		<CodeGeneratorFile>CodeGenerator</CodeGeneratorFile>
+		<SyntaxTreeFolder>$(SolutionDir)src\libcompiler\SyntaxTree\</SyntaxTreeFolder>
+		<SyntaxDefinitionFile>$(SyntaxTreeFolder)SyntaxNodeDefinitions.xml</SyntaxDefinitionFile>
+		<GeneratedBaseName>$([System.IO.Path]::GetFileName($(SyntaxDefinitionFile)))</GeneratedBaseName>
+		<GeneratedRedSyntaxNodes>$(SyntaxTreeFolder)$(GeneratedBaseName).Nodes.Generated.cs</GeneratedRedSyntaxNodes>
+		<GeneratedGreenSyntaxNodes>$(SyntaxTreeFolder)$(GeneratedBaseName).Internal.Generated.cs</GeneratedGreenSyntaxNodes>
+		<GeneratedNodeFactory>$(SyntaxTreeFolder)$(GeneratedBaseName).Factory.Generated.cs</GeneratedNodeFactory>
+		<GeneratedVisitorClasses>$(SyntaxTreeFolder)$(GeneratedBaseName).Visitors.Generated.cs</GeneratedVisitorClasses>
+	
 	</PropertyGroup>
 
-  <!-- The syntax generation actually outputs three files: .Syntax, .Internal and .Main -->
+
+
 	<PropertyGroup>
 		<CodeGeneratorDriverProject>$(SolutionDir)tools\CodeGeneratorDriver\CodeGeneratorDriver.csproj</CodeGeneratorDriverProject>
-		<CodeGeneratorExe Condition="'$(OS)' == 'Windows_NT'">$(ToolOutputDir)$(CodeGeneratorFile).exe</CodeGeneratorExe>
-		<CodeGeneratorExe Condition="'$(OS)' != 'Windows_NT'">$(ToolOutputDir)$(CodeGeneratorFile)</CodeGeneratorExe>
+		<CodeGeneratorExe>$(ToolOutputDir)$(CodeGeneratorFile).exe</CodeGeneratorExe>
 	</PropertyGroup>
 
 </Project>

@@ -1,12 +1,11 @@
 ﻿using System.Linq;
 using System.Text;
 using libcompiler.SyntaxTree;
-using libcompiler.SyntaxTree.Nodes;
 
 namespace libcompiler
 {
     
-    public class PrettyPrintVisitor : SyntaxTreeVistitor
+    public class PrettyPrintVisitor : SyntaxVisitor
     {
         public StringBuilder BuildString = new StringBuilder();
 
@@ -93,13 +92,13 @@ namespace libcompiler
 
             if (node.Declerations.ChildCount == 1)
             {
-                SingleVariableDecleration decleration = node.Declerations.First();
+                SingleVariableDeclerationNode decleration = node.Declerations.First();
                 BuildString.Append(' ');
                 BuildString.Append(decleration.Identifier);
                 if (decleration.DefaultValue != null)
                     Visit(decleration.DefaultValue);
             } else 
-            foreach (SingleVariableDecleration decleration in node.Declerations)
+            foreach (SingleVariableDeclerationNode decleration in node.Declerations)
             {
                 Indent();
                 BuildString.Append(decleration.Identifier);

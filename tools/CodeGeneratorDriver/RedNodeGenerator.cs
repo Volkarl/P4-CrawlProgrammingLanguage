@@ -83,7 +83,7 @@ namespace CodeGeneratorDriver
                     generator.ParameterDeclaration(options.IndexInParent,
                         generator.TypeExpression(SpecialType.System_Int32))
                 },
-                Accessibility.Public,
+                Accessibility.Internal,
                 DeclarationModifiers.None,
                 new[]
                 {

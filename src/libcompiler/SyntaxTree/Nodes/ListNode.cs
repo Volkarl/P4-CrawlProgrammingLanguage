@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using libcompiler.SyntaxTree.Nodes.Internal;
 
-namespace libcompiler.SyntaxTree.Nodes
+namespace libcompiler.SyntaxTree
 {
     public class ListNode<T> : CrawlSyntaxNode, IReadOnlyList<T> where T : CrawlSyntaxNode
     {

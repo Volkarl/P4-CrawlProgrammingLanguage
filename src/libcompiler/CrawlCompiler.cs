@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using libcompiler.SyntaxTree;
-using libcompiler.SyntaxTree.Nodes;
 
 namespace libcompiler
 {

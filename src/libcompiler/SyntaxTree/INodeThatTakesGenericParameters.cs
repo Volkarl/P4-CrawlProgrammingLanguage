@@ -1,4 +1,4 @@
-﻿using libcompiler.SyntaxTree.Nodes;
+﻿using libcompiler.SyntaxTree;
 
 namespace libcompiler.SyntaxTree
 {

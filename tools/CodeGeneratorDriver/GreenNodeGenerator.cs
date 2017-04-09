@@ -185,7 +185,7 @@ namespace CodeGeneratorDriver
                                 new[]
                                 {
                                     generator.ReturnStatement(
-                                        generator.IdentifierName(SharedGeneratorion.GreenNodeName(c.Name)))
+                                        generator.IdentifierName(c.Name))
                                 }
 
                             ))

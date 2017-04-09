@@ -39,5 +39,7 @@ namespace CodeGeneratorDriver
 
             return char.ToLower(s[0]) + s.Substring(1);
         }
+
+        public static string NonGenericPart(this string s) => s.Split('\'')[0];
     }
 }

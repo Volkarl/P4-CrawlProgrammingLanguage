@@ -13,15 +13,16 @@ namespace CodeGeneratorDriver
     {
         internal static SyntaxNode[] CreateFactoryFor(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
         {
-            var single = generator.MethodDeclaration(node.Name,
+            var single = generator.MethodDeclaration(node.Name + "Node",
                 node.AllProperties()
                     .Skip(1)
                     .Select(
                         x => generator.ParameterDeclaration(x.Name.AsParameter(), SyntaxFactory.ParseTypeName(x.Type)))
-                    .Concat(node.AllChildren().Select(
-                        x =>
-                            generator.ParameterDeclaration(x.Name.AsParameter(),
-                                SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(x.Type))))),
+                    .Concat(node.AllChildren()
+                        .Select(
+                            x =>
+                                generator.ParameterDeclaration(x.Name.AsParameter(),
+                                    SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(x.Type))))),
                 null,
                 SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)),
                 Accessibility.Public,
@@ -37,9 +38,16 @@ namespace CodeGeneratorDriver
                                             {
                                                 SyntaxFactory.ParseExpression("NodeType." + node.Name)
                                             }.Concat(node.AllProperties()
-                                                .Skip(1).Select(x => generator.IdentifierName(x.Name.AsParameter())))
+                                                .Skip(1)
+                                                .Select(x => generator.IdentifierName(x.Name.AsParameter())))
                                             .Concat(node.AllChildren()
-                                                .Select(x => generator.MemberAccessExpression(generator.IdentifierName(x.Name.AsParameter()), "GreenNode")))),
+                                                .Select(
+                                                    x => generator.CastExpression(
+                                                        SyntaxFactory.ParseTypeName(
+                                                            SharedGeneratorion.GreenNodeName(x.Type)),
+                                                        generator.MemberAccessExpression(
+                                                            generator.IdentifierName(x.Name.AsParameter()),
+                                                            "Green"))))),
                                     options.CreateRed),
                                 generator.LiteralExpression(null), generator.LiteralExpression(0))))
                 });

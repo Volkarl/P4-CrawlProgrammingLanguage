@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text;
-using libcompiler.SyntaxTree.Nodes;
+using libcompiler.SyntaxTree;
 
 namespace libcompiler.SyntaxTree
 {
-    public class SuperPrettyPrintVisitor : SyntaxTreeVistitor
+    public class SuperPrettyPrintVisitor : SyntaxVisitor
     {
         private StringBuilder _result;
         private StringBuilder _indentation;

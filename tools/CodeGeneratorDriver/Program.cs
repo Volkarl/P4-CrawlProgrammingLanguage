@@ -24,6 +24,9 @@ namespace CodeGeneratorDriver
                 )));*/
         public static void Main(string[] args)
         {
+            Console.WriteLine("Code generator started with arguments " +
+                              string.Join(", ", args.Select(x => '"' + x + '"')));
+
             if(args.Length != 5)
                 Environment.Exit(-1);
 
@@ -54,27 +57,54 @@ namespace CodeGeneratorDriver
 
             foreach (Node node in syntaxGeneration.Node)
             {
+                if(node.Manual) continue;
+
                 redNodes.Add(RedNodeGenerator.CreateRedNode(generator, node, syntaxGeneration.Options));
                 greenNodes.Add(GreenNodeGenerator.CreateGreenNode(generator, node, syntaxGeneration.Options));
                 factoryMethods.AddRange(Factory.CreateFactoryFor(generator, node, syntaxGeneration.Options));
-                //TODO: Factory
             }
 
-            Save(Formatter.Format(generator.NamespaceDeclaration(syntaxGeneration.Options.NameSpace, redNodes), workspace), nodes);
-            Save(Formatter.Format(generator.NamespaceDeclaration(syntaxGeneration.Options.NameSpace, visitors), workspace), visitor);
+            //Generated enum for all NodeTypes
+            redNodes.Add(GeneratedTypeEnum(generator, syntaxGeneration.Node));
 
-            Save(
-                Formatter.Format(
-                    generator.NamespaceDeclaration(syntaxGeneration.Options.NameSpace,
-                        generator.ClassDeclaration(syntaxGeneration.Options.BaseName, null, Accessibility.Public,
-                            DeclarationModifiers.Partial, null, null, members: factoryMethods)), workspace), factory);
-            Save(
-                Formatter.Format(
-                    generator.NamespaceDeclaration(syntaxGeneration.Options.NameSpace,
-                        generator.ClassDeclaration(syntaxGeneration.Options.BaseName, null, Accessibility.Public,
-                            DeclarationModifiers.Partial, null, null, members: greenNodes)), workspace), @internal);
-            Console.ReadLine();
 
+            Save(Patch(generator, syntaxGeneration.Options.NameSpace, workspace, redNodes), nodes);
+
+            Save(Patch(generator, syntaxGeneration.Options.NameSpace, workspace, visitors), visitor);
+
+            Save(Patch(generator, syntaxGeneration.Options.NameSpace, workspace, new[]
+            {
+                generator.ClassDeclaration(SharedGeneratorion.RedNodeName(syntaxGeneration.Options.BaseName), null, Accessibility.Public,
+                    DeclarationModifiers.Partial, null, null, members: factoryMethods)
+            }), factory);
+
+            Save(Patch(generator, syntaxGeneration.Options.NameSpace, workspace, new[]
+            {
+                generator.ClassDeclaration(SharedGeneratorion.RedNodeName(syntaxGeneration.Options.BaseName), null, Accessibility.Public,
+                    DeclarationModifiers.Partial, null, null, members: greenNodes)
+            }), @internal);
+
+        }
+
+        private static SyntaxNode GeneratedTypeEnum(SyntaxGenerator generator, Node[] nodes)
+        {
+            return generator.EnumDeclaration("NodeType", Accessibility.Public, DeclarationModifiers.None,
+                nodes.Select(x => generator.EnumMember(x.Name.NonGenericPart()))
+            );
+        }
+
+        private static SyntaxNode Patch(SyntaxGenerator generator, string nameSpace, Workspace workspace, IEnumerable<SyntaxNode> original)
+        {
+            var cu = generator.CompilationUnit(new[]
+            {
+                generator.NamespaceImportDeclaration("System"),
+                generator.NamespaceImportDeclaration("System.Collections.Generic"),
+                generator.NamespaceImportDeclaration("Antlr4.Runtime.Misc"),
+                generator.NamespaceDeclaration(nameSpace, original)
+            });
+
+
+            return Formatter.Format(cu, workspace);
         }
 
         private static void Save(SyntaxNode tree, string path)
@@ -88,13 +118,13 @@ namespace CodeGeneratorDriver
         {
             var nodes = (SyntaxGeneration)new XmlSerializer(typeof(SyntaxGeneration)).Deserialize(XmlReader.Create(File.OpenRead(path)));
 
-            var dictionary = nodes.Node.ToDictionary(x => x.Name);
+            var dictionary = nodes.Node.ToDictionary(x => x.Name.Split('\'')[0]);
 
             foreach (Node node in nodes.Node)
             {
                 if(node.BaseClass == null && node.Name == nodes.Options.BaseName) continue;
 
-                node.BaseNode = dictionary[node.BaseClass];
+                node.BaseNode = dictionary[node.BaseClass.Split('\'')[0]];
             }
 
             //Don't take the top level node, too much special stuff so implemented in hand anyway

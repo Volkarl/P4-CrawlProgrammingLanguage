@@ -74,13 +74,17 @@ namespace CodeGeneratorDriver
 
     public class Node
     {
+        public Node BaseNode { get; set; }
+
+
         [XmlElement("name")]
         public string Name { get; set; }
 
         [XmlElement("baseclass")]
         public string BaseClass { get; set; }
 
-        public Node BaseNode { get; set; }
+        [XmlElement("manual")]
+        public bool Manual { get; set; } = false;
 
 
         [XmlArray("children")]

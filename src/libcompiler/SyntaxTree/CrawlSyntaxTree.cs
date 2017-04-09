@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Antlr4.Runtime;
 using libcompiler.Parser;
-using libcompiler.SyntaxTree.Nodes;
 using libcompiler.SyntaxTree.Parser;
 
 namespace libcompiler.SyntaxTree
@@ -32,7 +31,7 @@ namespace libcompiler.SyntaxTree
             CrawlParser.Translation_unitContext rootContext = parser.translation_unit();
 
 
-            Nodes.TranslationUnitNode node = ParseTreeParser.ParseTranslationUnit(rootContext);
+            TranslationUnitNode node = ParseTreeParser.ParseTranslationUnit(rootContext);
 
             node.OwningTree.CompilationUnitName = compilationUnitName;
             return node.OwningTree;
