@@ -40,27 +40,37 @@ namespace libcompiler.TypeSystem
         /// <returns>A CrawlType representing name</returns>
         public static CrawlType ParseDecleration(IScope context, string name)
         {
-            //Parse [] and count ,, inside, then create array with remaining parts
-            if (name.Last() == ']')
+            try
             {
-                int arrayEnd = name.FromBackGetMatchingIndex('[');
+                //Parse [] and count ,, inside, then create array with remaining parts
+                if (name.Last() == ']')
+                {
+                    int arrayEnd = name.FromBackGetMatchingIndex('[');
 
-                string typepart = name.Substring(0, arrayEnd);
-                string arrayDef = name.Substring(arrayEnd);
-                int dimensions = arrayDef.Count(x => x == ',') + 1;
-                return new ArrayType(ParseDecleration(context, typepart), dimensions);
+                    string typepart = name.Substring(0, arrayEnd);
+                    string arrayDef = name.Substring(arrayEnd);
+                    int dimensions = arrayDef.Count(x => x == ',') + 1;
+                    return new ArrayType(ParseDecleration(context, typepart), dimensions);
+                }
+
+
+                ClrType returnvalue;
+                if (TranslatedTypes.TryGetValue(name, out returnvalue))
+                {
+                    return returnvalue;
+                }
+
+                TypeInformation[] info = context?.GetScope(name);
+
+                if(info == null || info.Length == 0) return Error;
+
+                throw new NotImplementedException();
             }
-
-
-            ClrType returnvalue;
-            if (TranslatedTypes.TryGetValue(name, out returnvalue))
+            catch (Exception)
             {
-                return returnvalue;
+                Utils.BreakIfDebugging();
+                throw;
             }
-
-            TypeInformation[] info = context.GetScope(name);
-
-            throw new NotImplementedException();
         }
 
         private static readonly ConcurrentDictionary<string, ClrType> TranslatedTypes =

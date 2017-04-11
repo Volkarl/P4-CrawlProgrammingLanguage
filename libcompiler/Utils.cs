@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text;
 
 namespace libcompiler
@@ -72,6 +74,13 @@ namespace libcompiler
             //Don't change this except what
             //its supposed to throw something, this makes it easy to throw an exception if a method returned an unexpted boolean value by codition chaining
             throw new NotImplementedException();
+        }
+
+        [DebuggerHiddenAttribute]
+        public static void BreakIfDebugging()
+        {
+            if (Debugger.IsAttached)
+                Debugger.Break();
         }
     }
 }
