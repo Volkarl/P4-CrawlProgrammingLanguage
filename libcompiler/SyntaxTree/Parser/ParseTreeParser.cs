@@ -18,14 +18,37 @@ namespace libcompiler.SyntaxTree.Parser
             CrawlParser.Import_directivesContext imports =
                 (CrawlParser.Import_directivesContext)translationUnit.GetChild(0);
 
+            CrawlParser.Namespace_declarationContext nameSpace =
+                (CrawlParser.Namespace_declarationContext)translationUnit.GetChild(1);
+
             CrawlParser.StatementsContext statements =
-                (CrawlParser.StatementsContext)translationUnit.GetChild(1);
+                (CrawlParser.StatementsContext)translationUnit.GetChild(2);
 
 
             ListNode<ImportNode> importNodes = ParseImports(imports);
+            NameSpaceNode namespaceNode = ParseNamespace(nameSpace);   //Fortsæt herfra.
             BlockNode rootBlock = ParseBlockNode(statements);
 
-            return NodeFactory.TranslationUnit(translationUnit.SourceInterval, importNodes, rootBlock);
+            return NodeFactory.TranslationUnit(translationUnit.SourceInterval, importNodes, namespaceNode, rootBlock);
+        }
+
+        private static NameSpaceNode ParseNamespace(RuleContext nameSpace)
+        {
+            StringBuilder path = new StringBuilder();
+            if (nameSpace.ChildCount != 0)
+            {
+                //Child 0 is reserved word "pakke", and is discarded.
+                
+
+                path.Append(nameSpace.GetChild(1).GetText());
+                //Stride 2 to avoid dots.
+                for (int i = 3; i < nameSpace.ChildCount; i = i + 2)
+                {
+                    path.Append(".");
+                    path.Append(nameSpace.GetChild(i).GetText());
+                }               
+            }
+            return NodeFactory.NameSpaceNode(nameSpace.SourceInterval, path.ToString());
         }
 
         /// <summary>

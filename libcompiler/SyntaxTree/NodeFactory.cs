@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime.Misc;
 using libcompiler.SyntaxTree.Nodes;
@@ -41,6 +42,11 @@ namespace libcompiler.SyntaxTree
             return (_.GreenIdentifierNode)CrawlSyntaxNode.ExtractGreenNode(n);
         }
 
+        private static _.GreenNameSpaceNode Extract(NameSpaceNode n)
+        {
+            return (_.GreenNameSpaceNode)CrawlSyntaxNode.ExtractGreenNode(n);
+        }
+
         /// <summary>
         /// Create new Green GreenListNode from series of any kind of red nodes.
         /// </summary>
@@ -51,6 +57,12 @@ namespace libcompiler.SyntaxTree
         {
             //TODO correct interval
             return new _.GreenListNode<T>(default(Interval), i.Select(CrawlSyntaxNode.ExtractGreenNode));
+        }
+
+        internal static NameSpaceNode NameSpaceNode(Interval sourceInterval, string nameSpace)
+        {
+            var green = new _.GreenNameSpaceNode(sourceInterval, nameSpace);
+            return (NameSpaceNode)Wrap( green );
         }
 
         public static FlowNode If(Interval interval, ExpressionNode conditon, BlockNode trueBlock)
@@ -209,10 +221,11 @@ namespace libcompiler.SyntaxTree
                 new _.GreenAssignmentNode(interval, Extract(target), Extract(value)));
         }
 
-        public static TranslationUnitNode TranslationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
+        //Denne skal skrives om senere, så den også gememer namespace noden.
+        public static TranslationUnitNode TranslationUnit(Interval interval, IEnumerable<ImportNode> importNodes,NameSpaceNode nameSpace, BlockNode rootCode)
         {
             return (TranslationUnitNode) Wrap(
-                new _.GreenTranslationUnitNode(interval, List(importNodes), Extract(rootCode)));
+                new _.GreenTranslationUnitNode(interval, List(importNodes),Extract(nameSpace), Extract(rootCode)));
         }
 
         //TODO: Also expose this as individual methods

@@ -85,9 +85,17 @@ namespace libcompiler.SyntaxTree
                 case NodeType.GenericParametersNode:
                     VisitGenericParameter((GenericParameterNode) node);
                     break;
+                case NodeType.NameSpace:
+                    VisitNameSpace((NameSpaceNode)node);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(node.ToString());
             }
+        }
+
+        private void VisitNameSpace(NameSpaceNode node)
+        {
+            
         }
 
         private void VisitReference(ReferenceNode node)
@@ -223,7 +231,7 @@ namespace libcompiler.SyntaxTree
         protected virtual void VisitTranslationUnit(TranslationUnitNode node)
         {
             Visit(node.Imports);
-
+            Visit(node.NameSpace);
             Visit(node.Code);
         }
 
