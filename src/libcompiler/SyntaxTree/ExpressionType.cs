@@ -3,8 +3,8 @@
     public enum ExpressionType
     {
         None = 0,
-        Invocation,
-        SubfieldAccess,
+        Call,
+        MemberAccess,
         Greater,
         GreaterEqual,
         Equal,
@@ -19,12 +19,15 @@
         Range,
         ShortCircuitOr,
         ShortCircuitAnd,
-        Constant,
+        RealLiteral,
+        StringLiteral,
+        IntegerLiteral,
+        BooleanLiteral,
         Variable,
         Negate,
         Not,
         Divide,
         Modulous,
-        GenericUnpack
+        GenericsUnpack
     }
 }

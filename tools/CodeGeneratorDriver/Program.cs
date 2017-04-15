@@ -61,6 +61,8 @@ namespace CodeGeneratorDriver
 
                 redNodes.Add(RedNodeGenerator.CreateRedNode(generator, node, syntaxGeneration.Options));
                 greenNodes.Add(GreenNodeGenerator.CreateGreenNode(generator, node, syntaxGeneration.Options));
+
+                if(node.Abstract) continue;
                 factoryMethods.AddRange(Factory.CreateFactoryFor(generator, node, syntaxGeneration.Options));
             }
 
@@ -99,6 +101,7 @@ namespace CodeGeneratorDriver
             {
                 generator.NamespaceImportDeclaration("System"),
                 generator.NamespaceImportDeclaration("System.Collections.Generic"),
+                generator.NamespaceImportDeclaration("System.Linq"),
                 generator.NamespaceImportDeclaration("Antlr4.Runtime.Misc"),
                 generator.NamespaceDeclaration(nameSpace, original)
             });

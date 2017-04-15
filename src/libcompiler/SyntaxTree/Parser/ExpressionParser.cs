@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
@@ -23,7 +24,7 @@ namespace libcompiler.SyntaxTree.Parser
                 ITerminalNode tn = rule.GetChild(0) as ITerminalNode;
                 if (tn != null && tn.Symbol.Type == CrawlLexer.IDENTIFIER)
                 {
-                    return CrawlSyntaxNode.VariableAccess(tn.SourceInterval, tn.GetText());
+                    return CrawlSyntaxNode.Variable(tn.SourceInterval, tn.GetText());
                 }
                 //Expression in parentheses. Parse only content, throw out parentheses.
                 else if (rule.ChildCount == 3)
@@ -85,7 +86,7 @@ namespace libcompiler.SyntaxTree.Parser
                 {
                     //TODO: Actually calculate the interval
                     //The expression contained multiple types of operations
-                    ExpressionNode newNode = CrawlSyntaxNode.MultiExpression(Interval.Invalid, type, sources);
+                    ExpressionNode newNode = CrawlSyntaxNode.MultiChildExpression(Interval.Invalid, type, sources);
                     sources.Clear();
                     sources.Add(newNode);
                     type = newtype;
@@ -93,7 +94,7 @@ namespace libcompiler.SyntaxTree.Parser
                 }
             }
 
-            return CrawlSyntaxNode.MultiChildExpressionNode(rule.SourceInterval, type, sources);
+            return CrawlSyntaxNode.MultiChildExpression(rule.SourceInterval, type, sources);
         }
 
         private static ExpressionNode ParseBinary(RuleContext rule)
@@ -186,15 +187,15 @@ namespace libcompiler.SyntaxTree.Parser
                 RuleContext post = (RuleContext)rule.GetChild(i);
                 if (post.RuleIndex == CrawlParser.RULE_call_expression)
                 {
-                    node = CrawlSyntaxNode.Call(post.SourceInterval, node, ParseRefCallTail(post));
+                    node = CrawlSyntaxNode.Call(post.SourceInterval, node, ParseArgumentList(post));
                 }
                 else if (post.RuleIndex == CrawlParser.RULE_index_expression)
                 {
-                    node = CrawlSyntaxNode.Index(post.SourceInterval, node, ParseCallTail(post));
+                    node = CrawlSyntaxNode.Index(post.SourceInterval, node, ParseArgumentList(post));
                 }
                 else if(post.RuleIndex == CrawlParser.RULE_subfield_expression)
                 {
-                    VariableNode sub = CrawlSyntaxNode.VariableAccess(post.GetChild(1).SourceInterval, post.GetChild(1).GetText());
+                    IdentifierNode sub = CrawlSyntaxNode.Identifier(post.GetChild(1).SourceInterval, post.GetChild(1).GetText());
                     node = CrawlSyntaxNode.MemberAccess(post.SourceInterval, node, sub);
                 }
                 else if (post.RuleIndex == CrawlParser.RULE_generic_unpack_expression)
@@ -202,7 +203,7 @@ namespace libcompiler.SyntaxTree.Parser
                     List<TypeNode> generics = new List<TypeNode>();
                     for (int j = 1; j < post.ChildCount; j += 2)
                         generics.Add(ParseTreeParser.ParseType((CrawlParser.TypeContext) post.GetChild(j)));
-                    node = CrawlSyntaxNode.GenericsUnpackNode(post.SourceInterval, node, generics);
+                    node = CrawlSyntaxNode.GenericsUnpack(post.SourceInterval, node, generics);
 
                 }
                 else throw new NotImplementedException("Strange postfix expression");
@@ -219,13 +220,13 @@ namespace libcompiler.SyntaxTree.Parser
             switch (realLiteral.RuleIndex)
             {
                 case CrawlParser.RULE_string_literal:
-                    return CrawlSyntaxNode.StringConstant(realLiteral.SourceInterval, realLiteral.GetText());
+                    return CrawlSyntaxNode.StringLiteral(realLiteral.SourceInterval, realLiteral.GetText());
                 case CrawlParser.RULE_integer_literal:
-                    return CrawlSyntaxNode.IntegerConstant(realLiteral.SourceInterval, realLiteral.GetText());
+                    return CrawlSyntaxNode.IntegerLiteral(realLiteral.SourceInterval, int.Parse(realLiteral.GetText()));
                 case CrawlParser.RULE_boolean_literal:
-                    return CrawlSyntaxNode.BooleanConstant(realLiteral.SourceInterval, realLiteral.GetText());
+                    return CrawlSyntaxNode.BooleanLiteral(realLiteral.SourceInterval, bool.Parse(realLiteral.GetText()));
                 case CrawlParser.RULE_real_literal:
-                    return CrawlSyntaxNode.RealConstant(realLiteral.SourceInterval, realLiteral.GetText());
+                    return CrawlSyntaxNode.RealLiteral(realLiteral.SourceInterval, double.Parse(realLiteral.GetText()));
                 default:
                     throw new NotImplementedException("Strange literal type");
             }
@@ -241,7 +242,7 @@ namespace libcompiler.SyntaxTree.Parser
             RuleContext toCall = (RuleContext) rule.GetChild(0);
             RuleContext invocation = (RuleContext) rule.GetChild(1);
 
-            List<ExpressionNode> args = ParseRefCallTail(invocation);
+            List<ArgumentNode> args = ParseArgumentList(invocation).ToList();
             ExpressionNode target = ParseExpression(toCall);
 
             return CrawlSyntaxNode.Call(rule.SourceInterval, target, args);
@@ -262,26 +263,12 @@ namespace libcompiler.SyntaxTree.Parser
             throw new NotImplementedException("Not sure when this could happen....");
         }
 
-        public static List<ExpressionNode> ParseRefCallTail(RuleContext rule)
-        {
-            if (rule.ChildCount == 2)
-            {
-                return new List<ExpressionNode>();
-            }
-            else if (rule.ChildCount == 3)
-            {
-                RuleContext expList = (RuleContext)rule.GetChild(1);
-                return ParseRefExpressionList(expList);
-            }
-
-            throw new NotImplementedException("Not sure when this could happen....");
-        }
-
         private static List<ExpressionNode> ParseExpressionList(RuleContext expList)
         {
             List<ExpressionNode> n = new List<ExpressionNode>(expList.ChildCount / 2);
             for (int i = 0; i < expList.ChildCount; i += 2)
             {
+
                 n.Add(ParseExpression((RuleContext) expList.GetChild(i)));
 
                 if (i + 1 != expList.ChildCount)
@@ -293,9 +280,27 @@ namespace libcompiler.SyntaxTree.Parser
             return n;
         }
 
-        private static List<ExpressionNode> ParseRefExpressionList(RuleContext refExpList)
+        public static IEnumerable<ArgumentNode> ParseArgumentList(RuleContext argList)
         {
-            List<ExpressionNode> n = new List<ExpressionNode>();
+            List<ExpressionNode> n = new List<ExpressionNode>(argList.ChildCount / 2);
+            for (int i = 0; i < argList.ChildCount; i += 2)
+            {
+                int starti = i;
+                bool reference = ((argList.GetChild(i) as ITerminalNode)?.Symbol?.Type == CrawlLexer.REFERENCE);
+
+                Interval interval = argList.GetChild(starti).SourceInterval;
+                interval = interval.Union(argList.GetChild(starti + (reference ? 1 : 0)).SourceInterval);
+                yield return CrawlSyntaxNode.Argument(interval, reference,
+                    ParseExpression((RuleContext) argList.GetChild(i)));
+
+                if (i + 1 != argList.ChildCount)
+                {
+                    ITerminalNode itemsep = (ITerminalNode) argList.GetChild(i+1);
+                    if(itemsep.Symbol.Type != CrawlLexer.ITEM_SEPARATOR) throw new NotImplementedException("Strange stuff in argument list");
+                }
+            }
+            /*
+            List<ArgumentNode> n = new List<ArgumentNode>();
             for (int i = 0; i < refExpList.ChildCount; i += 2)
             {
                 var refTerminalNode = refExpList.GetChild(i) as ITerminalNode;
@@ -319,7 +324,7 @@ namespace libcompiler.SyntaxTree.Parser
                     if (itemsep.Symbol.Type != CrawlLexer.ITEM_SEPARATOR) throw new NotImplementedException("Strange stuff in reference expression list");
                 }
             }
-            return n;
+            return n; */
         }
     }
 }

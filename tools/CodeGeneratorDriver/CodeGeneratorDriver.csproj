@@ -108,8 +108,12 @@
     <Compile Include="SharedGeneratorion.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="VisitorGenerator.cs" />
+    <Compile Include="../../src/libcompiler/SyntaxTree/ExpressionType.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="../../src/libcompiler/SyntaxTree/SyntaxNodeDefinitions.xml" />
+  </ItemGroup>
+    <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>

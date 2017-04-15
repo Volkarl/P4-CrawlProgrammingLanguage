@@ -65,10 +65,28 @@ namespace libcompiler
             last = false;
         }
 
-        protected override void VisitLiteral(LiteralNode node)
+        protected override void VisitRealLiteral(RealLiteralNode node)
         {
             SupressParens();
-            base.VisitLiteral(node);
+            base.VisitRealLiteral(node);
+        }
+
+        protected override void VisitStringLiteral(StringLiteralNode node)
+        {
+            SupressParens();
+            base.VisitStringLiteral(node);
+        }
+
+        protected override void VisitIntegerLiteral(IntegerLiteralNode node)
+        {
+            SupressParens();
+            base.VisitIntegerLiteral(node);
+        }
+
+        protected override void VisitBooleanLiteral(BooleanLiteralNode node)
+        {
+            SupressParens();
+            base.VisitBooleanLiteral(node);
         }
 
         private void SupressParens()

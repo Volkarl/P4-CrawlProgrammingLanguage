@@ -35,25 +35,35 @@
         <node>
             <name>Assignment</name>
             <baseclass>CrawlSyntax</baseclass>
-            <properties>
-                <property>
-                    <name>Foo</name>
-                    <type>string</type>
-                </property>
-            </properties>
             <children>
                 <child>
                     <name>Target</name>
-                    <type>Assignment</type>
+                    <type>Expression</type>
                 </child>
                 <child>
                     <name>Value</name>
-                    <type>Assignment</type>
+                    <type>Expression</type>
                 </child>
             </children>
         </node>
         <node>
-            <name>Binary</name>
+            <name>Argument</name>
+            <baseclass>CrawlSyntax</baseclass>
+            <properties>
+                <property>
+                    <name>Refence</name>
+                    <type>bool</type>
+                </property>
+            </properties>
+            <children>
+                <child>
+                    <name>Value</name>
+                    <type>Expression</type>
+                </child>
+            </children>
+        </node>
+        <node>
+            <name>BinaryExpression</name>
             <baseclass>Expression</baseclass>
             <children>
                 <child>
@@ -63,6 +73,34 @@
                 <child>
                     <name>RightHandSide</name>
                     <type>Expression</type>
+                </child>
+            </children>
+        </node>
+        <node>
+            <name>MemberAccess</name>
+            <baseclass>Expression</baseclass>
+            <children>
+                <child>
+                    <name>Target</name>
+                    <type>Expression</type>
+                </child>
+                <child>
+                    <name>Member</name>
+                    <type>Identifier</type>
+                </child>
+            </children>
+        </node>
+        <node>
+            <name>GenericsUnpack</name>
+            <baseclass>Expression</baseclass>
+            <children>
+                <child>
+                    <name>Target</name>
+                    <type>Expression</type>
+                </child>
+                <child>
+                    <name>Arguments</name>
+                    <type>List'Type</type>
                 </child>
             </children>
         </node>
@@ -80,9 +118,54 @@
                 </child>
                 <child>
                     <name>Arguments</name>
-                    <type>List'Expression</type>
+                    <type>List'Argument</type>
                 </child>
             </children>
+        </node>
+        <node>
+            <name>Literal</name>
+            <baseclass>Expression</baseclass>
+            <abstract>true</abstract>
+        </node>
+        <node>
+            <name>RealLiteral</name>
+            <baseclass>Literal</baseclass>
+            <properties>
+                <property>
+                    <type>double</type>
+                    <name>Value</name>
+                </property>
+            </properties>
+        </node>
+        <node>
+            <name>StringLiteral</name>
+            <baseclass>Literal</baseclass>
+            <properties>
+                <property>
+                    <type>string</type>
+                    <name>Value</name>
+                </property>
+            </properties>
+        </node>
+        <node>
+            <name>IntegerLiteral</name>
+            <baseclass>Literal</baseclass>
+            <properties>
+                <property>
+                    <type>int</type>
+                    <name>Value</name>
+                </property>
+            </properties>
+        </node>
+        <node>
+            <name>BooleanLiteral</name>
+            <baseclass>Literal</baseclass>
+            <properties>
+                <property>
+                    <type>bool</type>
+                    <name>Value</name>
+                </property>
+            </properties>
         </node>
         <node>
             <name>Index</name>
@@ -94,7 +177,7 @@
                 </child>
                 <child>
                     <name>Arguments</name>
-                    <type>List'Expression</type>
+                    <type>List'Argument</type>
                 </child>
             </children>
         </node>
@@ -119,6 +202,7 @@
         <node>
             <name>Decleration</name>
             <baseclass>CrawlSyntax</baseclass>
+            <abstract>true</abstract>
             <properties>
                 <property>
                     <name>ProtectionLevel</name>
@@ -129,6 +213,7 @@
         <node>
             <name>Expression</name>
             <baseclass>CrawlSyntax</baseclass>
+            <abstract>true</abstract>
             <properties>
                 <property>
                     <name>ExpressionType</name>
@@ -139,6 +224,7 @@
         <node>
             <name>Flow</name>
             <baseclass>CrawlSyntax</baseclass>
+            <abstract>true</abstract>
         </node>
         <node>
             <name>ForLoop</name>
@@ -197,16 +283,6 @@
                 <property>
                     <type>IEnumerable&lt;CrawlSyntaxNode&gt;</type>
                     <name>Children</name>
-                </property>
-            </properties>
-        </node>
-        <node>
-            <name>Literal</name>
-            <baseclass>Expression</baseclass>
-            <properties>
-                <property>
-                    <name>Name</name>
-                    <type>string</type>
                 </property>
             </properties>
         </node>
@@ -275,6 +351,7 @@
                 <child>
                     <name>Value</name>
                     <type>Expression</type>
+                    <nulldefault>true</nulldefault>
                 </child>
             </children>
         </node>
@@ -299,20 +376,17 @@
                     <name>Condition</name>
                     <type>Expression</type></child>
                 <child>
-                    <name>Statementes</name>
+                    <name>TrueBlock</name>
                     <type>Block</type>
                 </child>
             </children>
         </node>
         <node>
             <name>IfElse</name>
-            <baseclass>Flow</baseclass>
+            <baseclass>If</baseclass>
             <children>
                 <child>
-                    <name>Condition</name>
-                    <type>Expression</type></child>
-                <child>
-                    <name>Statementes</name>
+                    <name>FalseBlock</name>
                     <type>Block</type>
                 </child>
             </children>
@@ -335,9 +409,17 @@
                     <type>string</type>
                 </property>
             </properties>
+            <ctor><![CDATA[_expType = new Lazy<CrawlType>(() => CrawlType.ParseDecleration(/*this.FindFirstScope(), */TypeName));]]></ctor>
+            <class><![CDATA[
+        private readonly Lazy<CrawlType> _expType;
+
+        /// <summary>
+        /// The actual type, within context
+        /// </summary>
+        public CrawlType ExportedType => _expType.Value;]]></class>
         </node>
         <node>
-            <name>Unary</name>
+            <name>UnaryExpression</name>
             <baseclass>Expression</baseclass>
             <children>
                 <child>
@@ -358,6 +440,7 @@
                 <child>
                     <name>DefaultValue</name>
                     <type>Expression</type>
+                    <nulldefault>true</nulldefault>
                 </child>
             </children>
         </node>
@@ -377,7 +460,7 @@
         </node>
         <node>
             <name>Variable</name>
-            <baseclass>CrawlSyntax</baseclass>
+            <baseclass>Expression</baseclass>
             <properties>
                 <property>
                     <name>Name</name>

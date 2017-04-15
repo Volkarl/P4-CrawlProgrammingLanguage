@@ -86,6 +86,10 @@ namespace CodeGeneratorDriver
         [XmlElement("manual")]
         public bool Manual { get; set; } = false;
 
+        [XmlElement("abstract")]
+        public bool Abstract { get;
+            set; } = false;
+
 
         [XmlArray("children")]
         [XmlArrayItem("child")]
@@ -94,6 +98,12 @@ namespace CodeGeneratorDriver
         [XmlArray("properties")]
         [XmlArrayItem("property")]
         public Property[] Properties { get; set; } = new Property[0];
+
+        [XmlElement("ctor")]
+        public string ExtraConstructorCode { get; set; }
+
+        [XmlElement("class")]
+        public string ExtraClassCode { get; set; }
 
     }
 
@@ -104,6 +114,7 @@ namespace CodeGeneratorDriver
 
         [XmlElement("name")]
         public string Name { get; set; }
+
     }
 
     public class Child
@@ -113,5 +124,8 @@ namespace CodeGeneratorDriver
 
         [XmlElement("name")]
         public string Name { get; set; }
+
+        [XmlElement("nulldefault")]
+        public bool NullDefault { get; set; }
     }
 }

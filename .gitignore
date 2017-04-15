@@ -211,5 +211,5 @@ FakesAssemblies/
 .idea
 
 libcompiler/GeneratedParser
-
+*.Generated.cs
 

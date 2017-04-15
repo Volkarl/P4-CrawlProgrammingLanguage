@@ -52,7 +52,7 @@ namespace CodeGeneratorDriver
                         }),
                     generator.SwitchStatement(
                         generator.MemberAccessExpression(generator.IdentifierName(options.Node.AsParameter()), "Type"),
-                        syntaxGeneration.Node.Select(SwitchSectionVoid)
+                        syntaxGeneration.Node.Where(x => x.Abstract == false).Select(SwitchSectionVoid)
                     ),
                     generator.ThrowStatement(
                         generator.ObjectCreationExpression(SyntaxFactory.ParseTypeName("ArgumentOutOfRangeException")))
@@ -61,6 +61,7 @@ namespace CodeGeneratorDriver
 
             List<SyntaxNode> theSmallVisitMethods = syntaxGeneration.Node
                 .Where(x => !x.Manual)
+                .Where(x => x.Abstract == false)
                 .Where(Filter)
                 .Select(VisitMethod)
                 .ToList();
@@ -71,7 +72,7 @@ namespace CodeGeneratorDriver
             allMethods.AddRange(theSmallVisitMethods);
 
             return generator.ClassDeclaration(name, notVoid ? new[] {"T"} : null, Accessibility.Public,
-                DeclarationModifiers.Abstract, baseType, null,
+                DeclarationModifiers.Abstract.WithPartial(true), baseType, null,
                 allMethods);
         }
 

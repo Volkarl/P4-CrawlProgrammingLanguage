@@ -21,7 +21,7 @@ namespace libcompiler.SyntaxTree.Parser
                 (CrawlParser.StatementsContext)translationUnit.GetChild(1);
 
 
-            ListNode<ImportNode> importNodes = ParseImports(imports);
+            IEnumerable<ImportNode> importNodes = ParseImports(imports);
             BlockNode rootBlock = ParseBlockNode(statements);
 
             return CrawlSyntaxNode.TranslationUnit(translationUnit.SourceInterval, importNodes, rootBlock);
@@ -30,15 +30,10 @@ namespace libcompiler.SyntaxTree.Parser
         /// <summary>
         /// Parse import directives
         /// </summary>
-        private static ListNode<ImportNode> ParseImports(CrawlParser.Import_directivesContext imports)
+        private static IEnumerable<ImportNode> ParseImports(CrawlParser.Import_directivesContext imports)
         {
-            List<ImportNode> children = new List<ImportNode>();
-
-            if(imports.ChildCount!=0)
-                foreach (RuleContext child in imports.children.Cast<RuleContext>())
-                    children.Add(ParseImportNode(child));
-
-            return CrawlSyntaxNode.ImportNode(imports.SourceInterval, children);
+            foreach (RuleContext child in imports.children.Cast<RuleContext>())
+                yield return ParseImportNode(child);
         }
 
         /// <summary>
@@ -57,7 +52,7 @@ namespace libcompiler.SyntaxTree.Parser
                 path.Append(rule.GetChild(i).GetText());
             }
 
-            return CrawlSyntaxNode.ImportNode(rule.SourceInterval, path.ToString());
+            return CrawlSyntaxNode.Import(rule.SourceInterval, path.ToString());
         }
 
         public static BlockNode ParseBlockNode(RuleContext rule)
@@ -105,7 +100,7 @@ namespace libcompiler.SyntaxTree.Parser
             ExpressionNode condition = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(1));
             BlockNode block = ParseBlockNode((RuleContext) rule.GetChild(3));
 
-            return CrawlSyntaxNode.WhileLoop(rule.SourceInterval, condition, block);
+            return CrawlSyntaxNode.While(rule.SourceInterval, condition, block);
             throw new NotImplementedException();
         }
 
@@ -154,7 +149,7 @@ namespace libcompiler.SyntaxTree.Parser
             ExpressionNode iteratior = ExpressionParser.ParseExpression(expression);
             BlockNode block = ParseBlockNode(blockCtx);
 
-            return CrawlSyntaxNode.Forloop(rule.SourceInterval, type, ParseVariableNode(identifierNode), iteratior, block);
+            return CrawlSyntaxNode.ForLoop(rule.SourceInterval, ParseIdentifier(identifierNode), iteratior, block);
         }
 
         public static DeclerationNode ParseDeclerationNode(RuleContext rule)
@@ -217,7 +212,15 @@ namespace libcompiler.SyntaxTree.Parser
             RuleContext body =
                 (RuleContext) methodContext.LastChild().GetChild(1);
 
-            return CrawlSyntaxNode.Function(interval, protectionLevel, type, parameters, genericParameters, ParseVariableNode(identifier), ParseBlockNode(body));
+            return CrawlSyntaxNode.MethodDecleration(
+                interval,
+                protectionLevel,
+                type,
+                ParseIdentifier(identifier),
+                parameters,
+                genericParameters,
+                ParseBlockNode(body)
+            );
         }
 
         private static IEnumerable<ParameterNode> ParseParameters(CrawlParser.ParametersContext parametersContext)
@@ -239,7 +242,7 @@ namespace libcompiler.SyntaxTree.Parser
             TypeNode type = ParseType((CrawlParser.TypeContext) parameterContext.GetChild(typeindex));
             string identifier = parameterContext.LastChild().GetText();
 
-            return CrawlSyntaxNode.Parameter(parameterContext.SourceInterval, reference, type, identifier);
+            return CrawlSyntaxNode.Parameter(parameterContext.SourceInterval, reference, identifier, type);
         }
 
         private static IEnumerable<GenericParameterNode> ParseGenericParameters(CrawlParser.Generic_parametersContext genericsContext)
@@ -252,17 +255,17 @@ namespace libcompiler.SyntaxTree.Parser
 
         private static GenericParameterNode ParseGenericParameter(CrawlParser.GenericContext generic)
         {
-            return CrawlSyntaxNode.GenericsParameterNode(generic.SourceInterval, generic.GetChild(0).GetText(), generic.GetChild(2)?.GetText());
+            return CrawlSyntaxNode.GenericParameter(generic.SourceInterval, generic.GetChild(0).GetText(), generic.GetChild(2)?.GetText());
         }
 
         private static VariableNode ParseVariableNode(ITerminalNode node)
         {
-            return CrawlSyntaxNode.VariableNode(node.SourceInterval, node.GetText());
+            return CrawlSyntaxNode.Variable(node.SourceInterval, node.GetText());
         }
 
-        private static IdentifierNode ParseTokenNode(ITerminalNode node)
+        private static IdentifierNode ParseIdentifier(ITerminalNode node)
         {
-            return CrawlSyntaxNode.TokenNode(node.SourceInterval, node.GetText());
+            return CrawlSyntaxNode.Identifier(node.SourceInterval, node.GetText());
         }
 
         private static DeclerationNode ParseVariableDecleration(RuleContext classPart, ProtectionLevel protectionLevel, Interval interval)
@@ -274,7 +277,7 @@ namespace libcompiler.SyntaxTree.Parser
 
             TypeNode type = ParseType((CrawlParser.TypeContext) classPart.GetChild(0));
 
-            return CrawlSyntaxNode.VariableDeclerations(
+            return CrawlSyntaxNode.VariableDecleration(
                 interval,
                 protectionLevel,
                 type,
@@ -284,7 +287,7 @@ namespace libcompiler.SyntaxTree.Parser
                     .Select(ParseSingleVariable));
         }
 
-        private static VariableDeclerationNode ParseSingleVariable(CrawlParser.Variable_declContext variable)
+        private static SingleVariableDeclerationNode ParseSingleVariable(CrawlParser.Variable_declContext variable)
         {
             ITerminalNode identifier = (ITerminalNode) variable.GetChild(0);
             if(identifier.Symbol.Type != CrawlLexer.IDENTIFIER) throw new NotImplementedException();
@@ -292,12 +295,12 @@ namespace libcompiler.SyntaxTree.Parser
             //unitialized
             if (variable.ChildCount == 1)
             {
-                return CrawlSyntaxNode.VariableDecleration(variable.SourceInterval, ParseVariableNode(identifier));
+                return CrawlSyntaxNode.SingleVariableDecleration(variable.SourceInterval, ParseVariableNode(identifier));
             }
             //initialized
             else if (variable.ChildCount == 3)
             {
-                return CrawlSyntaxNode.VariableDecleration(variable.SourceInterval, ParseVariableNode(identifier),
+                return CrawlSyntaxNode.SingleVariableDecleration(variable.SourceInterval, ParseVariableNode(identifier),
                     ExpressionParser.ParseExpression((RuleContext) variable.GetChild(2)));
             }
 
@@ -328,14 +331,14 @@ namespace libcompiler.SyntaxTree.Parser
 
             BlockNode bodyBlock = ParseBlockNode(body);
 
-            return CrawlSyntaxNode.ClassDecleration(interval, protectionLevel, ParseTokenNode(tn2), genericParameters, bodyBlock);
+            return CrawlSyntaxNode.ClassDecleration(interval, protectionLevel, ParseIdentifier(tn2), genericParameters, bodyBlock);
         }
 
         #endregion
 
         public static TypeNode ParseType(CrawlParser.TypeContext type)
         {
-           return CrawlSyntaxNode.Type(type.SourceInterval, CrawlType.ParseDecleration(type.GetText()));
+           return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText());
         }
 
         private static ProtectionLevel ParseProtectionLevel(CrawlParser.Protection_levelContext protectionLevel)
@@ -390,7 +393,7 @@ namespace libcompiler.SyntaxTree.Parser
             }
             else
             {
-                return CrawlSyntaxNode.ReturnStatement(rule.SourceInterval);
+                return CrawlSyntaxNode.ReturnStatement(rule.SourceInterval, null);
             }
         }
 
@@ -402,13 +405,13 @@ namespace libcompiler.SyntaxTree.Parser
             {
                 CrawlParser.Subfield_expressionContext subfield = (CrawlParser.Subfield_expressionContext) rule.GetChild(1);
 
-                VariableNode sub = CrawlSyntaxNode.VariableAccess(subfield.GetChild(1).SourceInterval, subfield.GetChild(1).GetText());
+                IdentifierNode sub = CrawlSyntaxNode.Identifier(subfield.GetChild(1).SourceInterval, subfield.GetChild(1).GetText());
                 target = CrawlSyntaxNode.MemberAccess(subfield.SourceInterval, target, sub);
             }
             else if(rule.GetChild(1) is CrawlParser.Index_expressionContext)
             {
                 RuleContext idx = (RuleContext) rule.GetChild(1);
-                target = CrawlSyntaxNode.Index(idx.SourceInterval, target, ExpressionParser.ParseCallTail(idx));
+                target = CrawlSyntaxNode.Index(idx.SourceInterval, target, ExpressionParser.ParseArgumentList(idx));
             }
 
             ExpressionNode value = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(rule.ChildCount - 2));

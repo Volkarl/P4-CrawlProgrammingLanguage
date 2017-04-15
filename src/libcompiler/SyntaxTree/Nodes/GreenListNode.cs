@@ -19,7 +19,7 @@ namespace libcompiler.SyntaxTree
                 ChildCount = _children.Length;
             }
 
-            protected GreenListNode(Interval interval, GreenCrawlSyntaxNode[] children) : base(NodeType.List,
+            protected GreenListNode(Interval interval, GreenCrawlSyntaxNode[] children) : base(SyntaxTree.NodeType.List,
                 interval)
             {
                 _children = children;

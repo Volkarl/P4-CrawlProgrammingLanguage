@@ -1,21 +1,14 @@
-﻿namespace libcompiler.SyntaxTree.Nodes
+﻿using System;
+
+namespace libcompiler.SyntaxTree
 {
-    public class TypeNode : CrawlSyntaxNode
+    public partial class TypeNode
     {
-        public TypeNode(CrawlSyntaxNode parent, Internal.GreenTypeNode self, int indexInParent) : base(parent, self, indexInParent)
-        {
-            ExportedType = self.ExportedType;
-        }
+        private readonly Lazy<CrawlType> _type;
 
-        public CrawlType ExportedType { get; }
-        public override CrawlSyntaxNode GetChildAt(int index)
-        {
-            return default(CrawlSyntaxNode);
-        }
-
-        public override string ToString()
-        {
-            return ExportedType.ToString();
-        }
+        /// <summary>
+        /// The actual type, within context
+        /// </summary>
+        public CrawlType ExportedType => _type.Value;
     }
 }

@@ -58,6 +58,7 @@
     <Compile Include="SyntaxTree\Nodes\GreenCrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GreenListNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ListNode.cs" />
+    <Compile Include="SyntaxTree\VisitorVisitList.cs" />
     <Compile Include="TypeSystem\BuildInType.cs" />
     <Compile Include="TypeSystem\CrawlType.cs" />
     <Compile Include="$(GeneratedRedSyntaxNodes)" />

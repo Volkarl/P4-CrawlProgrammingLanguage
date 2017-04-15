@@ -28,13 +28,15 @@ namespace CodeGeneratorDriver
 
             classContents.Add(CreateConstructor(generator, node, options));
             classContents.Add(CreateGetChild(generator, node, options));
-            classContents.Add(CreateCreateRed(generator, node, options));
+            if(!node.Abstract)
+                classContents.Add(CreateCreateRed(generator, node, options));
             classContents.Add(CreateRepaceChild(generator, node, options));
 
 
 
             return generator.ClassDeclaration(
                 SharedGeneratorion.GreenNodeName(node.Name),
+                modifiers: DeclarationModifiers.None.WithIsAbstract(node.Abstract),
                 accessibility: Accessibility.Internal,
                 baseType: SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(node.BaseClass)),
                 members: classContents

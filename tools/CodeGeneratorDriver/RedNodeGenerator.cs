@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.CodeAnalysis.Editing;
 
 namespace CodeGeneratorDriver
@@ -15,6 +18,15 @@ namespace CodeGeneratorDriver
         public static SyntaxNode CreateRedNode(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
         {
             List<SyntaxNode> members = new List<SyntaxNode>();
+
+            if (!string.IsNullOrWhiteSpace(node.ExtraClassCode))
+            {
+                SyntaxTree tree = CSharpSyntaxTree.ParseText("class f{ " + node.ExtraClassCode + " }");
+                var cu = (CompilationUnitSyntax)tree.GetRoot();
+                var @class = (ClassDeclarationSyntax)cu.Members[0];
+                members.AddRange(@class.Members);
+
+            }
 
             members.AddRange(
                 node.Children.Select(
@@ -37,15 +49,64 @@ namespace CodeGeneratorDriver
 
             members.Add(CreateGetChildAt(generator, node, options));
 
+            members.Add(CreateUpdate(generator, node, options));
+
             return generator.ClassDeclaration(
                 SharedGeneratorion.RedNodeName(node.Name),
                 null,
                 Accessibility.Public,
-                DeclarationModifiers.Partial,
+                DeclarationModifiers.Partial.WithIsAbstract(node.Abstract),
                 SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.BaseClass)),
                 null,
                 members
             );
+        }
+
+        private static SyntaxNode CreateUpdate(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
+        {
+            IEnumerable<string> allArguments = node.AllProperties()
+                .Skip(1)
+                .Select(x => x.Name)
+                .Concat(node.AllChildren().Select(x => x.Name));
+
+            var first = allArguments.Take(1).First();
+
+            var q = generator.InvocationExpression(
+                generator.MemberAccessExpression(generator.IdentifierName(first), "Equals"),
+                generator.IdentifierName(first.AsParameter()));
+
+            var v = allArguments.Skip(1).Aggregate( q,
+                (syntaxNode, s) => generator.LogicalOrExpression(syntaxNode, CreateComparison(generator, s)));
+
+
+            SyntaxNode changeifstmt = generator.IfStatement(v
+                , new SyntaxNode[0]);
+
+            return generator.MethodDeclaration("Update",
+                node.AllProperties().Skip(1)
+                    .Select(p =>
+                        generator.ParameterDeclaration(p.Name.AsParameter(), SyntaxFactory.ParseTypeName(p.Type))
+                    )
+                    .Concat(
+                        node.AllChildren()
+                            .Select(p => generator.ParameterDeclaration(p.Name.AsParameter(),
+                                SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(p.Type))))
+                    ),
+                null,
+                SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)),
+                Accessibility.Public,
+                DeclarationModifiers.None,
+                new []
+                {
+                    changeifstmt,
+                    generator.ReturnStatement(generator.ThisExpression())
+                });
+        }
+
+        private static SyntaxNode CreateComparison(SyntaxGenerator generator, string item)
+        {
+            return generator.ValueNotEqualsExpression(generator.IdentifierName(item),
+                generator.IdentifierName(item.AsParameter()));
         }
 
         private static SyntaxNode CreateGetChildAt(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
@@ -73,6 +134,16 @@ namespace CodeGeneratorDriver
 
         private static SyntaxNode CreateCtor(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
         {
+            List<SyntaxNode> extraNodes = new List<SyntaxNode>();
+            if (!string.IsNullOrWhiteSpace(node.ExtraConstructorCode))
+            {
+                SyntaxTree tree = CSharpSyntaxTree.ParseText("class f{ public f(){" + node.ExtraConstructorCode + "}}");
+                var cu = (CompilationUnitSyntax)tree.GetRoot();
+                var @class = (ClassDeclarationSyntax)cu.Members[0];
+                var ctor = (ConstructorDeclarationSyntax)@class.Members[0];
+                extraNodes.AddRange(ctor.Body.Statements);
+
+            }
             return generator.ConstructorDeclaration(
                 null,
                 new[]
@@ -95,7 +166,7 @@ namespace CodeGeneratorDriver
                 node.Properties.Select(
                     x =>
                         generator.AssignmentStatement(generator.IdentifierName(x.Name),
-                            generator.MemberAccessExpression(generator.IdentifierName(options.Self), x.Name)))
+                            generator.MemberAccessExpression(generator.IdentifierName(options.Self), x.Name))).Concat(extraNodes)
 
             );
         }
