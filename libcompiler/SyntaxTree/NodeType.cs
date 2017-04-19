@@ -17,17 +17,17 @@ namespace libcompiler.SyntaxTree
         ClassDecleration,
         VariableDecleration,
         VariableDeclerationSingle,
-        FunctionDecleration,
+        MethodDecleration,
         Block,
         Imports,
         Import,
         TranslationUnit,
         Literal,
         NodeList,
-        Token,
         Type,
         GenericUnpack,
         GenericParametersNode,
-        Reference
+        Reference,
+        Identifier
     }
 }

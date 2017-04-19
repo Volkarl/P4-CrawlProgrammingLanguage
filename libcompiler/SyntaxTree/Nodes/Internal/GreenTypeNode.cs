@@ -6,10 +6,12 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
     public class GreenTypeNode : GreenCrawlSyntaxNode
     {
         public CrawlType ExportedType { get; }
+        public bool IsReference { get; set; }
 
-        public GreenTypeNode(Interval interval, CrawlType expotedType) : base(NodeType.Type, interval)
+        public GreenTypeNode(Interval interval, CrawlType expotedType, bool isReference) : base(NodeType.Type, interval)
         {
             ExportedType = expotedType;
+            IsReference = isReference;
             ChildCount = 0;
         }
 

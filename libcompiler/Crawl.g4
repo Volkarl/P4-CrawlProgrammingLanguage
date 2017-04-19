@@ -169,7 +169,8 @@ declaration				: protection_level? (class_declaration | function_decleration | v
 
 
 function_decleration	: type parameters generic_parameters? IDENTIFIER ASSIGNMENT_SYMBOL function_body;
-parameters              : LPARENTHESIS (REFERENCE? type IDENTIFIER ( ITEM_SEPARATOR REFERENCE? type IDENTIFIER )* )?  RPARENTHESIS;
+parameters              : LPARENTHESIS (parameter ( ITEM_SEPARATOR parameter )* )?  RPARENTHESIS;
+parameter               : REFERENCE? type IDENTIFIER;
 generic_parameters      : LANGLEBRACKET generic ( ITEM_SEPARATOR generic )* RANGLEBRACKET;
 generic                 : IDENTIFIER ( INHERITANCE_OPERATOR IDENTIFIER )?;
 
@@ -205,7 +206,7 @@ type					: IDENTIFIER function_type? array_type? generic_unpack_expression?;
 //type_tail			:  | array_type ;
 array_type			: (LSQUAREBRACKET ITEM_SEPARATOR* RSQUAREBRACKET)+ ;
 function_type		: (LPARENTHESIS function_arguments?  RPARENTHESIS)+ ;
-function_arguments	: (REFERENCE? type IDENTIFIER?) ( ITEM_SEPARATOR REFERENCE? type IDENTIFIER? ) *;
+function_arguments	: ( REFERENCE? type ) ( ITEM_SEPARATOR REFERENCE? type ) *;
 
 //Protection level. Just stolen from .NET, as we target CLR
 protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL ;

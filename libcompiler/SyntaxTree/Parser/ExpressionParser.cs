@@ -300,7 +300,6 @@ namespace libcompiler.SyntaxTree.Parser
             for (int i = 0; i < refExpList.ChildCount; i += 2)
             {
                 var refTerminalNode = refExpList.GetChild(i) as ITerminalNode;
-                //Console.WriteLine(refTerminalNode);
                 if (refTerminalNode == null) // If there is no reference, then the child is an expression
                 {
                     n.Add(ParseExpression((RuleContext) refExpList.GetChild(i)));

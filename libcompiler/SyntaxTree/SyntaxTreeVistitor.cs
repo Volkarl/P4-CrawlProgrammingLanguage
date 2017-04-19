@@ -49,8 +49,8 @@ namespace libcompiler.SyntaxTree
                 case NodeType.VariableDeclerationSingle:
                     VisitVariableDeclerationSingle((SingleVariableDecleration) node);
                     break;
-                case NodeType.FunctionDecleration:
-                    VisitFunctionDecleration((MethodDeclerationNode) node);
+                case NodeType.MethodDecleration:
+                    VisitMethodDecleration((MethodDeclerationNode) node);
                     break;
                 case NodeType.Block:
                     VisitBlock((BlockNode) node);
@@ -85,9 +85,16 @@ namespace libcompiler.SyntaxTree
                 case NodeType.GenericParametersNode:
                     VisitGenericParameter((GenericParameterNode) node);
                     break;
+                case NodeType.Identifier:
+                    VisitIdentifierNode((IdentifierNode) node);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(node.ToString());
             }
+        }
+
+        private void VisitIdentifierNode(IdentifierNode node)
+        {
         }
 
         private void VisitReference(ReferenceNode node)
@@ -191,10 +198,13 @@ namespace libcompiler.SyntaxTree
             Visit(node.Arguments);
         }
 
-        protected virtual void VisitFunctionDecleration(MethodDeclerationNode node)
+        protected virtual void VisitMethodDecleration(MethodDeclerationNode node)
         {
+            Visit(node.MethodSignature);
+            Visit(node.ParameterIdentifiers);
+            Visit(node.Identfier);
             Visit(node.GenericParameters);
-            Visit(node.BodyBlock);
+            Visit(node.Body);
         }
 
         protected virtual void VisitVariableDeclerationSingle(SingleVariableDecleration node)

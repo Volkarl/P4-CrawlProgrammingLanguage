@@ -4,25 +4,21 @@ namespace libcompiler.SyntaxTree.Nodes
 {
     public class MethodDeclerationNode : DeclerationNode, INodeThatTakesGenericParameters
     {
-        private TypeNode _type;
-        private VariableNode _id;
+        private TypeNode _methodSignature;
+        private ListNode<IdentifierNode> _parameterIdentifiers;
         private ListNode<GenericParameterNode> _genericParameters;
+        private VariableNode _identifier;
         private BlockNode _body;
 
-        //TODO: Needs to save parameters' identifiers.
-        public TypeNode FunctionType => GetRed(ref _type, 0);
-        public VariableNode Identfier => GetRed(ref _id, 1);
+        public TypeNode MethodSignature => GetRed(ref _methodSignature, 0);
+        public ListNode<IdentifierNode> ParameterIdentifiers => GetRed(ref _parameterIdentifiers, 1);
         public ListNode<GenericParameterNode> GenericParameters => GetRed(ref _genericParameters, 2);
-        public BlockNode BodyBlock => GetRed(ref _body, 3);
+        public VariableNode Identfier => GetRed(ref _identifier, 3);
+        public BlockNode Body => GetRed(ref _body, 4);
 
         public MethodDeclerationNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent) : base(parent, self, indexInParent)
         {
             
-        }
-
-        public override string ToString()
-        {
-            return $"decl {FunctionType.ExportedType.Textdef} {Identfier} =";
         }
 
         public override CrawlSyntaxNode GetChildAt(int index)
@@ -30,13 +26,15 @@ namespace libcompiler.SyntaxTree.Nodes
             switch (index)
             {
                 case 0:
-                    return FunctionType;
+                    return MethodSignature;
                 case 1:
-                    return Identfier;
+                    return ParameterIdentifiers;
                 case 2:
                     return GenericParameters;
                 case 3:
-                    return BodyBlock;
+                    return Identfier;
+                case 4:
+                    return Body;
                 default:
                     return default(CrawlSyntaxNode);
             }
