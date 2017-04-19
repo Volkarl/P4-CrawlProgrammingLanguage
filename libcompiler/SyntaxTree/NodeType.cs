@@ -28,6 +28,7 @@ namespace libcompiler.SyntaxTree
         GenericUnpack,
         GenericParametersNode,
         Reference,
-        Identifier
+        Identifier,
+        NameSpace
     }
 }

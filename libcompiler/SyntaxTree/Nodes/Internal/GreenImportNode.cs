@@ -5,12 +5,15 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
 {
     public class GreenImportNode : GreenCrawlSyntaxNode
     {
-        public string Module { get; }
+        public string Package { get; }
 
-        public GreenImportNode(Interval interval, string module)
-            : base(NodeType.Import, interval)
+        /// <summary> You see, GreenNameSpaceNode is just an abstraction of this node. It's quite identical except for it's advertised type, which is why we need to be able to set it outside the ctor.</summary>
+        private const NodeType THE_TYPE_OF_THIS_NODE = NodeType.Import;
+
+        public GreenImportNode(Interval interval, string package)
+            : base(THE_TYPE_OF_THIS_NODE, interval)
         {
-            Module = module;
+            Package = package;
             ChildCount = 0;
         }
 

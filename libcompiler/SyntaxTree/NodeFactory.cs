@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime.Misc;
 using libcompiler.SyntaxTree.Nodes;
@@ -40,6 +41,12 @@ namespace libcompiler.SyntaxTree
         {
             //TODO correct interval
             return new _.GreenListNode<T>(default(Interval), i.Select(CrawlSyntaxNode.ExtractGreenNode));
+        }
+
+        internal static NameSpaceNode NameSpaceNode(Interval sourceInterval, string nameSpace)
+        {
+            var green = new _.GreenNameSpaceNode(sourceInterval, nameSpace);
+            return (NameSpaceNode)Wrap( green );
         }
 
         public static FlowNode If(Interval interval, ExpressionNode conditon, BlockNode trueBlock)
@@ -218,12 +225,14 @@ namespace libcompiler.SyntaxTree
                     GetGreenNode<ExpressionNode,_.GreenExpressionNode>(value)));
         }
 
-        public static TranslationUnitNode TranslationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
+        //Denne skal skrives om senere, så den også gememer namespace noden.
+        public static TranslationUnitNode TranslationUnit(Interval interval, IEnumerable<ImportNode> importNodes,NameSpaceNode nameSpace, BlockNode rootCode)
         {
             return (TranslationUnitNode) Wrap(
                 new _.GreenTranslationUnitNode(
                     interval,
                     GetListOfGreenNodes(importNodes),
+                    GetGreenNode<NameSpaceNode, _.GreenNameSpaceNode> (nameSpace),
                     GetGreenNode<BlockNode, _.GreenBlockNode>(rootCode)
                 )
             );

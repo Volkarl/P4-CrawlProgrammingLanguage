@@ -85,6 +85,9 @@ namespace libcompiler.SyntaxTree
                 case NodeType.GenericParametersNode:
                     VisitGenericParameter((GenericParameterNode) node);
                     break;
+                case NodeType.NameSpace:
+                    VisitNameSpace((NameSpaceNode)node);
+                    break;
                 case NodeType.Identifier:
                     VisitIdentifierNode((IdentifierNode) node);
                     break;
@@ -95,6 +98,11 @@ namespace libcompiler.SyntaxTree
 
         private void VisitIdentifierNode(IdentifierNode node)
         {
+        }
+
+        private void VisitNameSpace(NameSpaceNode node)
+        {
+            
         }
 
         private void VisitReference(ReferenceNode node)
@@ -233,7 +241,7 @@ namespace libcompiler.SyntaxTree
         protected virtual void VisitTranslationUnit(TranslationUnitNode node)
         {
             Visit(node.Imports);
-
+            Visit(node.NameSpace);
             Visit(node.Code);
         }
 
