@@ -247,7 +247,7 @@ call_expression			: LPARENTHESIS ref_expression_list? RPARENTHESIS ;
 
 subfield_expression		: DOT IDENTIFIER ;
 
-index_expression		: LSQUAREBRACKET	expression_list RSQUAREBRACKET ;
+index_expression		: LSQUAREBRACKET expression_list RSQUAREBRACKET ;
 
 generic_unpack_expression   : LANGLEBRACKET type ( ITEM_SEPARATOR type )* RANGLEBRACKET;
 

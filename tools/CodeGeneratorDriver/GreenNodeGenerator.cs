@@ -65,7 +65,7 @@ namespace CodeGeneratorDriver
                 null,
                 node.AllProperties()
                     .Select(p =>
-                        generator.ParameterDeclaration(p.Name.AsParameter(), SyntaxFactory.ParseTypeName(p.Type))
+                        generator.ParameterDeclaration(p.Name.AsParameter(),SyntaxFactory.ParseTypeName(p.Type == "IEnumerable<CrawlSyntaxNode>" ? "IEnumerable<GreenCrawlSyntaxNode>" : p.Type))
                     )
                     .Concat(
                         node.AllChildren()

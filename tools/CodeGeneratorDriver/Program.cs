@@ -50,9 +50,11 @@ namespace CodeGeneratorDriver
                 new SimpleTVisitorGenerator(generator, syntaxGeneration).CreateVisitor("SyntaxVisitor"),
                 new ComplexTVisitorGenerator(generator, syntaxGeneration,
                     SyntaxFactory.ParseTypeName("SyntaxVisitor<T>")).CreateVisitor("SimpleSyntaxVisitor"),
+
+                /*
                 new SyntaxRewriterGenerator(generator, syntaxGeneration,
                         SyntaxFactory.ParseTypeName($"SyntaxVisitor<{SharedGeneratorion.RedNodeName(syntaxGeneration.Options.BaseName)}>"))
-                    .CreateVisitor("SyntaxRewriter")
+                    .CreateVisitor("SyntaxRewriter") */
             };
 
             foreach (Node node in syntaxGeneration.Node)

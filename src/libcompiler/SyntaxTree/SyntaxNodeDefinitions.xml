@@ -275,7 +275,7 @@
                 </property>
             </properties>
         </node>
-        <node>
+        <node> 
             <name>List'CrawlSyntax</name>
             <baseclass>CrawlSyntax</baseclass>
             <manual>true</manual>

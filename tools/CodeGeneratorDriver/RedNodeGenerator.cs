@@ -49,7 +49,7 @@ namespace CodeGeneratorDriver
 
             members.Add(CreateGetChildAt(generator, node, options));
 
-            members.Add(CreateUpdate(generator, node, options));
+            //members.Add(CreateUpdate(generator, node, options));
 
             return generator.ClassDeclaration(
                 SharedGeneratorion.RedNodeName(node.Name),

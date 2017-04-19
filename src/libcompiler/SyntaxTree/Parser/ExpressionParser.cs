@@ -224,7 +224,7 @@ namespace libcompiler.SyntaxTree.Parser
                 case CrawlParser.RULE_integer_literal:
                     return CrawlSyntaxNode.IntegerLiteral(realLiteral.SourceInterval, int.Parse(realLiteral.GetText()));
                 case CrawlParser.RULE_boolean_literal:
-                    return CrawlSyntaxNode.BooleanLiteral(realLiteral.SourceInterval, bool.Parse(realLiteral.GetText()));
+                    return CrawlSyntaxNode.BooleanLiteral(realLiteral.SourceInterval, (realLiteral.GetText()) == "true");
                 case CrawlParser.RULE_real_literal:
                     return CrawlSyntaxNode.RealLiteral(realLiteral.SourceInterval, double.Parse(realLiteral.GetText()));
                 default:
@@ -282,6 +282,10 @@ namespace libcompiler.SyntaxTree.Parser
 
         public static IEnumerable<ArgumentNode> ParseArgumentList(RuleContext argList)
         {
+            if(argList.ChildCount == 2) yield break;
+
+            argList = (RuleContext)argList.GetChild(1);
+
             List<ExpressionNode> n = new List<ExpressionNode>(argList.ChildCount / 2);
             for (int i = 0; i < argList.ChildCount; i += 2)
             {

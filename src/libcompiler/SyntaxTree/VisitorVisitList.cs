@@ -26,14 +26,14 @@ namespace libcompiler.SyntaxTree
         }
     }
 
-    public partial class SyntaxRewriter<T>
+    /*public partial class SyntaxRewriter<T>
     {
         protected override CrawlSyntaxNode VisitList<TNode>(ListNode<TNode> list)
         {
             return list.Update(list.Select(Visit).ToArray());
         }
     }
-    /*SimpleSyntaxVisitor
+    SimpleSyntaxVisitor
     SyntaxRewriter
 
 */

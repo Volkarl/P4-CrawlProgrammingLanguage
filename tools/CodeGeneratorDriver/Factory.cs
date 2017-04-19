@@ -87,12 +87,16 @@ namespace CodeGeneratorDriver
             {
                 Code = new[]
                 {
+
                     generator.LocalDeclarationStatement(
                         SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(parameter.Type)), identifier,
-                        generator.CastExpression(
-                            SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(parameter.Type)),
-                            generator.MemberAccessExpression(generator.IdentifierName(parameter.Name.AsParameter()),
-                                "Green")))
+                        generator.ConditionalExpression(
+                            generator.ReferenceNotEqualsExpression(
+                                generator.IdentifierName(parameter.Name.AsParameter()),
+                                generator.LiteralExpression(null)), generator.CastExpression(
+                                SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(parameter.Type)),
+                                generator.MemberAccessExpression(generator.IdentifierName(parameter.Name.AsParameter()),
+                                    "Green")), generator.LiteralExpression(null)))
 
 
                 },
@@ -192,6 +196,32 @@ namespace CodeGeneratorDriver
                         },
                         FinalIdentifier = identifier
                     }
+                };
+            }
+            else if (parameter.Type == "IEnumerable<CrawlSyntaxNode>")
+            {
+                string identifier = GenerateUnusedIdentifier();
+                return new List<ParameterGenerationInfo>()
+                {
+                    new ParameterGenerationInfo()
+                    {
+                        Parameters = new[]
+                        {
+                            generator.ParameterDeclaration(parameter.Name.AsParameter(),
+                                SyntaxFactory.ParseTypeName(parameter.Type))
+                        },
+                        Code = new[]
+                        {
+                            generator.LocalDeclarationStatement(identifier,
+                                generator.InvocationExpression(
+                                    generator.MemberAccessExpression(
+                                        generator.IdentifierName(parameter.Name.AsParameter()), "Select"),
+                                    generator.ValueReturningLambdaExpression("z",
+                                        generator.MemberAccessExpression(generator.IdentifierName("z"), "Green"))))
+                        },
+                        FinalIdentifier = identifier
+
+                    },
                 };
             }
             else

@@ -32,6 +32,8 @@ namespace libcompiler.SyntaxTree.Parser
         /// </summary>
         private static IEnumerable<ImportNode> ParseImports(CrawlParser.Import_directivesContext imports)
         {
+            if(imports.ChildCount == 0) yield break;
+            
             foreach (RuleContext child in imports.children.Cast<RuleContext>())
                 yield return ParseImportNode(child);
         }
