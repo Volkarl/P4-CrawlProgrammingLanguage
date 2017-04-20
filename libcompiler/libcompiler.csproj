@@ -130,6 +130,7 @@
     <Compile Include="TypeChecker\BlockScope.cs" />
     <Compile Include="TypeChecker\IScope.cs" />
     <Compile Include="TypeChecker\MethodScope.cs" />
+    <Compile Include="TypeSystem\TypeImplementationThatJustContainsATextString.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

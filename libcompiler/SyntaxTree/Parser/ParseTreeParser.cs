@@ -9,6 +9,7 @@ using Antlr4.Runtime.Tree;
 using libcompiler.ExtensionMethods;
 using libcompiler.Parser;
 using libcompiler.SyntaxTree.Nodes;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.SyntaxTree.Parser
 {
@@ -238,8 +239,6 @@ namespace libcompiler.SyntaxTree.Parser
 
             if(genericsContext != null)
                 genericParameters.AddRange(ParseGenericParameters(genericsContext));
-            RuleContext body =
-                (RuleContext) methodContext.LastChild().GetChild(1);
 
             //Body
             RuleContext bodyContext = (RuleContext) methodContext.LastChild().GetChild(1);
@@ -284,7 +283,7 @@ namespace libcompiler.SyntaxTree.Parser
         private static TypeNode GenerateMethodSignature(TypeNode returnType, List<TypeNode> parameterTypes)
         {
             StringBuilder textDef = new StringBuilder();
-            textDef.Append(returnType.ExportedType.Textdef);
+            textDef.Append(returnType.ExportedType);
 
             textDef.Append('(');
 
@@ -306,7 +305,7 @@ namespace libcompiler.SyntaxTree.Parser
             else
                 interval = new Interval(returnType.Interval.a, returnType.Interval.b);    //TODO: Only roughly correct.
 
-            CrawlType type = new CrawlType(textDef.ToString());
+            CrawlType type = new TypeImplementationThatJustContainsATextString(textDef.ToString());
 
             TypeNode result = NodeFactory.Type(interval, type, false);
             return result;
@@ -405,7 +404,7 @@ namespace libcompiler.SyntaxTree.Parser
 
         public static TypeNode ParseType(CrawlParser.TypeContext type, bool isReference=false)
         {
-           return NodeFactory.Type(type.SourceInterval, new CrawlType(type.GetText()), isReference);
+           return NodeFactory.Type(type.SourceInterval, new TypeImplementationThatJustContainsATextString(type.GetText()), isReference);
         }
 
         private static ProtectionLevel ParseProtectionLevel(CrawlParser.Protection_levelContext protectionLevel)

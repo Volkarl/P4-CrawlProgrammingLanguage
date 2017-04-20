@@ -11,6 +11,7 @@ namespace libcompiler.TypeChecker
         TypeInformation[] GetScope(string symbol);
     }
 
+    //TODO: This isn't how you TypeInformation
     public class TypeInformation
     {
     }

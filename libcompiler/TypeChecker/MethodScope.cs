@@ -12,8 +12,8 @@ namespace libcompiler.TypeChecker
         private readonly Dictionary<string, TypeInformation[]> _scopeInfo;
         public MethodScope(MethodDeclerationNode m)
         {
-            //TODO: Save real info in typeinformation....
-            _scopeInfo = m.Parameters.ToDictionary(x => x.Identifier, y => new TypeInformation[1]);
+            //TODO: Save more than just identifier
+            _scopeInfo = m.ParameterIdentifiers.ToDictionary(x => x.Value, y => new TypeInformation[1]);
         }
 
         public TypeInformation[] GetScope(string symbol)

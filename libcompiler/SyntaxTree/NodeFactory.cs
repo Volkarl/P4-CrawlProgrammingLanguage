@@ -344,7 +344,7 @@ namespace libcompiler.SyntaxTree
 
         public static ParameterNode Parameter(Interval interval, bool isReference, TypeNode type, string identifier)
         {
-            return (ParameterNode) Wrap(new _.GreenParameterNode(interval, isReference, Extract(type), identifier));
+            return (ParameterNode) Wrap(new _.GreenParameterNode(interval, isReference, GetGreenNode<TypeNode, _.GreenTypeNode>(type), identifier));
         }
     }
 }

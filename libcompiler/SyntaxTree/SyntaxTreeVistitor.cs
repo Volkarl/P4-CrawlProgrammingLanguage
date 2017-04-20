@@ -105,11 +105,6 @@ namespace libcompiler.SyntaxTree
             
         }
 
-        private void VisitReference(ReferenceNode node)
-        {
-            Visit(node.ParameterType);
-        }
-
         protected virtual void VisitReference(ReferenceNode node)
         {
             Visit(node.Target);
