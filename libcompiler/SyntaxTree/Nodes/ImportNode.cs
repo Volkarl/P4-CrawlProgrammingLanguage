@@ -2,11 +2,11 @@
 {
     public class ImportNode : CrawlSyntaxNode
     {
-        public string Module { get; }
+        public string Package { get; }
 
         protected internal ImportNode(CrawlSyntaxNode parent, Internal.GreenImportNode self, int indexInParent) : base(parent, self, indexInParent)
         {
-            Module = self.Module;
+            Package = self.Package;
         }
 
         public override CrawlSyntaxNode GetChildAt(int index)
@@ -16,7 +16,7 @@
 
         public override string ToString()
         {
-            return "Import: " + Module;
+            return "Import: " + Package;
         }
     }
 }

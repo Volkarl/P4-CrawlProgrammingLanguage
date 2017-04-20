@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Antlr4.Runtime;
@@ -18,14 +19,37 @@ namespace libcompiler.SyntaxTree.Parser
             CrawlParser.Import_directivesContext imports =
                 (CrawlParser.Import_directivesContext)translationUnit.GetChild(0);
 
+            CrawlParser.Namespace_declarationContext nameSpace =
+                (CrawlParser.Namespace_declarationContext)translationUnit.GetChild(1);
+
             CrawlParser.StatementsContext statements =
-                (CrawlParser.StatementsContext)translationUnit.GetChild(1);
+                (CrawlParser.StatementsContext)translationUnit.GetChild(2);
 
 
             ListNode<ImportNode> importNodes = ParseImports(imports);
+            NameSpaceNode namespaceNode = ParseNamespace(nameSpace);   //Forts�t herfra.
             BlockNode rootBlock = ParseBlockNode(statements);
 
-            return NodeFactory.TranslationUnit(translationUnit.SourceInterval, importNodes, rootBlock);
+            return NodeFactory.TranslationUnit(translationUnit.SourceInterval, importNodes, namespaceNode, rootBlock);
+        }
+
+        private static NameSpaceNode ParseNamespace(RuleContext nameSpace)
+        {
+            StringBuilder path = new StringBuilder();
+            if (nameSpace.ChildCount != 0)
+            {
+                //Child 0 is reserved word "pakke", and is discarded.
+                
+
+                path.Append(nameSpace.GetChild(1).GetText());
+                //Stride 2 to avoid dots.
+                for (int i = 3; i < nameSpace.ChildCount; i = i + 2)
+                {
+                    path.Append(".");
+                    path.Append(nameSpace.GetChild(i).GetText());
+                }               
+            }
+            return NodeFactory.NameSpaceNode(nameSpace.SourceInterval, path.ToString());
         }
 
         /// <summary>
@@ -155,7 +179,7 @@ namespace libcompiler.SyntaxTree.Parser
             ExpressionNode iteratior = ExpressionParser.ParseExpression(expression);
             BlockNode block = ParseBlockNode(blockCtx);
 
-            return NodeFactory.Forloop(rule.SourceInterval, type, ParseVariableNode(identifierNode), iteratior, block);
+            return NodeFactory.Forloop(rule.SourceInterval, type, ParseVariable(identifierNode), iteratior, block);
         }
 
         public static DeclerationNode ParseDeclerationNode(RuleContext rule)
@@ -195,52 +219,97 @@ namespace libcompiler.SyntaxTree.Parser
 
         private static DeclerationNode ParseMethodDecleration(RuleContext methodContext, ProtectionLevel protectionLevel, Interval interval)
         {
-            TypeNode type =
+            //Return Type
+            TypeNode returnType =
                 ParseType((CrawlParser.TypeContext) methodContext.GetChild(0));
 
-            CrawlParser.ParametersContext parametersContext = 
-                (CrawlParser.ParametersContext) methodContext.GetChild(1);
-            List<ParameterNode> parameters = ParseParameters(parametersContext).ToList();
+            Tuple<List<TypeNode>, List<IdentifierNode>> parameters =
+                ParseParameters((CrawlParser.ParametersContext)methodContext.GetChild(1));
+            List<IdentifierNode> parameterIdentifiers = parameters.Item2;
 
-            
+            TypeNode methodSignature = GenerateMethodSignature(returnType, parameters.Item1);
+
+            //Generic Parameters
+            List<GenericParameterNode> genericParameters
+                = new List<GenericParameterNode>();
+
             CrawlParser.Generic_parametersContext genericsContext =
                 methodContext.GetChild(2) as CrawlParser.Generic_parametersContext;
-            List<GenericParameterNode> genericParameters = new List<GenericParameterNode>();
+
             if(genericsContext != null)
                 genericParameters.AddRange(ParseGenericParameters(genericsContext));
-
-            int identifierIndex =
-                methodContext.ChildCount - 2 - 1;    //Identifier is always second last. And then one for the zero-indexed arrays.
-            ITerminalNode identifier =
-                (ITerminalNode)methodContext.GetChild(identifierIndex);
-
-
             RuleContext body =
                 (RuleContext) methodContext.LastChild().GetChild(1);
 
-            return NodeFactory.Function(interval, protectionLevel, type, parameters, genericParameters, ParseVariableNode(identifier), ParseBlockNode(body));
+            //Body
+            RuleContext bodyContext = (RuleContext) methodContext.LastChild().GetChild(1);
+            BlockNode body = ParseBlockNode(bodyContext);
+
+            //Identifier
+            int identifierIndex = methodContext.ChildCount - 2 -1; //Identifier is always second last. And then one for the zero-indexed arrays.
+            ITerminalNode identifierTerminal =
+                (ITerminalNode) methodContext.GetChild(identifierIndex);
+            VariableNode identifier = ParseVariable(identifierTerminal);
+
+            //Combine it all.
+            return NodeFactory.Method(interval, protectionLevel, methodSignature, parameterIdentifiers, genericParameters, identifier, body);
         }
 
-        private static IEnumerable<ParameterNode> ParseParameters(CrawlParser.ParametersContext parametersContext)
+        private static Tuple<List<TypeNode>, List<IdentifierNode>> ParseParameters(CrawlParser.ParametersContext context)
         {
-            if (parametersContext.ChildCount == 2) yield break;
-
-            for (int i = 1; i < parametersContext.ChildCount; i += 2)
+            List<TypeNode> resultPart1 = new List<TypeNode>();
+            List<IdentifierNode> resultPart2 = new List<IdentifierNode>();
+            //parameters : LPARENTHESIS (parameter ( ITEM_SEPARATOR parameter )* )?  RPARENTHESIS;
+            //parameter : REFERENCE? type IDENTIFIER;
+            if (context.ChildCount > 2)
             {
-                yield return ParseParameter((CrawlParser.ParameterContext)parametersContext.GetChild(i));
+                for (int i = 1; i < context.ChildCount; i = i + 2)
+                {
+                    IParseTree parameter = context.GetChild(i);
+                    if (parameter.ChildCount == 3) //This parameter is a Reference.
+                    {
+                        resultPart1.Add(ParseType((CrawlParser.TypeContext) parameter.GetChild(1), true)); //type, which is a reference.
+                        resultPart2.Add(ParseIdentifier((ITerminalNode) parameter.GetChild(2))); //IDENTIFIER
+                    }
+                    else //This parameter is not a reference.
+                    {
+                        resultPart1.Add(ParseType((CrawlParser.TypeContext) parameter.GetChild(0))); //type
+                        resultPart2.Add(ParseIdentifier((ITerminalNode) parameter.GetChild(1))); //IDENTIFIER
+                    }
+                }
             }
+            return new Tuple<List<TypeNode>, List<IdentifierNode>>(resultPart1, resultPart2);
         }
 
-        private static ParameterNode ParseParameter(CrawlParser.ParameterContext parameterContext)
+        private static TypeNode GenerateMethodSignature(TypeNode returnType, List<TypeNode> parameterTypes)
         {
-            //A parameter can either start with REFERENCE or a type. If its a reference its a terminal, that is afaik the easiest way to check
-            bool reference = parameterContext.GetChild(0) is ITerminalNode;
-            int typeindex = reference ? 1 : 0;
+            StringBuilder textDef = new StringBuilder();
+            textDef.Append(returnType.ExportedType.Textdef);
 
-            TypeNode type = ParseType((CrawlParser.TypeContext) parameterContext.GetChild(typeindex));
-            string identifier = parameterContext.LastChild().GetText();
+            textDef.Append('(');
 
-            return NodeFactory.Parameter(parameterContext.SourceInterval, reference, type, identifier);
+            if (parameterTypes.Count > 0)
+            {
+                textDef.Append(parameterTypes[0]);
+                for (var i = 1; i < parameterTypes.Count; i++)
+                {
+                    textDef.Append(", ");
+                    textDef.Append(parameterTypes[i]);
+                }
+            }
+
+            textDef.Append(')');
+
+            Interval interval;
+            if(parameterTypes.Count > 0)
+                interval = new Interval(returnType.Interval.a, parameterTypes.Last().Interval.b);    //TODO: Only roughly correct.
+            else
+                interval = new Interval(returnType.Interval.a, returnType.Interval.b);    //TODO: Only roughly correct.
+
+            CrawlType type = new CrawlType(textDef.ToString());
+
+            TypeNode result = NodeFactory.Type(interval, type, false);
+            return result;
         }
 
         private static IEnumerable<GenericParameterNode> ParseGenericParameters(CrawlParser.Generic_parametersContext genericsContext)
@@ -256,12 +325,12 @@ namespace libcompiler.SyntaxTree.Parser
             return NodeFactory.GenericsParameterNode(generic.SourceInterval, generic.GetChild(0).GetText(), generic.GetChild(2)?.GetText());
         }
 
-        private static VariableNode ParseVariableNode(ITerminalNode node)
+        private static VariableNode ParseVariable(ITerminalNode node)
         {
             return NodeFactory.VariableNode(node.SourceInterval, node.GetText());
         }
 
-        private static IdentifierNode ParseTokenNode(ITerminalNode node)
+        private static IdentifierNode ParseIdentifier(ITerminalNode node)
         {
             return NodeFactory.TokenNode(node.SourceInterval, node.GetText());
         }
@@ -293,12 +362,12 @@ namespace libcompiler.SyntaxTree.Parser
             //unitialized
             if (variable.ChildCount == 1)
             {
-                return NodeFactory.SingleVariable(variable.SourceInterval, ParseVariableNode(identifier));
+                return NodeFactory.SingleVariable(variable.SourceInterval, ParseVariable(identifier));
             }
             //initialized
             else if (variable.ChildCount == 3)
             {
-                return NodeFactory.SingleVariable(variable.SourceInterval, ParseVariableNode(identifier),
+                return NodeFactory.SingleVariable(variable.SourceInterval, ParseVariable(identifier),
                     ExpressionParser.ParseExpression((RuleContext) variable.GetChild(2)));
             }
 
@@ -329,14 +398,14 @@ namespace libcompiler.SyntaxTree.Parser
 
             BlockNode bodyBlock = ParseBlockNode(body);
 
-            return NodeFactory.ClassDecleration(interval, protectionLevel, ParseTokenNode(tn2), genericParameters, bodyBlock);
+            return NodeFactory.ClassDecleration(interval, protectionLevel, ParseIdentifier(tn2), genericParameters, bodyBlock);
         }
 
         #endregion
 
-        public static TypeNode ParseType(CrawlParser.TypeContext type)
+        public static TypeNode ParseType(CrawlParser.TypeContext type, bool isReference=false)
         {
-           return NodeFactory.Type(type.SourceInterval, CrawlType.ParseDecleration(type.GetText()));
+           return NodeFactory.Type(type.SourceInterval, new CrawlType(type.GetText()), isReference);
         }
 
         private static ProtectionLevel ParseProtectionLevel(CrawlParser.Protection_levelContext protectionLevel)

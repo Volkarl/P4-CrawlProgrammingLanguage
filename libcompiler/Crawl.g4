@@ -131,12 +131,16 @@ using libcompiler.ExtensionMethods;
 
 //The acctual CFG. 
 //A translation unit is one source file for a program. First it contains imports of libraries, then the statements that make up the program
-translation_unit		: import_directives statements;
+translation_unit		: import_directives namespace_declaration statements;
 
 //////////////////////////////////////////////////////////////////////////////////
 //import_directive(s) is imports. Using from C# or import from python
 import_directives		: import_directive* ;
 import_directive		: IMPORT IDENTIFIER (DOT IDENTIFIER)* END_OF_STATEMENT;
+
+//////////////////////////////////////////////////////////////////////////////////
+//Namespaces are made as packages. 
+namespace_declaration	: (PACKAGE IDENTIFIER (DOT IDENTIFIER)* END_OF_STATEMENT)?;
 
 //////////////////////////////////////////////////////////////////////////////////
 //Statements make up the program. Functions/Classes, function calls and general computation
@@ -206,7 +210,7 @@ type					: IDENTIFIER function_type? array_type? generic_unpack_expression?;
 //type_tail			:  | array_type ;
 array_type			: (LSQUAREBRACKET ITEM_SEPARATOR* RSQUAREBRACKET)+ ;
 function_type		: (LPARENTHESIS function_arguments?  RPARENTHESIS)+ ;
-function_arguments	: (REFERENCE? type IDENTIFIER?) ( ITEM_SEPARATOR REFERENCE? type IDENTIFIER? ) *;
+function_arguments	: ( REFERENCE? type ) ( ITEM_SEPARATOR REFERENCE? type ) *;
 
 //Protection level. Just stolen from .NET, as we target CLR
 protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL ;
@@ -231,7 +235,7 @@ and_expression			: comparison_expression ( AND comparison_expression )* ;
 
 comparison_expression	: additive_expression (comparison_symbol additive_expression)? ;  //?
 
-additive_expression		: multiplicative_expression (ADDITIVE_SYMBOL multiplicative_expression )* ;
+additive_expression		: multiplicative_expression ((PLUS | MINUS) multiplicative_expression )* ;
 
 multiplicative_expression: exponential_expression (MULTIPLICATIVE_SYMBOL exponential_expression )* ;
 
@@ -239,7 +243,7 @@ exponential_expression	: cast_expression (EXPONENT cast_expression)* ;
 
 cast_expression			: ( LPARENTHESIS type RPARENTHESIS ) * unary_expression ;
 
-unary_expression		: ( unary_symbol )* postfix_expression ;
+unary_expression		: ( INVERT | MINUS )* postfix_expression ;
 
 postfix_expression		: atom ( call_expression | subfield_expression | index_expression | generic_unpack_expression)* ;
 
@@ -261,11 +265,10 @@ atom					: IDENTIFIER
 //More nuts and bolts
 //Symbols used for different things. Should maybe be changed to tokens, but Antlr does magic and I don't.
 comparison_symbol		: RANGLEBRACKET | '>=' | '==' | '!=' | '<=' | LANGLEBRACKET ;
-ADDITIVE_SYMBOL			: '+' |MINUS ;
 MULTIPLICATIVE_SYMBOL	: '*' | '/' | '%' ;
-unary_symbol			: INVERT | MINUS;
-
 MINUS					: '-' ;
+PLUS					: '+' ;
+
 //All the literals. Values
 literal					: boolean_literal 
 						| integer_literal
@@ -308,6 +311,7 @@ AND						: 'og' ;
 OR						: 'eller' ;
 IMPORT					: 'importer' ;
 REFERENCE				: 'reference' ;
+PACKAGE					: 'pakke' ;
 
 //Symbols with meaning
 FOR_LOOP_SEPERATOR		: 'fra' ;
@@ -323,7 +327,7 @@ RANGLEBRACKET           : '>' ;
 INVERT					: 'ikke' ;
 DOT						: '.' ;
 EXPONENT				: '**' ;
-INHERITANCE_OPERATOR	: ':';
+INHERITANCE_OPERATOR	: 'er';
 
 ///////////////////////////////////////////////////////////////////////////////
 //Finally some tokens that is more than just a specific string.
@@ -346,7 +350,7 @@ fragment DIGIT 			: '0' .. '9' ;
 
 fragment STRING_ESCAPE_SEQ : '\\' . ;
 
-fragment EXPONENT_END	: ('e' |'E' ) (ADDITIVE_SYMBOL)? NUMBER ;
+fragment EXPONENT_END	: ('e' |'E' ) (PLUS | MINUS)? NUMBER ;
 
 
 //Code used to handle emitting DEDENT/INDENT after newlines. Newlines itself is hidden (ignored by the parser unless told not to)

@@ -14,5 +14,10 @@ namespace libcompiler.SyntaxTree.Nodes
         {
             return default(CrawlSyntaxNode);
         }
+
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 }

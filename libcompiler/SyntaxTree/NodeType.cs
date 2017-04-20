@@ -24,11 +24,12 @@ namespace libcompiler.SyntaxTree
         TranslationUnit,
         Literal,
         NodeList,
-        Token,
         Type,
         GenericUnpack,
         GenericParametersNode,
         Reference,
+        Identifier,
+        NameSpace,
         Parameter
     }
 }

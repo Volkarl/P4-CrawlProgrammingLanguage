@@ -16,7 +16,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
             ChildCount = 0;
         }
 
-        public GreenIdentifierNode(Interval interval, string value) : this(interval, value, NodeType.Token)
+        public GreenIdentifierNode(Interval interval, string value) : this(interval, value, NodeType.Identifier)
         {
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime.Misc;
 using libcompiler.SyntaxTree.Nodes;
@@ -16,29 +17,18 @@ namespace libcompiler.SyntaxTree
             return greenNode.CreateRed(null, 0);
         }
 
-        private static _.GreenBlockNode Extract(BlockNode n)
+        /// <summary>
+        /// Returns green node from red node.
+        /// </summary>
+        /// <param name="n">The node extract green node from.</param>
+        /// <typeparam name="T">The type of that node.</typeparam>
+        /// <typeparam name="GreenT">The type of the green counterpart.</typeparam>
+        /// <returns></returns>
+        private static GreenT GetGreenNode<T, GreenT>(T n)
+            where T:CrawlSyntaxNode
+            where GreenT:_.GreenCrawlSyntaxNode
         {
-            return (_.GreenBlockNode) CrawlSyntaxNode.ExtractGreenNode(n);
-        }
-
-        private static _.GreenTypeNode Extract(TypeNode n)
-        {
-            return (_.GreenTypeNode)CrawlSyntaxNode.ExtractGreenNode(n);
-        }
-
-        private static _.GreenVariableNode Extract(VariableNode n)
-        {
-            return (_.GreenVariableNode)CrawlSyntaxNode.ExtractGreenNode(n);
-        }
-
-        private static _.GreenExpressionNode Extract(ExpressionNode n)
-        {
-            return (_.GreenExpressionNode)CrawlSyntaxNode.ExtractGreenNode(n);
-        }
-
-        private static _.GreenIdentifierNode Extract(IdentifierNode n)
-        {
-            return (_.GreenIdentifierNode)CrawlSyntaxNode.ExtractGreenNode(n);
+            return (GreenT) CrawlSyntaxNode.ExtractGreenNode(n);
         }
 
         /// <summary>
@@ -47,10 +37,16 @@ namespace libcompiler.SyntaxTree
         /// <param name="i">Series of red nodes</param>
         /// <typeparam name="T">Type of red node.</typeparam>
         /// <returns>A new green GreenListNode</returns>
-        private static _.GreenListNode<T> List<T>(IEnumerable<T> i) where T : CrawlSyntaxNode
+        private static _.GreenListNode<T> GetListOfGreenNodes<T>(IEnumerable<T> i) where T : CrawlSyntaxNode
         {
             //TODO correct interval
             return new _.GreenListNode<T>(default(Interval), i.Select(CrawlSyntaxNode.ExtractGreenNode));
+        }
+
+        internal static NameSpaceNode NameSpaceNode(Interval sourceInterval, string nameSpace)
+        {
+            var green = new _.GreenNameSpaceNode(sourceInterval, nameSpace);
+            return (NameSpaceNode)Wrap( green );
         }
 
         public static FlowNode If(Interval interval, ExpressionNode conditon, BlockNode trueBlock)
@@ -70,49 +66,46 @@ namespace libcompiler.SyntaxTree
                 new _.GreenSelectiveFlowNode(
                     interval, 
                     NodeType.IfElse, 
-                    Extract(conditon), 
-                    Extract(trueBlock), 
-                    Extract(falseBlock)));
+                    GetGreenNode<ExpressionNode, _.GreenExpressionNode>(conditon),
+                    GetGreenNode<BlockNode, _.GreenBlockNode>(trueBlock),
+                    GetGreenNode<BlockNode, _.GreenBlockNode>(falseBlock)));
         }
-
-        
 
         public static FlowNode Forloop(Interval interval, TypeNode inducedVariableType, VariableNode inducedVariableName, ExpressionNode iteratior, BlockNode block)
         {
             return (FlowNode) Wrap(
                 new _.GreenForLoopNode(
                     interval,
-                    Extract(inducedVariableType),
-                    Extract(inducedVariableName), 
-                    Extract(iteratior),
-                    Extract(block)));
+                    GetGreenNode<TypeNode, _.GreenTypeNode> (inducedVariableType),
+                    GetGreenNode<VariableNode, _.GreenVariableNode>(inducedVariableName),
+                    GetGreenNode<ExpressionNode, _.GreenExpressionNode>(iteratior),
+                    GetGreenNode<BlockNode, _.GreenBlockNode>(block)));
             
         }
 
         public static FlowNode WhileLoop(Interval interval, ExpressionNode condition, BlockNode block)
         {
-            return (FlowNode) Wrap(new _.GreenSelectiveFlowNode(interval, NodeType.While, Extract(condition), Extract(block), null));
+            return (FlowNode) Wrap(new _.GreenSelectiveFlowNode(interval, NodeType.While, GetGreenNode<ExpressionNode, _.GreenExpressionNode>(condition), GetGreenNode<BlockNode, _.GreenBlockNode>(block), null));
         }
 
-        public static MethodDeclerationNode Function(
+        public static MethodDeclerationNode Method(
             Interval interval,
             ProtectionLevel protectionLevel,
-            TypeNode returnType,
-            IEnumerable<ParameterNode> parameters,
+            TypeNode methodSignature,
+            List<IdentifierNode> parameterIdentifiers,
             IEnumerable<GenericParameterNode> genericParameterNodes,
             VariableNode identifier,
-            BlockNode block
-        )
+            BlockNode block)
         {
             return (MethodDeclerationNode) Wrap(
                 new _.GreenMethodDeclerationNode(
                     interval,
                     protectionLevel,
-                    Extract(returnType),
-                    List(parameters),
-                    List(genericParameterNodes),
-                    Extract(identifier),
-                    Extract(block)
+                    GetGreenNode<TypeNode, _.GreenTypeNode> (methodSignature),
+                    GetListOfGreenNodes(parameterIdentifiers),
+                    GetListOfGreenNodes(genericParameterNodes),
+                    GetGreenNode<VariableNode, _.GreenVariableNode>(identifier),
+                    GetGreenNode<BlockNode, _.GreenBlockNode>(block)
                 ));
         }
 
@@ -126,8 +119,8 @@ namespace libcompiler.SyntaxTree
             return (SingleVariableDecleration) Wrap(
                 new _.GreenSingleVariableDecleration(
                     interval,
-                    Extract(identifier),
-                    Extract(value))
+                    GetGreenNode<VariableNode, _.GreenVariableNode>(identifier),
+                    GetGreenNode<ExpressionNode, _.GreenExpressionNode>(value))
             );
         }
 
@@ -137,8 +130,8 @@ namespace libcompiler.SyntaxTree
                 new _.GreenVariableDeclerationNode(
                     interval,
                     protectionLevel,
-                    Extract(type),
-                    List(declerations))
+                    GetGreenNode<TypeNode, _.GreenTypeNode>(type),
+                    GetListOfGreenNodes(declerations))
             );
         }
 
@@ -154,9 +147,9 @@ namespace libcompiler.SyntaxTree
                 new _.GreenClassDeclerationNode(
                     interval,
                     protectionLevel,
-                    Extract(identifier),
-                    List(genericParameterNodes),
-                    Extract(bodyBlock)
+                    GetGreenNode<IdentifierNode, _.GreenIdentifierNode>(identifier),
+                    GetListOfGreenNodes(genericParameterNodes),
+                    GetGreenNode<BlockNode, _.GreenBlockNode>(bodyBlock)
                 )
             );
         }
@@ -170,7 +163,7 @@ namespace libcompiler.SyntaxTree
         public static ReturnStatement Return(Interval interval, ExpressionNode returnValue)
         {
             return (ReturnStatement) Wrap(
-                new _.GreenReturnStatement(interval, Extract(returnValue)));
+                new _.GreenReturnStatement(interval, GetGreenNode<ExpressionNode, _.GreenExpressionNode>(returnValue)));
         }
 
         public static ReturnStatement Return(Interval interval)
@@ -188,46 +181,74 @@ namespace libcompiler.SyntaxTree
         public static BinaryNode MemberAccess(Interval interval, ExpressionNode target, VariableNode sub)
         {
             return (BinaryNode) Wrap(
-                new _.GreenBinaryNode(interval, Extract(target), Extract(sub), ExpressionType.SubfieldAccess)
+                new _.GreenBinaryNode(
+                    interval,
+                    GetGreenNode<ExpressionNode, _.GreenExpressionNode>(target),
+                    GetGreenNode<VariableNode, _.GreenVariableNode>(sub),
+                    ExpressionType.SubfieldAccess
+                )
             );
         }
 
         public static CallishNode Index(Interval interval, ExpressionNode target, IEnumerable<ExpressionNode> arguments)
         {
             return (CallishNode) Wrap(
-                new _.GreenCallishNode(interval, Extract(target), List(arguments), ExpressionType.Index));
+                new _.GreenCallishNode(
+                    interval,
+                    GetGreenNode<ExpressionNode,
+                        _.GreenExpressionNode>(target),
+                    GetListOfGreenNodes(arguments),
+                    ExpressionType.Index
+                )
+            );
 
         }
 
         public static CallishNode Call(Interval interval, ExpressionNode target, IEnumerable<ExpressionNode> arguments)
         {
             return (CallishNode) Wrap(
-                new _.GreenCallishNode(interval, Extract(target), List(arguments), ExpressionType.Invocation));
+                new _.GreenCallishNode(interval,
+                    GetGreenNode<ExpressionNode,
+                        _.GreenExpressionNode>(target),
+                    GetListOfGreenNodes(arguments),
+                    ExpressionType.Invocation
+                )
+            );
         }
 
         public static AssignmentNode Assignment(Interval interval, ExpressionNode target, ExpressionNode value)
         {
             return (AssignmentNode) Wrap(
-                new _.GreenAssignmentNode(interval, Extract(target), Extract(value)));
+                new _.GreenAssignmentNode(interval,
+                    GetGreenNode<ExpressionNode,
+                        _.GreenExpressionNode>(target),
+                    GetGreenNode<ExpressionNode,_.GreenExpressionNode>(value)));
         }
 
-        public static TranslationUnitNode TranslationUnit(Interval interval, IEnumerable<ImportNode> importNodes, BlockNode rootCode)
+        //Denne skal skrives om senere, så den også gememer namespace noden.
+        public static TranslationUnitNode TranslationUnit(Interval interval, IEnumerable<ImportNode> importNodes,NameSpaceNode nameSpace, BlockNode rootCode)
         {
             return (TranslationUnitNode) Wrap(
-                new _.GreenTranslationUnitNode(interval, List(importNodes), Extract(rootCode)));
+                new _.GreenTranslationUnitNode(
+                    interval,
+                    GetListOfGreenNodes(importNodes),
+                    GetGreenNode<NameSpaceNode, _.GreenNameSpaceNode> (nameSpace),
+                    GetGreenNode<BlockNode, _.GreenBlockNode>(rootCode)
+                )
+            );
         }
 
         //TODO: Also expose this as individual methods
         public static ExpressionNode MultiExpression(Interval interval, ExpressionType type, IEnumerable<ExpressionNode> sources)
         {
             return (ExpressionNode) Wrap(
-                new _.GreenMultiChildExpressionNode(interval, type, List(sources)));
+                new _.GreenMultiChildExpressionNode(interval, type, GetListOfGreenNodes(sources)));
         }
 
         public static ExpressionNode UnaryExpression(Interval interval, ExpressionType type, ExpressionNode target)
         {
             return (ExpressionNode)Wrap(
-                new _.GreenUnaryNode(interval, type, Extract(target))
+                new _.GreenUnaryNode(interval, type, GetGreenNode<ExpressionNode, _.GreenExpressionNode>(target))
                 );
         }
 
@@ -236,7 +257,12 @@ namespace libcompiler.SyntaxTree
         public static ExpressionNode BinaryExpression(Interval interval, ExpressionType type, ExpressionNode leftHandSide, ExpressionNode rightHandSide)
         {
             return (ExpressionNode) Wrap(
-                new _.GreenBinaryNode(interval, Extract(leftHandSide), Extract(rightHandSide), type)
+                new _.GreenBinaryNode(
+                    interval,
+                    GetGreenNode<ExpressionNode, _.GreenExpressionNode>(leftHandSide),
+                    GetGreenNode<ExpressionNode, _.GreenExpressionNode>(rightHandSide),
+                    type
+                )
             );
         }
 
@@ -273,9 +299,9 @@ namespace libcompiler.SyntaxTree
             return (IdentifierNode) Wrap(new _.GreenIdentifierNode(interval, name));
         }
 
-        public static TypeNode Type(Interval interval, CrawlType crawlType)
+        public static TypeNode Type(Interval interval, CrawlType crawlType, bool isReference)
         {
-            return (TypeNode) Wrap(new _.GreenTypeNode(interval, crawlType));
+            return (TypeNode) Wrap(new _.GreenTypeNode(interval, crawlType, isReference));
         }
 
         /// <summary>
@@ -287,7 +313,7 @@ namespace libcompiler.SyntaxTree
         // Green node created, red representation returned.
         public static ListNode<ImportNode> ImportsNode(Interval interval, IEnumerable<ImportNode> children)
         {
-            return (ListNode<ImportNode>) Wrap(List(children));
+            return (ListNode<ImportNode>) Wrap(GetListOfGreenNodes(children));
         }
 
         /// <summary>
@@ -303,7 +329,7 @@ namespace libcompiler.SyntaxTree
 
         public static GenericsUnpackNode GenericsUnpackNode(Interval interval, ExpressionNode target, IEnumerable<TypeNode> generics)
         {
-            return (GenericsUnpackNode) Wrap(new _.GreenGenericUnpackNode(interval, Extract(target), List(generics)));
+            return (GenericsUnpackNode) Wrap(new _.GreenGenericUnpackNode(interval, GetGreenNode<ExpressionNode,_.GreenExpressionNode>(target), GetListOfGreenNodes(generics)));
         }
 
         public static GenericParameterNode GenericsParameterNode(Interval interval, string value, string limitation)
@@ -313,7 +339,7 @@ namespace libcompiler.SyntaxTree
 
         public static ReferenceNode ReferenceNode(ExpressionNode target)
         {
-            return (ReferenceNode) Wrap(new _.GreenReferenceNode(Extract(target)));
+            return (ReferenceNode) Wrap(new _.GreenReferenceNode(GetGreenNode<ExpressionNode, _.GreenExpressionNode>(target)));
         }
 
         public static ParameterNode Parameter(Interval interval, bool isReference, TypeNode type, string identifier)

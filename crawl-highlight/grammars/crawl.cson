@@ -40,9 +40,11 @@
   },
   {
     'comment' : '  class_declaration, second half:  ...  : menneske, soldat, skjald = '
-    'match' : '(:)((\\s*)([\\w\\d]+)(\\s*)((,)(\\s*)([\\w\\d]+)(\\s*))*)(=)'
+    'match' : '(er)((\\s*)([\\w\\d]+)(\\s*)((,)(\\s*)([\\w\\d]+)(\\s*))*)(=)'
     'name' :'meta'
     'captures' :
+      '1' : 
+        'name' : 'keyword.other.crawl'
       '2' :
         'name' : 'entity.other.inherited-class.crawl'
   },

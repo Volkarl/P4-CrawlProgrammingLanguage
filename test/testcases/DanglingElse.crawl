@@ -1,0 +1,16 @@
+tal a = 1;
+tal b = 2;
+
+hvis a < b
+  print("bif");
+hvis b < a
+  print("buf");
+ellers
+  print("baf");
+
+hvis a < b
+  print("nif");
+  hvis b < a
+    print("nuf");
+ellers
+  print("naf");

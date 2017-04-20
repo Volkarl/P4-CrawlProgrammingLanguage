@@ -1,0 +1,3 @@
+tal a = 5;
+tal b = -a;
+tal c = a - b;
