@@ -210,6 +210,6 @@ FakesAssemblies/
 #Projet rider project directory
 .idea
 
-libcompiler/GeneratedParser
+src/libcompiler/GeneratedParser/
 *.Generated.cs
 
