@@ -49,11 +49,15 @@
     <Compile Include="SyntaxTree\Nodes\AssignmentNode.cs" />
     <Compile Include="SyntaxTree\Nodes\BinaryNode.cs" />
     <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\CallableDeclarationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CallishNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ClassDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\ConstructNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GenericParameterNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GenericsUnpackNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\GreeenCallableDeclarationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenAssignmentNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Internal\GreenConstructNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenGenericParameterNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenGenericUnpackNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Internal\GreenNameSpaceNode.cs" />

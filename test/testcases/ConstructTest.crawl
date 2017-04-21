@@ -1,0 +1,12 @@
+offentlig klasse Fisk=
+	offentlig tal Finner;
+	offentlig tal Øjne;
+	offentlig bool ErFlyvefisk;
+	
+	offentlig(tal finner, tal øjne, bool erFlyvefisk) opret = 
+		Finner = finner;
+		Øjne = øjne;
+	
+		ErFlyvefisk = erFlyvefisk;
+
+Fisk f = Fisk (1,3,falsk);	

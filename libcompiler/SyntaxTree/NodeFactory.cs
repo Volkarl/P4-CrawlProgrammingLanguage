@@ -88,13 +88,19 @@ namespace libcompiler.SyntaxTree
             return (FlowNode) Wrap(new _.GreenSelectiveFlowNode(interval, NodeType.While, GetGreenNode<ExpressionNode, _.GreenExpressionNode>(condition), GetGreenNode<BlockNode, _.GreenBlockNode>(block), null));
         }
 
+        public static ConstructNode Constructor (Interval interval, ProtectionLevel protectionlevel, BlockNode body)
+        {
+            return (ConstructNode)Wrap(new _.GreenConstructNode(interval, protectionlevel, null, GetGreenNode<BlockNode, _.GreenBlockNode>(body)));
+        }
+
+
         public static MethodDeclerationNode Method(
             Interval interval,
             ProtectionLevel protectionLevel,
             TypeNode methodSignature,
             List<IdentifierNode> parameterIdentifiers,
             IEnumerable<GenericParameterNode> genericParameterNodes,
-            VariableNode identifier,
+            IdentifierNode identifier,
             BlockNode block)
         {
             return (MethodDeclerationNode) Wrap(
@@ -104,7 +110,7 @@ namespace libcompiler.SyntaxTree
                     GetGreenNode<TypeNode, _.GreenTypeNode> (methodSignature),
                     GetListOfGreenNodes(parameterIdentifiers),
                     GetListOfGreenNodes(genericParameterNodes),
-                    GetGreenNode<VariableNode, _.GreenVariableNode>(identifier),
+                    GetGreenNode<IdentifierNode, _.GreenIdentifierNode>(identifier),
                     GetGreenNode<BlockNode, _.GreenBlockNode>(block)
                 ));
         }

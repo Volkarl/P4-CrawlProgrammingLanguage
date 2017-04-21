@@ -86,7 +86,7 @@ namespace libcompiler.SyntaxTree
         {
             //If this is root, add no indentation
             if (node.Parent == null)
-                ;
+            { }
             //If parent is not the last sibling, a branch continues downwards
             else if(node.Parent.Parent?.ChildCount - 1 > node.Parent.IndexInParent)
             {

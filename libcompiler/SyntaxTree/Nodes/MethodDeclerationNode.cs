@@ -2,23 +2,22 @@
 
 namespace libcompiler.SyntaxTree.Nodes
 {
-    public class MethodDeclerationNode : DeclerationNode, INodeThatTakesGenericParameters
+    public class MethodDeclerationNode : CallableDeclarationNode, INodeThatTakesGenericParameters
     {
-        private TypeNode _methodSignature;
         private ListNode<IdentifierNode> _parameterIdentifiers;
         private ListNode<GenericParameterNode> _genericParameters;
-        private VariableNode _identifier;
-        private BlockNode _body;
+        
 
-        public TypeNode MethodSignature => GetRed(ref _methodSignature, 0);
-        public ListNode<IdentifierNode> ParameterIdentifiers => GetRed(ref _parameterIdentifiers, 1);
-        public ListNode<GenericParameterNode> GenericParameters => GetRed(ref _genericParameters, 2);
-        public VariableNode Identfier => GetRed(ref _identifier, 3);
-        public BlockNode Body => GetRed(ref _body, 4);
+        public ListNode<IdentifierNode> ParameterIdentifiers => GetRed(ref _parameterIdentifiers, 3);
+        public ListNode<GenericParameterNode> GenericParameters => GetRed(ref _genericParameters, 4);
+        
 
         public MethodDeclerationNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent) : base(parent, self, indexInParent)
+        { }
+
+        public override string ToString()
         {
-            
+            return $"decl {MethodType.ExportedType.Textdef} {Identfier} =";
         }
 
         public override CrawlSyntaxNode GetChildAt(int index)
@@ -26,15 +25,16 @@ namespace libcompiler.SyntaxTree.Nodes
             switch (index)
             {
                 case 0:
-                    return MethodSignature;
+                    return MethodType;
                 case 1:
-                    return ParameterIdentifiers;
-                case 2:
-                    return GenericParameters;
-                case 3:
                     return Identfier;
+                case 2:
+                    return BodyBlock;
+                case 3:
+                    return ParameterIdentifiers;
                 case 4:
-                    return Body;
+                    return GenericParameters;
+                
                 default:
                     return default(CrawlSyntaxNode);
             }

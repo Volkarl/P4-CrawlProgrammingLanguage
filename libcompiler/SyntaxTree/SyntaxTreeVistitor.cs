@@ -91,6 +91,9 @@ namespace libcompiler.SyntaxTree
                 case NodeType.Identifier:
                     VisitIdentifierNode((IdentifierNode) node);
                     break;
+                case NodeType.ConstructorNode:
+                    VisitConstruct((ConstructNode)node);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(node.ToString());
             }
@@ -103,6 +106,13 @@ namespace libcompiler.SyntaxTree
         private void VisitNameSpace(NameSpaceNode node)
         {
             
+        }
+
+        private void VisitConstruct(ConstructNode node)
+        {
+            //Visit(node.MethodType);
+            Visit(node.BodyBlock);
+           
         }
 
         private void VisitReference(ReferenceNode node)
@@ -208,11 +218,11 @@ namespace libcompiler.SyntaxTree
 
         protected virtual void VisitMethodDecleration(MethodDeclerationNode node)
         {
-            Visit(node.MethodSignature);
+            Visit(node.MethodType);
             Visit(node.ParameterIdentifiers);
             Visit(node.Identfier);
             Visit(node.GenericParameters);
-            Visit(node.Body);
+            Visit(node.BodyBlock);
         }
 
         protected virtual void VisitVariableDeclerationSingle(SingleVariableDecleration node)
@@ -255,6 +265,7 @@ namespace libcompiler.SyntaxTree
     }
 
     public class FooVisitor : SyntaxTreeVistitor
-    { }
+    {
+    }
     
 }

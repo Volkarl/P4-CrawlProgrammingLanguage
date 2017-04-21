@@ -4,30 +4,25 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree.Nodes.Internal
 {
-    public class GreenMethodDeclerationNode : GreenDeclerationNode
+    public class GreenMethodDeclerationNode : GreeenCallableDeclarationNode
     {
-        public GreenTypeNode MethodSignature { get; }
         public GreenListNode<IdentifierNode> ParameterIdentifiers { get; }
-        public GreenVariableNode Identfier { get; }
         public GreenListNode<GenericParameterNode> GenericParameters { get; }
-        public GreenBlockNode Body { get; }
 
+  
         public GreenMethodDeclerationNode(
             Interval interval,
             ProtectionLevel protectionLevel,
             GreenTypeNode methodSignature,
             GreenListNode<IdentifierNode> parameterIdentifiers,
             GreenListNode<GenericParameterNode> genericParameters,
-            GreenVariableNode identfier,
+            GreenIdentifierNode identfier,
             GreenBlockNode body
         )
-            : base(interval, NodeType.MethodDecleration,  protectionLevel)
+            : base(interval, protectionLevel, methodSignature ,identfier, body, NodeType.MethodDecleration )
         {
-            MethodSignature = methodSignature;
             ParameterIdentifiers = parameterIdentifiers;
             GenericParameters = genericParameters;
-            Identfier = identfier;
-            Body = body;
             ChildCount = 5;
         }
 
@@ -38,13 +33,14 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
                 case 0:
                     return MethodSignature;
                 case 1:
-                    return ParameterIdentifiers;
-                case 2:
-                    return GenericParameters;
-                case 3:
                     return Identfier;
-                case 4:
+                case 2:
                     return Body;
+                case 3:
+                    return ParameterIdentifiers;
+                case 4:
+                    return GenericParameters;
+                
                 default:
                     return default(GreenCrawlSyntaxNode);
             }
@@ -71,7 +67,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
                         Identfier, Body);
                 case 3:
                     return new GreenMethodDeclerationNode(Interval, ProtectionLevel,
-                        MethodSignature, ParameterIdentifiers, GenericParameters, (GreenVariableNode) newChild, Body);
+                        MethodSignature, ParameterIdentifiers, GenericParameters, (GreenIdentifierNode) newChild, Body);
                 case 4:
                     return new GreenMethodDeclerationNode(Interval, ProtectionLevel,
                         MethodSignature, ParameterIdentifiers, GenericParameters, Identfier, (GreenBlockNode) newChild);

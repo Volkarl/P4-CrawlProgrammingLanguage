@@ -85,6 +85,9 @@ namespace libcompiler.SyntaxTree.Parser
             return NodeFactory.ImportNode(rule.SourceInterval, path.ToString());
         }
 
+        //public static ConstructNode ParseConstruct(RuleContext rule)
+        
+
         public static BlockNode ParseBlockNode(RuleContext rule)
         {
             System.Collections.IEnumerable meaningfullContent;
@@ -202,9 +205,14 @@ namespace libcompiler.SyntaxTree.Parser
             {
                 return ParseClassDecleration(declpart, protectionLevel, rule.SourceInterval);
             }
-            if (declpart.RuleIndex == CrawlParser.RULE_function_decleration)
+            if (declpart.RuleIndex == CrawlParser.RULE_method_decleration)
             {
                 return ParseMethodDecleration(declpart, protectionLevel, rule.SourceInterval);
+            }
+            if (declpart.RuleIndex == CrawlParser.RULE_constructor_declaration)
+            {
+                return ParseConstruct(declpart, rule.SourceInterval, protectionLevel);
+                
             }
             else if (declpart.RuleIndex == CrawlParser.RULE_variable_declerations)
             {
@@ -215,6 +223,18 @@ namespace libcompiler.SyntaxTree.Parser
         }
 
         #region DeclerationSubs
+
+        private static ConstructNode ParseConstruct(RuleContext ConstructContex, Interval interval, ProtectionLevel protectionlevel)
+        {
+
+
+            BlockNode body = ParseBlockNode((RuleContext)ConstructContex.GetChild(3).GetChild(1));
+
+            return NodeFactory.Constructor(interval,protectionlevel,body); 
+                
+                
+        }
+
 
 
         private static DeclerationNode ParseMethodDecleration(RuleContext methodContext, ProtectionLevel protectionLevel, Interval interval)
@@ -248,7 +268,7 @@ namespace libcompiler.SyntaxTree.Parser
             int identifierIndex = methodContext.ChildCount - 2 -1; //Identifier is always second last. And then one for the zero-indexed arrays.
             ITerminalNode identifierTerminal =
                 (ITerminalNode) methodContext.GetChild(identifierIndex);
-            VariableNode identifier = ParseVariable(identifierTerminal);
+            IdentifierNode identifier = ParseIdentifier(identifierTerminal);
 
             //Combine it all.
             return NodeFactory.Method(interval, protectionLevel, methodSignature, parameterIdentifiers, genericParameters, identifier, body);
@@ -310,6 +330,8 @@ namespace libcompiler.SyntaxTree.Parser
             TypeNode result = NodeFactory.Type(interval, type, false);
             return result;
         }
+
+       
 
         private static IEnumerable<GenericParameterNode> ParseGenericParameters(CrawlParser.Generic_parametersContext genericsContext)
         {
