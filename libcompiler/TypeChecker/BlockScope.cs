@@ -27,16 +27,31 @@ namespace libcompiler.TypeChecker
                 }
                 else if(child.Type == NodeType.ClassDecleration)
                 {
-                    ClassDeclerationNode classNode = (ClassDeclerationNode) child;
+                    ClassDeclerationNode classNode = (ClassDeclerationNode)child;
                     string name = classNode.Identifier.Value;
                     scopeDictionary.Add(name, new TypeInformation[1]);
                 }
                 else if(child.Type == NodeType.MethodDecleration)
                 {
-                    MethodDeclerationNode methodNode = (MethodDeclerationNode) child;
+                    MethodDeclerationNode methodNode = (MethodDeclerationNode)child;
+                    TypeInformation info = null;
                     string name = methodNode.Identfier.Name;
-                    scopeDictionary.Add(name, new TypeInformation[1]);
+                    if (scopeDictionary.ContainsKey(name))
+                    {
+                        //TODO: Check if type is the exact same, if yes, bail
+                        TypeInformation[] old = scopeDictionary[name];
+                        TypeInformation[] new_ = new TypeInformation[old.Length + 1];
+                        Array.Copy(old, new_, old.Length);
+                        new_[old.Length] = info;
+                        scopeDictionary[name] = new_;
+                    }
+                    else
+                    {
+                        scopeDictionary.Add(name, new [] { info });
+                    }
+                    
                 }
+                //TODO: Constructor?
             }
         }
         //checks if the symbol is in the scopeDictionary else return null
