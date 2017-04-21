@@ -1,11 +1,13 @@
 ﻿using libcompiler.SyntaxTree.Nodes.Internal;
+using libcompiler.TypeChecker;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
     /// <summary>
     /// This declares a class.
     /// </summary>
-    public class ClassDeclerationNode : DeclerationNode, INodeThatTakesGenericParameters
+    //TODO: IScope
+    public class ClassDeclerationNode : DeclerationNode, INodeThatTakesGenericParameters, IScope
     {
         private IdentifierNode _identifier;
         private ListNode<GenericParameterNode> _genericParameters;
@@ -27,9 +29,7 @@ namespace libcompiler.SyntaxTree.Nodes
         
 
         public ClassDeclerationNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent) : base(parent, self, indexInParent)
-           
         {
-            
         }
 
         public override CrawlSyntaxNode GetChildAt(int index)

@@ -26,7 +26,7 @@ namespace libcompiler.Tests
         public void TestScopeFoundVariable()
         {
             TranslationUnitNode tree = ReadTestFile("scopetest1.crawl");
-            Assert.NotNull(tree.Code.GetScope("abe"));   
+            Assert.NotNull(tree.Code.FindSymbol("abe"));
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace libcompiler.Tests
         public void TestScopeFoundMethod()
         {
             TranslationUnitNode tree = ReadTestFile("scopetest1.crawl");
-            Assert.NotNull(tree.Code.GetScope("UdregnOrangutanger"));
+            Assert.NotNull(tree.Code.FindSymbol("UdregnOrangutanger"));
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace libcompiler.Tests
         {
             TranslationUnitNode tree = ReadTestFile("scopetest11.crawl");
             MethodDeclerationNode method = (MethodDeclerationNode) tree.Code[0];
-            Assert.NotNull(method.GetScope("a"));
+            Assert.NotNull(method.FindSymbol("a"));
 
         }
 
@@ -127,7 +127,7 @@ namespace libcompiler.Tests
         public void TestScopeMissingReturnsNull()
         {
             TranslationUnitNode tree = ReadTestFile("scopetest1.crawl");
-            Assert.IsNull(tree.Code.GetScope("notdefined"));
+            Assert.IsNull(tree.Code.FindSymbol("notdefined"));
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace libcompiler.Tests
         public void TestScopeNotFindingChildren()
         {
             TranslationUnitNode tree = ReadTestFile("scopetest1.crawl");
-            Assert.IsNull(tree.Code.GetScope("orangutanger"));
+            Assert.IsNull(tree.Code.FindSymbol("orangutanger"));
         }
 
         //TODO: Test duplicate method with changed signature cannot see eachothers variables
@@ -149,7 +149,7 @@ namespace libcompiler.Tests
         {
             TranslationUnitNode tree = ReadTestFile("scopetest9.crawl");
             MethodDeclerationNode m = (MethodDeclerationNode) tree.Code[1];
-            Assert.IsNull(m.Body.GetScope("z"));
+            Assert.IsNull(m.Body.FindSymbol("z"));
 
         }
 
@@ -162,7 +162,7 @@ namespace libcompiler.Tests
         {
             TranslationUnitNode tree = ReadTestFile("scopetest9.crawl");
             MethodDeclerationNode m = (MethodDeclerationNode)tree.Code[1];
-            Assert.NotNull(m.Body.GetScope("a"));
+            Assert.NotNull(m.Body.FindSymbol("a"));
 
         }
 
@@ -175,7 +175,7 @@ namespace libcompiler.Tests
             TranslationUnitNode tree = ReadTestFile("scopetest1.crawl");
             MethodDeclerationNode method = (MethodDeclerationNode) tree.Code[1];
             BlockNode block = method.Body;
-            Assert.NotNull(block.GetScope("abe"));
+            Assert.NotNull(block.FindSymbol("abe"));
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace libcompiler.Tests
             TranslationUnitNode tree = ReadTestFile("scopetest1.crawl");
             MethodDeclerationNode method = (MethodDeclerationNode)tree.Code[1];
             BlockNode block = method.Body;
-            Assert.NotNull(block.GetScope("UdregnOrangutanger"));
+            Assert.NotNull(block.FindSymbol("UdregnOrangutanger"));
         }
 
         //TODO: Test private isn't
@@ -200,7 +200,7 @@ namespace libcompiler.Tests
             TranslationUnitNode tree = ReadTestFile("scopetest10.crawl");
 
             ClassDeclerationNode childClass = (ClassDeclerationNode)tree.Code[1];
-            Assert.NotNull(childClass.BodyBlock.GetScope("inparrent"));
+            Assert.NotNull(childClass.BodyBlock.FindSymbol("inparrent"));
         }
     }
 }
