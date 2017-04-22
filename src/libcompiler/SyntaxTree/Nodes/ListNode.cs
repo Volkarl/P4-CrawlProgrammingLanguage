@@ -17,7 +17,8 @@ namespace libcompiler.SyntaxTree
             {
                 if (index >= 0 && _childNodes.Length > index)
                 {
-                    return GetRed(ref _childNodes[index], index);
+                    var tmp = GetRed(ref _childNodes[index], index);
+                    return tmp;
                 }
 
                 return default(T);

@@ -54,11 +54,13 @@
     <Compile Include="GeneratedParser\CrawlListener.cs" />
     <Compile Include="GeneratedParser\CrawlParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SyntaxTree\Nodes\BlockNode.cs" />
     <Compile Include="SyntaxTree\Nodes\CrawlSyntaxNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\GreenBlockNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GreenCrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GreenListNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ListNode.cs" />
-    <Compile Include="SyntaxTree\VisitorVisitList.cs" />
+    <Compile Include="SyntaxTree\VisitorManualVisits.cs" />
     <Compile Include="TypeSystem\BuildInType.cs" />
     <Compile Include="TypeSystem\CrawlType.cs" />
     <Compile Include="$(GeneratedRedSyntaxNodes)" />

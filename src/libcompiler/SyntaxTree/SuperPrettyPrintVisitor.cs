@@ -36,6 +36,8 @@ namespace libcompiler.SyntaxTree
 
         public override void Visit(CrawlSyntaxNode node)
         {
+            if (node == null) return;
+
             addIndentation(node);
 
 

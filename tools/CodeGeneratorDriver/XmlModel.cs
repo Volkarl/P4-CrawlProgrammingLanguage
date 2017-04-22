@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodeGeneratorDriver
 {
     [XmlRoot("syntaxnodes")]
-    public class SyntaxGeneration
+    public class Model
     {
         [XmlElement("options")]
-        public SyntaxGenerationOptions Options { get; set; }
+        public Options Options { get; set; }
 
 
         [XmlArray("nodes")]
@@ -18,7 +21,7 @@ namespace CodeGeneratorDriver
 
     }
 
-    public class SyntaxGenerationOptions
+    public class Options
     {
         [XmlElement("basename")]
         public string BaseName { get; set; }
@@ -87,9 +90,38 @@ namespace CodeGeneratorDriver
         public bool Manual { get; set; } = false;
 
         [XmlElement("abstract")]
-        public bool Abstract { get;
-            set; } = false;
+        public bool Abstract { get; set; } = false;
 
+
+        [XmlIgnore]
+        private List<Member> _allMembers;
+
+        [XmlIgnore]
+        public List<Member> AllMembers => _allMembers ?? (_allMembers =
+                                              this.AllProperties()
+                                                  .Select(p => new Member(p))
+                                                  .Concat(this.AllChildren().Select(c => new Member(c)))
+                                                  .ToList());
+
+        [XmlIgnore]
+        private List<Member> _members;
+
+        [XmlIgnore]
+        public List<Member> Members => _members ?? (_members =
+                                           Properties
+                                               .Select(p => new Member(p))
+                                               .Concat(Children.Select(c => new Member(c)))
+                                               .ToList());
+
+        public TypeSyntax GetRepresentation(TypeClassContext context = TypeClassContext.None)
+        {
+            if ((context & TypeClassContext.NotList) != 0 && Name.StartsWith("List'"))
+                return SyntaxFactory.ParseTypeName($"IEnumerable<{Name.Split('\'')[1]}Node>");
+
+
+            return SyntaxFactory.ParseTypeName($"{Name}Node");
+            throw new NotImplementedException();
+        }
 
         [XmlArray("children")]
         [XmlArrayItem("child")]

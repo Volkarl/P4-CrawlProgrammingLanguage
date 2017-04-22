@@ -7,7 +7,6 @@ namespace libcompiler.SyntaxTree
 {
     public partial class CrawlSyntaxNode
     {
-
         public class GreenListNode<T> : GreenCrawlSyntaxNode where T : CrawlSyntaxNode
         {
             private readonly GreenCrawlSyntaxNode[] _children;

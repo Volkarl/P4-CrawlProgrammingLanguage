@@ -107,6 +107,7 @@
         <node>
             <name>Block</name>
             <baseclass>List'CrawlSyntax</baseclass>
+            <manual>true</manual>
         </node>
         <node>
             <name>Call</name>
@@ -182,7 +183,7 @@
             </children>
         </node>
         <node>
-            <name>ClassDecleration</name>
+            <name>ClassTypeDecleration</name>
             <baseclass>Decleration</baseclass>
             <children>
                 <child>
@@ -281,7 +282,7 @@
             <manual>true</manual>
             <properties>
                 <property>
-                    <type>IEnumerable&lt;CrawlSyntaxNode&gt;</type>
+                    <type>IEnumerable'CrawlSyntaxNode</type>
                     <name>Children</name>
                 </property>
             </properties>

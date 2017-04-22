@@ -37,7 +37,8 @@ namespace CodeGeneratorDriver
             string visitor = args[4];
 
 
-            SyntaxGeneration syntaxGeneration = ReadDefinition(xmlPath);
+            Model model = ReadDefinition(xmlPath);
+
             Workspace workspace = new AdhocWorkspace();
             SyntaxGenerator generator = SyntaxGenerator.GetGenerator(workspace, LanguageNames.CSharp);
 
@@ -46,47 +47,49 @@ namespace CodeGeneratorDriver
             List<SyntaxNode> greenNodes = new List<SyntaxNode>();
             List<SyntaxNode> visitors = new List<SyntaxNode>()
             {
-                new VoidVisitorGenerator(generator, syntaxGeneration).CreateVisitor("SyntaxVisitor"),
-                new SimpleTVisitorGenerator(generator, syntaxGeneration).CreateVisitor("SyntaxVisitor"),
-                new ComplexTVisitorGenerator(generator, syntaxGeneration,
+                new VoidVisitorGenerator(generator, model).CreateVisitor("SyntaxVisitor"),
+                new SimpleTVisitorGenerator(generator, model).CreateVisitor("SyntaxVisitor"),
+                new ComplexTVisitorGenerator(generator, model,
                     SyntaxFactory.ParseTypeName("SyntaxVisitor<T>")).CreateVisitor("SimpleSyntaxVisitor"),
 
                 /*
-                new SyntaxRewriterGenerator(generator, syntaxGeneration,
-                        SyntaxFactory.ParseTypeName($"SyntaxVisitor<{SharedGeneratorion.RedNodeName(syntaxGeneration.Options.BaseName)}>"))
+                new SyntaxRewriterGenerator(generator, model,
+                        SyntaxFactory.ParseTypeName($"SyntaxVisitor<{SharedGeneratorion.RedNodeName(model.Options.BaseName)}>"))
                     .CreateVisitor("SyntaxRewriter") */
             };
 
-            foreach (Node node in syntaxGeneration.Node)
+            foreach (Node node in model.Node)
             {
                 if(node.Manual) continue;
 
-                redNodes.Add(RedNodeGenerator.CreateRedNode(generator, node, syntaxGeneration.Options));
-                greenNodes.Add(GreenNodeGenerator.CreateGreenNode(generator, node, syntaxGeneration.Options));
+                redNodes.Add(RedNodeGenerator.CreateRedNode(generator, node, model.Options));
+                greenNodes.Add(GreenNodeGenerator.CreateGreenNode(generator, node, model.Options));
 
                 if(node.Abstract) continue;
-                factoryMethods.AddRange(Factory.CreateFactoryFor(generator, node, syntaxGeneration.Options));
+                factoryMethods.AddRange(Factory.CreateFactoryFor(generator, node, model.Options));
             }
 
             //Generated enum for all NodeTypes
-            redNodes.Add(GeneratedTypeEnum(generator, syntaxGeneration.Node));
+            redNodes.Add(GeneratedTypeEnum(generator, model.Node));
 
 
-            Save(Patch(generator, syntaxGeneration.Options.NameSpace, workspace, redNodes), nodes);
+            Save(Patch(generator, model.Options.NameSpace, workspace, redNodes), nodes);
 
-            Save(Patch(generator, syntaxGeneration.Options.NameSpace, workspace, visitors), visitor);
+            Save(Patch(generator, model.Options.NameSpace, workspace, visitors), visitor);
 
-            Save(Patch(generator, syntaxGeneration.Options.NameSpace, workspace, new[]
+            Save(Patch(generator, model.Options.NameSpace, workspace, new[]
             {
-                generator.ClassDeclaration(SharedGeneratorion.RedNodeName(syntaxGeneration.Options.BaseName), null, Accessibility.Public,
+                generator.ClassDeclaration(SharedGeneratorion.RedNodeName(model.Options.BaseName), null, Accessibility.Public,
                     DeclarationModifiers.Partial, null, null, members: factoryMethods)
             }), factory);
 
-            Save(Patch(generator, syntaxGeneration.Options.NameSpace, workspace, new[]
+            Save(Patch(generator, model.Options.NameSpace, workspace, new[]
             {
-                generator.ClassDeclaration(SharedGeneratorion.RedNodeName(syntaxGeneration.Options.BaseName), null, Accessibility.Public,
+                generator.ClassDeclaration(SharedGeneratorion.RedNodeName(model.Options.BaseName), null, Accessibility.Public,
                     DeclarationModifiers.Partial, null, null, members: greenNodes)
             }), @internal);
+
+            Console.WriteLine("Finished");
 
         }
 
@@ -119,9 +122,9 @@ namespace CodeGeneratorDriver
             File.WriteAllText(path, tree.ToString());
         }
 
-        private static SyntaxGeneration ReadDefinition(string path)
+        private static Model ReadDefinition(string path)
         {
-            var nodes = (SyntaxGeneration)new XmlSerializer(typeof(SyntaxGeneration)).Deserialize(XmlReader.Create(File.OpenRead(path)));
+            var nodes = (Model)new XmlSerializer(typeof(Model)).Deserialize(XmlReader.Create(File.OpenRead(path)));
 
             var dictionary = nodes.Node.ToDictionary(x => x.Name.Split('\'')[0]);
 

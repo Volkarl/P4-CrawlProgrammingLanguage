@@ -101,19 +101,20 @@
   <ItemGroup>
     <Compile Include="GreenNodeGenerator.cs" />
     <Compile Include="Factory.cs" />
+    <Compile Include="Member.cs" />
     <Compile Include="RedNodeGenerator.cs" />
-    <Compile Include="SyntaxGeneration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharedGeneratorion.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="VisitorGenerator.cs" />
     <Compile Include="../../src/libcompiler/SyntaxTree/ExpressionType.cs" />
+    <Compile Include="XmlModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../src/libcompiler/SyntaxTree/SyntaxNodeDefinitions.xml" />
   </ItemGroup>
-    <ItemGroup>
+  <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>

@@ -15,7 +15,7 @@ namespace CodeGeneratorDriver
     class RedNodeGenerator
     {
 
-        public static SyntaxNode CreateRedNode(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
+        public static SyntaxNode CreateRedNode(SyntaxGenerator generator, Node node, Options options)
         {
             List<SyntaxNode> members = new List<SyntaxNode>();
 
@@ -43,7 +43,7 @@ namespace CodeGeneratorDriver
                             SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(x.Type)), Accessibility.Public,
                             DeclarationModifiers.ReadOnly, CreateGetter(generator, x, i, parrentChildCount, options))));
 
-            members.AddRange(node.Properties.Select(x => SharedGeneratorion.GetOnlyAccessor(x.Name, x.Type)));
+            members.AddRange(node.Properties.Select(x => SharedGeneratorion.GetOnlyAccessor(x.Name, SyntaxFactory.ParseTypeName(x.Type))));
 
             members.Add(CreateCtor(generator, node, options));
 
@@ -62,7 +62,7 @@ namespace CodeGeneratorDriver
             );
         }
 
-        private static SyntaxNode CreateUpdate(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
+        private static SyntaxNode CreateUpdate(SyntaxGenerator generator, Node node, Options options)
         {
             IEnumerable<string> allArguments = node.AllProperties()
                 .Skip(1)
@@ -109,7 +109,7 @@ namespace CodeGeneratorDriver
                 generator.IdentifierName(item.AsParameter()));
         }
 
-        private static SyntaxNode CreateGetChildAt(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
+        private static SyntaxNode CreateGetChildAt(SyntaxGenerator generator, Node node, Options options)
         {
             return generator.MethodDeclaration(options.GetChildAt,
                 new[]
@@ -132,7 +132,7 @@ namespace CodeGeneratorDriver
                 });
         }
 
-        private static SyntaxNode CreateCtor(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
+        private static SyntaxNode CreateCtor(SyntaxGenerator generator, Node node, Options options)
         {
             List<SyntaxNode> extraNodes = new List<SyntaxNode>();
             if (!string.IsNullOrWhiteSpace(node.ExtraConstructorCode))
@@ -171,7 +171,7 @@ namespace CodeGeneratorDriver
             );
         }
 
-        private static IEnumerable<SyntaxNode> CreateGetter(SyntaxGenerator generator, Child child, int index, int parrentChildCount, SyntaxGenerationOptions options)
+        private static IEnumerable<SyntaxNode> CreateGetter(SyntaxGenerator generator, Child child, int index, int parrentChildCount, Options options)
         {
             yield return
                 generator.ReturnStatement(generator.InvocationExpression(generator.IdentifierName(options.GetRed),

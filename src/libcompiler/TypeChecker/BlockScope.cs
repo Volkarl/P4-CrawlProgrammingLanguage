@@ -24,9 +24,9 @@ namespace libcompiler.TypeChecker
                         scopeDictionary.Add(name, new TypeInformation[1]);
                     }
                 }
-                else if(child.Type == NodeType.ClassDecleration)
+                else if(child.Type == NodeType.ClassTypeDecleration)
                 {
-                    ClassDeclerationNode classNode = (ClassDeclerationNode) child;
+                    ClassTypeDeclerationNode classNode = (ClassTypeDeclerationNode) child;
                     string name = classNode.Identifier.Value;
                     scopeDictionary.Add(name, new TypeInformation[1]);
                 }

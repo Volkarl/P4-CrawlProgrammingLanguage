@@ -1,28 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
+using Microsoft.Isam.Esent.Interop;
 
 namespace CodeGeneratorDriver
 {
     public class GreenNodeGenerator
     {
-        public static SyntaxNode CreateGreenNode(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
+        public static SyntaxNode CreateGreenNode(SyntaxGenerator generator, Node node, Options options)
         {
             List<SyntaxNode> classContents = new List<SyntaxNode>();
 
-            foreach (Child child in node.Children)
+            foreach (Member type in node.Members)
             {
-                classContents.Add(CreateChild(generator, child));
-            }
-
-            SharedGeneratorion.AddLineBreak(classContents);
-
-            foreach (Property field in node.Properties)
-            {
-                classContents.Add(CreateProperty(generator, field));
+                classContents.Add(CreateMember(generator, type));
             }
 
 
@@ -45,48 +40,72 @@ namespace CodeGeneratorDriver
         }
 
         public static SyntaxNode CreateConstructor(SyntaxGenerator generator, Node node,
-            SyntaxGenerationOptions options)
+            Options options)
         {
-
-
             List<SyntaxNode> baseArgs = null;
+            List<SyntaxNode> block = node.Members.Select(x =>
+                    generator.AssignmentStatement(generator.IdentifierName(x.PropertyName()),
+                        generator.IdentifierName(x.ParameterName())))
+                .ToList();
+
+            block.Add(generator.AssignmentStatement(generator.IdentifierName("ChildCount"),
+                generator.LiteralExpression(node.AllChildren().Count())));
 
             if (node.BaseNode != null)
             {
-                baseArgs = node.BaseNode.AllProperties()
-                    .Select(x => generator.Argument(generator.IdentifierName(x.Name.AsParameter())))
-                    .Concat(node.BaseNode.AllChildren()
-                        .Select(x => generator.Argument(generator.IdentifierName(x.Name.AsParameter()))))
-                    .ToList();
+                baseArgs = node.BaseNode.AllMembers.Select(x => generator.IdentifierName(x.ParameterName())).ToList();
             }
-
 
             return generator.ConstructorDeclaration(
                 null,
-                node.AllProperties()
-                    .Select(p =>
-                        generator.ParameterDeclaration(p.Name.AsParameter(),SyntaxFactory.ParseTypeName(p.Type == "IEnumerable<CrawlSyntaxNode>" ? "IEnumerable<GreenCrawlSyntaxNode>" : p.Type))
-                    )
-                    .Concat(
-                        node.AllChildren()
-                            .Select(p => generator.ParameterDeclaration(p.Name.AsParameter(),
-                                SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(p.Type))))
-                    ),
+                node.AllMembers.Select(m => generator.ParameterDeclaration(m.ParameterName(),
+                    m.GetRepresentation(TypeClassContext.GreenIEnumerableParameter))),
                 Accessibility.Internal,
                 baseConstructorArguments: baseArgs,
-                    statements: node.Properties.Select(x =>
-                            generator.AssignmentStatement(generator.IdentifierName(x.Name),
-                                generator.IdentifierName(x.Name.AsParameter())))
-                        .Concat(node.Children.Select(
-                            x => generator.AssignmentStatement(generator.IdentifierName(x.Name),
-                                generator.IdentifierName(x.Name.AsParameter())))));
-
-
-
+                statements: block
+            );
         }
 
-        private static SyntaxNode CreateRepaceChild(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
+        private static SyntaxNode CreateRepaceChild(SyntaxGenerator generator, Node node, Options options)
         {
+            List<SyntaxNode> cases = new List<SyntaxNode>();
+
+            cases.AddRange(node.AllChildren()
+                .Select((c, i) => generator.SwitchSection(
+                    generator.LiteralExpression(i),
+                    new[]
+                    {
+                        generator.ReturnStatement(
+                            generator.ObjectCreationExpression(
+                                SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(node.Name)),
+                                node.AllProperties()
+                                    .Select(x => generator.Argument(generator.IdentifierName(x.Name)))
+                                    .Concat(node.AllChildren()
+                                        .Select((q, z) => generator.Argument(
+                                            z == i
+                                                ? generator.CastExpression(
+                                                    SyntaxFactory.ParseTypeName(
+                                                        SharedGeneratorion.GreenNodeName(q.Type)),
+                                                    generator.IdentifierName(options.NewChild))
+                                                : generator.IdentifierName(q.Name)
+                                        )))
+                            )
+                        )
+                    }
+
+                )));
+
+            cases.Add(generator.DefaultSwitchSection(new[]
+            {
+                generator.ThrowStatement(generator.ObjectCreationExpression(
+                    SyntaxFactory.ParseTypeName(options.InvalidChildReplace)))
+            }));
+
+
+            SyntaxNode switchStatement = generator.SwitchStatement(generator.IdentifierName(options.Index),
+                cases);
+
+
             return generator.MethodDeclaration(
                 options.WithReplacedChild,
                 new[]
@@ -100,46 +119,12 @@ namespace CodeGeneratorDriver
                 DeclarationModifiers.Override,
                 new[]
                 {
-                    generator.SwitchStatement(generator.IdentifierName(options.Index),
-                        node.AllChildren().Select((c, i) => generator.SwitchSection(
-                                generator.LiteralExpression(i),
-                                new[]
-                                {
-                                    generator.ReturnStatement(
-                                        generator.ObjectCreationExpression(
-                                            SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(node.Name)),
-                                            node.AllProperties()
-                                                .Select(x => generator.Argument(generator.IdentifierName(x.Name)))
-                                                .Concat(node.AllChildren()
-                                                    .Select((q, z) => generator.Argument(
-                                                        z == i
-                                                            ? generator.CastExpression(
-                                                                SyntaxFactory.ParseTypeName(
-                                                                    SharedGeneratorion.GreenNodeName(q.Type)),
-                                                                generator.IdentifierName(options.NewChild))
-                                                            : generator.IdentifierName(q.Name)
-
-
-                                                    )))
-                                        )
-                                    )
-                                }
-
-                            ))
-                            .Concat(
-                                new[]
-                                {
-                                    generator.DefaultSwitchSection(new[]
-                                    {
-                                        generator.ThrowStatement(generator.ObjectCreationExpression(
-                                            SyntaxFactory.ParseTypeName(options.InvalidChildReplace)))
-                                    })
-                                }))
+                    switchStatement
                 }
             );
         }
 
-        private static SyntaxNode CreateCreateRed(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
+        private static SyntaxNode CreateCreateRed(SyntaxGenerator generator, Node node, Options options)
         {
             return generator.MethodDeclaration(
                 options.CreateRed,
@@ -168,7 +153,7 @@ namespace CodeGeneratorDriver
             );
         }
 
-        private static SyntaxNode CreateGetChild(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
+        private static SyntaxNode CreateGetChild(SyntaxGenerator generator, Node node, Options options)
         {
             return generator.MethodDeclaration(
                 options.GetChildAt,
@@ -204,14 +189,9 @@ namespace CodeGeneratorDriver
                 });
         }
 
-        private static SyntaxNode CreateChild(SyntaxGenerator generator, Child child)
+        private static SyntaxNode CreateMember(SyntaxGenerator generator, Member type)
         {
-            return SharedGeneratorion.GetOnlyAccessor(child.Name, SharedGeneratorion.GreenNodeName(child.Type));
-        }
-
-        private static SyntaxNode CreateProperty(SyntaxGenerator generator, Property property)
-        {
-            return SharedGeneratorion.GetOnlyAccessor(property.Name, property.Type);
+            return SharedGeneratorion.GetOnlyAccessor(type.PropertyName(), type.GetRepresentation(TypeClassContext.None));
         }
     }
 }

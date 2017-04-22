@@ -7,12 +7,12 @@ namespace CodeGeneratorDriver
 {
     public static class ExtensionMethods
     {
-        public static TypeSyntax RedBase(this SyntaxGenerationOptions options)
+        public static TypeSyntax RedBase(this Options options)
         {
             return SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(options.BaseName));
         }
 
-        public static TypeSyntax GreenBase(this SyntaxGenerationOptions options)
+        public static TypeSyntax GreenBase(this Options options)
         {
             return SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(options.BaseName));
         }

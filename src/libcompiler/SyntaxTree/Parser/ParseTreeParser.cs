@@ -333,7 +333,7 @@ namespace libcompiler.SyntaxTree.Parser
 
             BlockNode bodyBlock = ParseBlockNode(body);
 
-            return CrawlSyntaxNode.ClassDecleration(interval, protectionLevel, ParseIdentifier(tn2), genericParameters, bodyBlock);
+            return CrawlSyntaxNode.ClassTypeDecleration(interval, protectionLevel, ParseIdentifier(tn2), genericParameters, bodyBlock);
         }
 
         #endregion

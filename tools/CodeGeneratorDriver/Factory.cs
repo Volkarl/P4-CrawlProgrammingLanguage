@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,10 +19,10 @@ namespace CodeGeneratorDriver
 {
     class Factory
     {
-        internal static SyntaxNode[] CreateFactoryFor(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options)
+        internal static SyntaxNode[] CreateFactoryFor(SyntaxGenerator generator, Node node, Options options)
         {
-            List<Parameter> greenParameters = CreateInitialParameters(node).ToList();
-            List<List<ParameterGenerationInfo>> v = CreateAllVariations(greenParameters, node, generator);
+
+            List<List<ParameterGenerationInfo>> v = CreateAllVariations(node.AllMembers, node, generator);
 
             var q = v.Select(param => CreateMethod(generator, node, options, param));
 
@@ -30,7 +31,7 @@ namespace CodeGeneratorDriver
 
         }
 
-        private static SyntaxNode CreateMethod(SyntaxGenerator generator, Node node, SyntaxGenerationOptions options, List<ParameterGenerationInfo> param)
+        private static SyntaxNode CreateMethod(SyntaxGenerator generator, Node node, Options options, List<ParameterGenerationInfo> param)
         {
             return generator.MethodDeclaration(node.Name == "Type" ? "TypeNode" : node.Name,
                 param.SelectMany(x => x.Parameters),
@@ -57,29 +58,25 @@ namespace CodeGeneratorDriver
             );
         }
 
-        private static List<ParameterGenerationInfo> GenerateWays(Parameter parameter, Node node, SyntaxGenerator generator, bool last)
+        private static List<ParameterGenerationInfo> GenerateWays(Member member, Node node, SyntaxGenerator generator, bool last)
         {
-            if (parameter.ParameterType == ParameterType.Green)
+            if (member.IsNode)
             {
-                return GenerateGreenParameters(generator, parameter, node, last);
-            }
-            else if (parameter.ParameterType == ParameterType.Normal)
-            {
-                return GeneratePropertyParameters(generator, parameter, node);
+                return GenerateGreenParameters(generator, member, node, last);
             }
             else
             {
-                throw new NotImplementedException();
+                return GeneratePropertyParameters(generator, member, node);
             }
         }
 
         private static List<ParameterGenerationInfo> GenerateGreenParameters(SyntaxGenerator generator,
-            Parameter parameter, Node node, bool last)
+            Member member, Node node, bool last)
         {
             string identifier = GenerateUnusedIdentifier();
 
             SyntaxNode initializer = null;
-            if (parameter.Null)
+            if (member.NullAllowed)
             {
                 initializer = generator.LiteralExpression(null);
             }
@@ -89,13 +86,13 @@ namespace CodeGeneratorDriver
                 {
 
                     generator.LocalDeclarationStatement(
-                        SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(parameter.Type)), identifier,
+                        member.GetRepresentation(TypeClassContext.None), identifier,
                         generator.ConditionalExpression(
                             generator.ReferenceNotEqualsExpression(
-                                generator.IdentifierName(parameter.Name.AsParameter()),
+                                generator.IdentifierName(member.ParameterName()),
                                 generator.LiteralExpression(null)), generator.CastExpression(
-                                SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(parameter.Type)),
-                                generator.MemberAccessExpression(generator.IdentifierName(parameter.Name.AsParameter()),
+                                member.GetRepresentation(TypeClassContext.None),
+                                generator.MemberAccessExpression(generator.IdentifierName(member.ParameterName()),
                                     "Green")), generator.LiteralExpression(null)))
 
 
@@ -103,13 +100,13 @@ namespace CodeGeneratorDriver
                 Parameters = new[]
                 {
 
-                    generator.ParameterDeclaration(parameter.Name.AsParameter(),
-                        SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(parameter.Type)), initializer)
+                    generator.ParameterDeclaration(member.ParameterName(),
+                        member.GetRepresentation(TypeClassContext.Red), initializer)
                 },
                 FinalIdentifier = identifier
             };
 
-            if (!parameter.Type.StartsWith("List'"))
+            if (!member.IsList)
                 return new List<ParameterGenerationInfo>(1)
                 {
                     std
@@ -119,20 +116,18 @@ namespace CodeGeneratorDriver
                 var items = new List<ParameterGenerationInfo>
                 {
                     std,
-                    CreateListCreator(generator, parameter,
-                        generator.ParameterDeclaration(parameter.Name.AsParameter(),
-                            SyntaxFactory.ParseTypeName(
-                                $"IEnumerable<{SharedGeneratorion.RedNodeName(parameter.Type.Split('\'')[1])}>")))
+                    CreateListCreator(generator, member,
+                        generator.ParameterDeclaration(member.ParameterName(),
+                            member.GetRepresentation(TypeClassContext.Red | TypeClassContext.NotList)))
                 };
 
                 if (!last)
                 {
-                    items.Add(CreateListCreator(generator, parameter, SyntaxFactory.Parameter(
+                    items.Add(CreateListCreator(generator, member, SyntaxFactory.Parameter(
                         SyntaxFactory.List(new AttributeListSyntax[0]),
                         SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.ParamsKeyword)),
-                        SyntaxFactory.ParseTypeName(
-                            SharedGeneratorion.RedNodeName(parameter.Type.Split('\'')[1]) + "[]"),
-                        SyntaxFactory.Identifier(parameter.Name.AsParameter()), null)));
+                        member.GetRepresentation(TypeClassContext.Red | TypeClassContext.Array) ,
+                        SyntaxFactory.Identifier(member.ParameterName()), null)));
                 }
 
 
@@ -140,7 +135,7 @@ namespace CodeGeneratorDriver
             }
         }
 
-        private static ParameterGenerationInfo CreateListCreator(SyntaxGenerator generator, Parameter parameter, SyntaxNode theParameter)
+        private static ParameterGenerationInfo CreateListCreator(SyntaxGenerator generator, Member member, SyntaxNode theParameter)
         {
             string identifier = GenerateUnusedIdentifier();
             return new ParameterGenerationInfo()
@@ -154,19 +149,20 @@ namespace CodeGeneratorDriver
                 {
                     generator.LocalDeclarationStatement(identifier,
                         generator.ObjectCreationExpression(
-                            SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(parameter.Type)),
+                            member.GetRepresentation(TypeClassContext.None),
                             SyntaxFactory.ParseExpression("SyntaxTree.NodeType.List"),
                             generator.MemberAccessExpression(generator.IdentifierName("Interval"), "Invalid"),
                             generator.InvocationExpression(generator.MemberAccessExpression(
-                                generator.IdentifierName(parameter.Name.AsParameter()), "Select"), generator.ValueReturningLambdaExpression("x", generator.MemberAccessExpression(generator.IdentifierName("x"), "Green")))))
+                                generator.IdentifierName(member.ParameterName()), "Select"), generator.ValueReturningLambdaExpression("x", generator.MemberAccessExpression(generator.IdentifierName("x"), "Green")))))
                 }
             };
         }
 
-        private static List<ParameterGenerationInfo> GeneratePropertyParameters(SyntaxGenerator generator, Parameter parameter, Node node)
+        private static List<ParameterGenerationInfo> GeneratePropertyParameters(SyntaxGenerator generator, Member member, Node node)
         {
             ExpressionType type;
-            if (parameter.Type == "NodeType")
+            string typeName = member.Type;
+            if (typeName== "NodeType")
             {
                 string identifier = GenerateUnusedIdentifier();
                 return new List<ParameterGenerationInfo>(1)
@@ -182,7 +178,7 @@ namespace CodeGeneratorDriver
                     }
                 };
             }
-            else if (parameter.Type == "ExpressionType" && Enum.TryParse(node.Name, true, out type))
+            else if (typeName == "ExpressionType" && Enum.TryParse(node.Name, true, out type))
             {
                 string identifier = GenerateUnusedIdentifier();
                 return new List<ParameterGenerationInfo>(1)
@@ -198,7 +194,7 @@ namespace CodeGeneratorDriver
                     }
                 };
             }
-            else if (parameter.Type == "IEnumerable<CrawlSyntaxNode>")
+            else if (typeName == "IEnumerable")
             {
                 string identifier = GenerateUnusedIdentifier();
                 return new List<ParameterGenerationInfo>()
@@ -207,15 +203,15 @@ namespace CodeGeneratorDriver
                     {
                         Parameters = new[]
                         {
-                            generator.ParameterDeclaration(parameter.Name.AsParameter(),
-                                SyntaxFactory.ParseTypeName(parameter.Type))
+                            generator.ParameterDeclaration(member.ParameterName(),
+                                member.GetRepresentation())
                         },
                         Code = new[]
                         {
                             generator.LocalDeclarationStatement(identifier,
                                 generator.InvocationExpression(
                                     generator.MemberAccessExpression(
-                                        generator.IdentifierName(parameter.Name.AsParameter()), "Select"),
+                                        generator.IdentifierName(member.ParameterName()), "Select"),
                                     generator.ValueReturningLambdaExpression("z",
                                         generator.MemberAccessExpression(generator.IdentifierName("z"), "Green"))))
                         },
@@ -232,10 +228,10 @@ namespace CodeGeneratorDriver
                     {
                         Parameters = new[]
                         {
-                            generator.ParameterDeclaration(parameter.Name.AsParameter(),
-                                SyntaxFactory.ParseTypeName(parameter.Type))
+                            generator.ParameterDeclaration(member.ParameterName(),
+                                member.GetRepresentation())
                         },
-                        FinalIdentifier = parameter.Name.AsParameter()
+                        FinalIdentifier = member.ParameterName()
                     }
                 };
             }
@@ -249,7 +245,7 @@ namespace CodeGeneratorDriver
             return $"__generated{id}";
         }
 
-        private static List<List<ParameterGenerationInfo>> CreateAllVariations(List<Parameter> parameters, Node node, SyntaxGenerator generator)
+        private static List<List<ParameterGenerationInfo>> CreateAllVariations(List<Member> parameters, Node node, SyntaxGenerator generator)
         {
             /*
              * For a list of parameters (parameters) first find all ways to create that parameter (GenerateWays)
@@ -289,30 +285,6 @@ namespace CodeGeneratorDriver
             _out:;
 
             return results;
-        }
-
-        private static IEnumerable<Parameter> CreateInitialParameters(Node node)
-        {
-            foreach (Property property in node.AllProperties())
-            {
-                yield return new Parameter
-                {
-                    Name = property.Name,
-                    Type = property.Type,
-                    ParameterType = ParameterType.Normal
-                };
-            }
-
-            foreach (Child child in node.AllChildren())
-            {
-                yield return new Parameter
-                {
-                    Name = child.Name,
-                    Type = child.Type,
-                    ParameterType = ParameterType.Green,
-                    Null = child.NullDefault
-                };
-            }
         }
 
         [DebuggerDisplay("{Name}")]

@@ -1,7 +1,6 @@
-﻿using libcompiler.SyntaxTree.Nodes.Internal;
-using libcompiler.TypeChecker;
+﻿using libcompiler.TypeChecker;
 
-namespace libcompiler.SyntaxTree.Nodes
+namespace libcompiler.SyntaxTree
 {
     /// <summary>
     /// Represents a block of code, surrounded by Indent .. Dedent

@@ -15,11 +15,13 @@ namespace CodeGeneratorDriver
             yield return SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Text"));
         }
 
-        public static SyntaxNode GetOnlyAccessor(string name, string type)
+
+
+        public static SyntaxNode GetOnlyAccessor(string name, TypeSyntax type)
         {
             return SyntaxFactory.PropertyDeclaration(
 
-                    SyntaxFactory.ParseTypeName(type), name)
+                    type, name)
                 .WithAccessorList(
                     SyntaxFactory.AccessorList(
                         SyntaxFactory.List(

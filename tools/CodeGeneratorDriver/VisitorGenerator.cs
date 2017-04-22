@@ -13,23 +13,31 @@ namespace CodeGeneratorDriver
     abstract class VisitorGenerator
     {
         protected readonly SyntaxGenerator generator;
-        protected readonly SyntaxGeneration syntaxGeneration;
+        protected readonly Model model;
         private readonly bool notVoid;
-        protected readonly SyntaxGenerationOptions options;
+        protected readonly Options options;
 
         protected SyntaxNode baseType = null;
         
 
-        protected VisitorGenerator(SyntaxGenerator generator, SyntaxGeneration syntaxGeneration, bool T = false)
+        protected VisitorGenerator(SyntaxGenerator generator, Model model, bool T = false)
         {
-            options = syntaxGeneration.Options;
+            options = model.Options;
             this.generator = generator;
-            this.syntaxGeneration = syntaxGeneration;
+            this.model = model;
             notVoid = T;
         }
 
         public SyntaxNode CreateVisitor(string name)
         {
+            SyntaxNode bailIfNull = generator.IfStatement(
+                generator.ValueEqualsExpression(generator.IdentifierName(options.Node.AsParameter()),
+                    generator.LiteralExpression(null)),
+                new[]
+                {
+                    generator.ReturnStatement(notVoid ? generator.DefaultExpression(ReturnType()) : null)
+                });
+
 
             SyntaxNode theBigVisitMethod = generator.MethodDeclaration(
                 options.Visit,
@@ -43,23 +51,17 @@ namespace CodeGeneratorDriver
                 baseType == null ? DeclarationModifiers.Virtual : DeclarationModifiers.Override,
                 new[]
                 {
-                    generator.IfStatement(
-                        generator.ValueEqualsExpression(generator.IdentifierName(options.Node.AsParameter()),
-                            generator.LiteralExpression(null)),
-                        new[]
-                        {
-                            generator.ReturnStatement(notVoid ? generator.DefaultExpression(ReturnType()) : null)
-                        }),
+                    bailIfNull,
                     generator.SwitchStatement(
                         generator.MemberAccessExpression(generator.IdentifierName(options.Node.AsParameter()), "Type"),
-                        syntaxGeneration.Node.Where(x => x.Abstract == false).Select(SwitchSectionVoid)
+                        model.Node.Where(x => x.Abstract == false).Select(SwitchSectionVoid)
                     ),
                     generator.ThrowStatement(
                         generator.ObjectCreationExpression(SyntaxFactory.ParseTypeName("ArgumentOutOfRangeException")))
                 });
 
 
-            List<SyntaxNode> theSmallVisitMethods = syntaxGeneration.Node
+            List<SyntaxNode> theSmallVisitMethods = model.Node
                 .Where(x => !x.Manual)
                 .Where(x => x.Abstract == false)
                 .Where(Filter)
@@ -93,11 +95,21 @@ namespace CodeGeneratorDriver
                 new[]
                 {
                     generator.ReturnStatement(
-                        generator.InvocationExpression(generator.IdentifierName(options.Visit+ arg.Name.NonGenericPart()),
-                            generator.CastExpression(
-                                SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(arg.Name)),
-                                generator.IdentifierName(options.Node.AsParameter()))))
+                        generator.InvocationExpression(NameOfVisitMethod(arg),
+                            GenerateCastExpression(arg)))
                 });
+        }
+
+        protected SyntaxNode NameOfVisitMethod(Node arg)
+        {
+            return generator.IdentifierName(options.Visit+ arg.Name.NonGenericPart());
+        }
+
+        protected SyntaxNode GenerateCastExpression(Node arg)
+        {
+            return generator.CastExpression(
+                arg.GetRepresentation(TypeClassContext.NotList | TypeClassContext.Red),
+                generator.IdentifierName(options.Node.AsParameter()));
         }
 
         protected virtual IEnumerable<SyntaxNode> ExtraMembers()
@@ -106,7 +118,7 @@ namespace CodeGeneratorDriver
 
     class VoidVisitorGenerator : VisitorGenerator
     {
-        public VoidVisitorGenerator(SyntaxGenerator generator, SyntaxGeneration syntaxGeneration) : base(generator, syntaxGeneration)
+        public VoidVisitorGenerator(SyntaxGenerator generator, Model model) : base(generator, model)
         {
         }
 
@@ -140,9 +152,8 @@ namespace CodeGeneratorDriver
             return generator.SwitchSection(SyntaxFactory.ParseExpression("NodeType." + arg.Name.NonGenericPart()),
                 new[]
                 {
-                    generator.InvocationExpression(generator.IdentifierName(options.Visit + arg.Name.NonGenericPart()),
-                        generator.CastExpression(SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(arg.Name)),
-                            generator.IdentifierName(options.Node.AsParameter()))),
+                    generator.InvocationExpression(NameOfVisitMethod(arg),
+                        GenerateCastExpression(arg)),
                     generator.ReturnStatement()
                 });
         }
@@ -150,7 +161,7 @@ namespace CodeGeneratorDriver
 
     class SimpleTVisitorGenerator : VisitorGenerator
     {
-        public SimpleTVisitorGenerator(SyntaxGenerator generator, SyntaxGeneration syntaxGeneration) : base(generator, syntaxGeneration, true)
+        public SimpleTVisitorGenerator(SyntaxGenerator generator, Model model) : base(generator, model, true)
         {
         }
 
@@ -215,7 +226,7 @@ namespace CodeGeneratorDriver
 
     class ComplexTVisitorGenerator : SimpleTVisitorGenerator
     {
-        public ComplexTVisitorGenerator(SyntaxGenerator generator, SyntaxGeneration syntaxGeneration, SyntaxNode baseType) : base(generator, syntaxGeneration)
+        public ComplexTVisitorGenerator(SyntaxGenerator generator, Model model, SyntaxNode baseType) : base(generator, model)
         {
             this.baseType = baseType;
         }
@@ -271,7 +282,7 @@ namespace CodeGeneratorDriver
 
     class SyntaxRewriterGenerator : VisitorGenerator
     {
-        public SyntaxRewriterGenerator(SyntaxGenerator generator, SyntaxGeneration syntaxGeneration, SyntaxNode baseType) : base(generator, syntaxGeneration, true)
+        public SyntaxRewriterGenerator(SyntaxGenerator generator, Model model, SyntaxNode baseType) : base(generator, model, true)
         {
             this.baseType = baseType;
         }
