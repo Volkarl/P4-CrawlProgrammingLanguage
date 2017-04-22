@@ -49,6 +49,8 @@ namespace CodeGeneratorDriver
 
             members.Add(CreateGetChildAt(generator, node, options));
 
+            members.Add(CreateToString(generator, node, options));
+
             //members.Add(CreateUpdate(generator, node, options));
 
             return generator.ClassDeclaration(
@@ -60,6 +62,32 @@ namespace CodeGeneratorDriver
                 null,
                 members
             );
+        }
+
+        private static SyntaxNode CreateToString(SyntaxGenerator generator, Node node, Options options)
+        {
+            string formatstring = string.Join(" ", node.AllProperties().Select((n, i) => "{" + i + "}"));
+
+            List<SyntaxNode> arguments = new List<SyntaxNode>()
+            {
+                generator.LiteralExpression(formatstring)
+            };
+
+            arguments.AddRange(node.AllProperties().Select(p => generator.IdentifierName(p.Name)));
+
+            return generator.MethodDeclaration(
+                "ToString",
+                null,
+                null,
+                generator.TypeExpression(SpecialType.System_String),
+                Accessibility.Public,
+                DeclarationModifiers.Override,
+                new []
+                {
+                    generator.ReturnStatement(generator.InvocationExpression(
+                        generator.MemberAccessExpression(generator.TypeExpression(SpecialType.System_String), "Format"), arguments))
+                }
+                );
         }
 
         private static SyntaxNode CreateUpdate(SyntaxGenerator generator, Node node, Options options)
