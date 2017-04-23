@@ -14,6 +14,8 @@ namespace CodeGeneratorDriver
         {
             List<SyntaxNode> members = new List<SyntaxNode>();
 
+            //Parse extra code that might be required inserted into the class body
+            //text manipulation as it is (afaik) impossible to ask it to parse as inside a class so we cheat...
             if (!string.IsNullOrWhiteSpace(node.ExtraClassCode))
             {
                 SyntaxTree tree = CSharpSyntaxTree.ParseText("class f{ " + node.ExtraClassCode + " }");
