@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,6 +14,7 @@ namespace CodeGeneratorDriver
         private readonly bool notVoid;
         protected readonly Options options;
 
+        protected virtual bool noT => notVoid;
         protected SyntaxNode baseType = null;
         
 
@@ -73,7 +71,7 @@ namespace CodeGeneratorDriver
             allMethods.AddRange(ExtraMembers());
             allMethods.AddRange(theSmallVisitMethods);
 
-            return generator.ClassDeclaration(name, notVoid ? new[] {"T"} : null, Accessibility.Public,
+            return generator.ClassDeclaration(name, noT ? new[] {"T"} : null, Accessibility.Public,
                 DeclarationModifiers.Abstract.WithPartial(true), baseType, null,
                 allMethods);
         }
@@ -282,6 +280,8 @@ namespace CodeGeneratorDriver
 
     class SyntaxRewriterGenerator : VisitorGenerator
     {
+        protected override bool noT => false;
+
         public SyntaxRewriterGenerator(SyntaxGenerator generator, Model model, SyntaxNode baseType) : base(generator, model, true)
         {
             this.baseType = baseType;
