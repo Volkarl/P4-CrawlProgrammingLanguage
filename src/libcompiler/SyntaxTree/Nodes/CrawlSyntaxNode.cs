@@ -110,7 +110,7 @@ namespace libcompiler.SyntaxTree
             return result;
         }
 
-        internal static GreenCrawlSyntaxNode ExtractGreenNode(CrawlSyntaxNode node) => node?.Green;
+        protected static GreenCrawlSyntaxNode ExtractGreenNode(CrawlSyntaxNode node) => node?.Green;
 
         public abstract CrawlSyntaxNode GetChildAt(int index);
 

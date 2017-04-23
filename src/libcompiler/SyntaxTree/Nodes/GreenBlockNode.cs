@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree
@@ -34,11 +35,14 @@ namespace libcompiler.SyntaxTree
 
             internal override GreenCrawlSyntaxNode WithReplacedChild(GreenCrawlSyntaxNode newChild, int index)
             {
-                switch (index)
-                {
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                if(0 > index || index >= ChildCount)
+                    throw new ArgumentOutOfRangeException();
+
+                var newchildren = ChildCopy();
+                newchildren[index] = newChild;
+
+                return new GreenBlockNode(Type, Interval, newchildren);
+
             }
         }
     }

@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree
 {
@@ -23,6 +25,29 @@ namespace libcompiler.SyntaxTree
 
                 return default(T);
             }
+        }
+
+        public ListNode<T> Update(Interval interval, IEnumerable<T> children)
+        {
+            List<T> newchildren = children.ToList();
+
+            if (Interval.Equals(interval) && AreEqual(newchildren)) return this;
+
+            var green = new GreenListNode<T>(NodeType.List, interval, newchildren.Select(ExtractGreenNode));
+
+            return (ListNode<T>) Translplant(green.CreateRed(null, 0));
+        }
+
+        protected bool AreEqual(List<T> n)
+        {
+            if (_childNodes.Length != n.Count) return false;
+
+            for (int i = 0; i < _childNodes.Length; i++)
+            {
+                if (_childNodes[i] != n[i]) return false;
+            }
+
+            return true;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

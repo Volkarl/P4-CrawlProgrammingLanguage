@@ -30,6 +30,15 @@ namespace libcompiler
                 }
             }
 
+            foreach (CrawlSyntaxTree tree in parsedFiles)
+            {
+                ReplaceLocalVariablesRewriter rewriter = new ReplaceLocalVariablesRewriter();
+                SuperPrettyPrintVisitor printer = new SuperPrettyPrintVisitor(true);
+                string s = printer.PrettyPrint(rewriter.Visit(tree.RootNode));
+                output.WriteLine(s);
+
+            }
+
             if (configuration.TargetStage == TargetStage.TypeCheck)
             {
                 foreach (CrawlSyntaxTree syntaxTree in parsedFiles)
@@ -51,6 +60,14 @@ namespace libcompiler
         private static CrawlSyntaxTree ParseFileToAst(string arg)
         {
             return CrawlSyntaxTree.ParseTree(new StreamReader(File.OpenRead(arg)), arg);
+        }
+    }
+
+    public class ReplaceLocalVariablesRewriter : SyntaxRewriter
+    {
+        protected override CrawlSyntaxNode VisitIntegerLiteral(IntegerLiteralNode integerLiteral)
+        {
+            return CrawlSyntaxNode.IntegerLiteral(integerLiteral.Interval, 9001);
         }
     }
 }

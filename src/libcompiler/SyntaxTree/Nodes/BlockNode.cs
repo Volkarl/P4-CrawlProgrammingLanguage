@@ -1,4 +1,7 @@
-﻿using libcompiler.TypeChecker;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Antlr4.Runtime.Misc;
+using libcompiler.TypeChecker;
 
 namespace libcompiler.SyntaxTree
 {
@@ -27,6 +30,18 @@ namespace libcompiler.SyntaxTree
                 return scope?.GetScope(symbol);
             }
             return typeInformation;
+        }
+
+        public new BlockNode Update(Interval interval, IEnumerable<CrawlSyntaxNode> children)
+        {
+            List<CrawlSyntaxNode> newchildren = children.ToList();
+
+            if (Interval.Equals(interval) && AreEqual(newchildren)) return this;
+
+            var green = new GreenBlockNode(NodeType.List, interval, newchildren.Select(ExtractGreenNode));
+
+            return (BlockNode) Translplant(green.CreateRed(null, 0));
+
         }
     }
 }
