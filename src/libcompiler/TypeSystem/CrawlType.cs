@@ -1,13 +1,17 @@
-﻿using System;
-
-namespace libcompiler
+﻿namespace libcompiler.TypeSystem
 {
-    //TODO: Should probably be in a TypeSystem folder
-    public abstract class CrawlType
+    public class CrawlType
     {
-        public static CrawlType ParseDecleration(string text)
+        public string Textdef { get; }
+
+        public CrawlType(string textdef)
         {
-            throw new NotImplementedException();
+            Textdef = textdef;
+        }
+
+        public override string ToString()
+        {
+            return Textdef;
         }
     }
 }

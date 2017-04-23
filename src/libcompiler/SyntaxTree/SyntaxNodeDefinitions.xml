@@ -124,6 +124,10 @@
             </children>
         </node>
         <node>
+            <name>Namespace</name>
+            <baseclass>Import</baseclass>
+        </node>
+        <node>
             <name>Literal</name>
             <baseclass>Expression</baseclass>
             <abstract>true</abstract>
@@ -183,6 +187,20 @@
             </children>
         </node>
         <node>
+            <name>CallableDeclaration</name>
+            <baseclass>Decleration</baseclass>
+            <children>
+                <child>
+                    <name>MethodSignature</name>
+                    <type>Type</type>
+                </child>
+                <child>
+                    <name>Body</name>
+                    <type>Block</type>
+                </child>
+            </children>
+        </node>
+        <node>
             <name>ClassTypeDecleration</name>
             <baseclass>Decleration</baseclass>
             <children>
@@ -199,6 +217,10 @@
                     <type>Block</type>
                 </child>
             </children>
+        </node>
+        <node>
+            <name>Constructor</name>
+            <baseclass>CallableDeclaration</baseclass>
         </node>
         <node>
             <name>Decleration</name>
@@ -231,6 +253,10 @@
             <name>ForLoop</name>
             <baseclass>Flow</baseclass>
             <children>
+                <child>
+                    <name>Loopvariable</name>
+                    <type>Type</type>
+                </child>
                 <child>
                     <name>LoopVariable</name>
                     <type>Identifier</type>
@@ -289,30 +315,21 @@
         </node>
         <node>
             <name>MethodDecleration</name>
-            <baseclass>Decleration</baseclass>
+            <baseclass>CallableDeclaration</baseclass>
             <children>
-                <child>
-                    <name>ReturnType</name>
-                    <type>Type</type>
-                </child>
                 <child>
                     <name>Identifier</name>
                     <type>Identifier</type>
                 </child>
                 <child>
                     <name>Parameters</name>
-                    <type>List'Parameter</type>
+                    <type>List'Identifier</type>
                 </child>
                 <child>
                     <name>GenericParameters</name>
                     <type>List'GenericParameter</type>
                 </child>
-                <child>
-                    <name>Body</name>
-                    <type>Block</type>
-                </child>
             </children>
-
         </node>
         <node>
             <name>MultiChildExpression</name>
@@ -396,9 +413,18 @@
             <name>TranslationUnit</name>
             <baseclass>CrawlSyntax</baseclass>
             <children>
-                <child><name>Imports</name><type>List'Import</type></child>
                 <child>
-                <name>Code</name><type>Block</type></child>
+                    <name>Imports</name>
+                    <type>List'Import</type>
+                </child>
+                <child>
+                    <name>Namespace</name>
+                    <type>Namespace</type>
+                </child>
+                <child>
+                    <name>Code</name>
+                    <type>Block</type>
+                </child>
             </children>
         </node>
         <node>
@@ -410,7 +436,7 @@
                     <type>string</type>
                 </property>
             </properties>
-            <ctor><![CDATA[_expType = new Lazy<CrawlType>(() => CrawlType.ParseDecleration(/*this.FindFirstScope(), */TypeName));]]></ctor>
+            <ctor><![CDATA[_expType = new Lazy<CrawlType>(() => new CrawlType(TypeName));]]></ctor>
             <class><![CDATA[
         private readonly Lazy<CrawlType> _expType;
 

@@ -108,6 +108,7 @@ namespace CodeGeneratorDriver
                 generator.NamespaceImportDeclaration("System.Collections.Generic"),
                 generator.NamespaceImportDeclaration("System.Linq"),
                 generator.NamespaceImportDeclaration("Antlr4.Runtime.Misc"),
+                generator.NamespaceImportDeclaration("libcompiler.TypeSystem"),
                 generator.NamespaceDeclaration(nameSpace, original)
             });
 

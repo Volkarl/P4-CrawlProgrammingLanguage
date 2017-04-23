@@ -61,7 +61,6 @@
     <Compile Include="SyntaxTree\Nodes\GreenListNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ListNode.cs" />
     <Compile Include="SyntaxTree\VisitorManualVisits.cs" />
-    <Compile Include="TypeSystem\BuildInType.cs" />
     <Compile Include="TypeSystem\CrawlType.cs" />
     <Compile Include="$(GeneratedRedSyntaxNodes)" />
     <Compile Include="$(GeneratedGreenSyntaxNodes)" />
@@ -82,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Crawl.g4" />
+    <None Include="SyntaxTree\Nodes\redgreen.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\external_dependencies\antlr4\runtime\CSharp\runtime\CSharp\Antlr4.Runtime\Antlr4.Runtime.vs2013.csproj">

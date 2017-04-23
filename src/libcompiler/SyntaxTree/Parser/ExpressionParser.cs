@@ -64,7 +64,7 @@ namespace libcompiler.SyntaxTree.Parser
             RuleContext tar = (RuleContext) rule.GetChild(1);
             ExpressionNode target = ParseExpression(tar);
 
-            ITerminalNode symbol = (ITerminalNode) rule.GetChild(0).GetChild(0);
+            ITerminalNode symbol = (ITerminalNode) rule.GetChild(0);
             ExpressionType type = ParseUnaryOp(symbol);
 
             return CrawlSyntaxNode.UnaryExpression(rule.SourceInterval, type, target);
@@ -308,7 +308,6 @@ namespace libcompiler.SyntaxTree.Parser
             for (int i = 0; i < refExpList.ChildCount; i += 2)
             {
                 var refTerminalNode = refExpList.GetChild(i) as ITerminalNode;
-                //Console.WriteLine(refTerminalNode);
                 if (refTerminalNode == null) // If there is no reference, then the child is an expression
                 {
                     n.Add(ParseExpression((RuleContext) refExpList.GetChild(i)));

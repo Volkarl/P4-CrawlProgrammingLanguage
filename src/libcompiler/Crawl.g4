@@ -5,9 +5,9 @@ tokens { INDENT, DEDENT }
 //Code to handle INDENT/DEDENT instead of curly braces. Complained when i tried to move it so now it is at the top of file
 //Acctual CFG starts on line 132
 
-@lexer::header { 
-using System.Collections.Generic; 
-using System.Linq; 
+@lexer::header {
+using System.Collections.Generic;
+using System.Linq;
 using libcompiler.ExtensionMethods;
 }
 @lexer::members {
@@ -19,7 +19,7 @@ using libcompiler.ExtensionMethods;
   private int opened = 0;
   // The most recently produced token.
   private IToken lastToken = null;
-  
+
   private string Escape(string s)
   {
     StringBuilder sb = new StringBuilder();
@@ -35,10 +35,10 @@ using libcompiler.ExtensionMethods;
     }
     return sb.ToString();
   }
-  
+
   public override void Emit(IToken t) {
 	TraceListners.ParserTraceListner?.WriteLine(
-        $"Emitting :{CrawlParser.DefaultVocabulary.GetSymbolicName(t.Type)}{(string.IsNullOrEmpty(t.Text) ? string.Empty : " \"" + Escape(t.Text) + "\"")}({t.Channel})", 
+        $"Emitting :{CrawlParser.DefaultVocabulary.GetSymbolicName(t.Type)}{(string.IsNullOrEmpty(t.Text) ? string.Empty : " \"" + Escape(t.Text) + "\"")}({t.Channel})",
         "Lexer"
     );
 	Token = t;
@@ -89,9 +89,9 @@ using libcompiler.ExtensionMethods;
     int start = text.Length == 0 ? stop : stop - text.Length + 1;
     return new CommonToken(
 		new Antlr4.Runtime.Sharpen.Tuple<ITokenSource, ICharStream>(this, (this as ITokenSource).InputStream),
-	    type, 
-		channel, 
-		start, 
+	    type,
+		channel,
+		start,
 		stop
 	);
   }
@@ -104,7 +104,7 @@ using libcompiler.ExtensionMethods;
   //  the replacement is a multiple of eight [...]"
   //
   //  -- https://docs.python.org/3.1/reference/lexical_analysis.html#indentation
-  
+
   //TODO: Fix it. This is code from python, that belives tab = 8 spaces
   static int GetIndentationCount(string spaces) {
     int count = 0;
@@ -129,9 +129,9 @@ using libcompiler.ExtensionMethods;
   }
 }
 
-//The acctual CFG. 
+//The acctual CFG.
 //A translation unit is one source file for a program. First it contains imports of libraries, then the statements that make up the program
-translation_unit		: import_directives statements;
+translation_unit		: import_directives namespace_declaration statements;
 
 //////////////////////////////////////////////////////////////////////////////////
 //import_directive(s) is imports. Using from C# or import from python
@@ -139,11 +139,15 @@ import_directives		: import_directive* ;
 import_directive		: IMPORT IDENTIFIER (DOT IDENTIFIER)* END_OF_STATEMENT;
 
 //////////////////////////////////////////////////////////////////////////////////
+//Namespaces are made as packages.
+namespace_declaration	: (PACKAGE IDENTIFIER (DOT IDENTIFIER)* END_OF_STATEMENT)?;
+
+//////////////////////////////////////////////////////////////////////////////////
 //Statements make up the program. Functions/Classes, function calls and general computation
 statements				: ( if_selection | for_loop | while_loop | declaration | assignment | return_statement | side_effect_stmt | END_OF_STATEMENT | NEWLINE ) *;
 
 //////////////////////////////////////////////////////////////////////////////////
-//A side effect statement is a statement with a side effect. Aka a function call. 
+//A side effect statement is a statement with a side effect. Aka a method call.
 //A later part of the compiler needs to ensure it acctually ends with a call_expression
 //Could _maybe_ be done in the parser, but it requires a lot of lookahead.
 side_effect_stmt		: postfix_expression call_expression END_OF_STATEMENT;
@@ -159,29 +163,29 @@ for_loop				: FOR type IDENTIFIER FOR_LOOP_SEPERATOR expression INDENT statement
 //Plain and simple while loop. While expression is true, whatever
 while_loop				: WHILE expression INDENT statements DEDENT;
 
-//Returns from a function. Optionally return a value
+//Returns from a method. Optionally return a value
 return_statement		: RETURN expression? END_OF_STATEMENT;
-	
+
 ///////////////////////////////////////////////////////////////////////////////
-//Since we try and treat functions as any other type, we can't quite see if it is a function or variable definiton before we read it.
+//Since we try and treat methods as any other type, we can't quite see if it is a method or variable definiton before we read it.
 //But this section deals with declearation of anything you can access at a later time
-declaration				: protection_level? (class_declaration | function_decleration | variable_declerations) ;
+declaration				: protection_level? (class_declaration | method_decleration | variable_declerations|constructor_declaration) ;
 
 
-function_decleration	: type parameters generic_parameters? IDENTIFIER ASSIGNMENT_SYMBOL function_body;
-parameters              : LPARENTHESIS ( parameter ( ITEM_SEPARATOR parameter )* )?  RPARENTHESIS;
-parameter				: REFERENCE? type IDENTIFIER;
+method_decleration	: type parameters generic_parameters? IDENTIFIER ASSIGNMENT_SYMBOL method_body;
+parameters              : LPARENTHESIS (parameter ( ITEM_SEPARATOR parameter )* )?  RPARENTHESIS;
+parameter               : REFERENCE? type IDENTIFIER;
 generic_parameters      : LANGLEBRACKET generic ( ITEM_SEPARATOR generic )* RANGLEBRACKET;
 generic                 : IDENTIFIER ( INHERITANCE_OPERATOR IDENTIFIER )?;
 
 variable_declerations	: type variable_decl (ITEM_SEPARATOR variable_decl)* END_OF_STATEMENT;
 variable_decl			: IDENTIFIER (ASSIGNMENT_SYMBOL expression)? ;
 
-//The body of a function. No great secrets hidden here
-function_body			: INDENT statements DEDENT;
+//The body of a method. No great secrets hidden here
+method_body			: INDENT statements DEDENT;
 
-//Decleartion of a class. A class starts with 'class' (well, translated) then its name, 
-//then plausibly a list of things to inherit from. 
+//Decleartion of a class. A class starts with 'class' (well, translated) then its name,
+//then plausibly a list of things to inherit from.
 class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? generic_parameters? ASSIGNMENT_SYMBOL class_body;
 inheritances			: inheritance (ITEM_SEPARATOR inheritance)* ;
 inheritance				: IDENTIFIER;
@@ -189,34 +193,38 @@ inheritance				: IDENTIFIER;
 class_body				: INDENT declaration* DEDENT;
 
 
-///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+constructor_declaration	: parameters CONSTRUCT ASSIGNMENT_SYMBOL method_body;
+
+/////////////////////////////////////////////////////
+//////////////////////////
 //A few nuts and bolts that is also needed.
 
 //Save some value in a variable
 assignment				: (postfix_expression (subfield_expression | index_expression) | atom) ASSIGNMENT_SYMBOL expression END_OF_STATEMENT;
 
-//A type. As a function is a type with "return_type (argument types)" the real decleartion of type is "type (list of types)?" but that is left recursive type : 
+//A type. As a method is a type with "return_type (argument types)" the real decleartion of type is "type (list of types)?" but that is left recursive type :
 //Antlr can maybe acctually deal with this, but we just rewrite it
-//Its a * and not a ? as a function can return a function, ad infinitum....
+//Its a * and not a ? as a method can return a method, ad infinitum....
 
-type					: IDENTIFIER function_type? array_type? generic_unpack_expression?;
+type					: IDENTIFIER method_type? array_type? generic_unpack_expression?;
 
 
-//The tailing part if you define a function. ( optional reference, argument type, optional name, repeat)
+//The tailing part if you define a method. ( optional reference, argument type, optional name, repeat)
 //type_tail			:  | array_type ;
 array_type			: (LSQUAREBRACKET ITEM_SEPARATOR* RSQUAREBRACKET)+ ;
-function_type		: (LPARENTHESIS function_arguments?  RPARENTHESIS)+ ;
-function_arguments	: (REFERENCE? type IDENTIFIER?) ( ITEM_SEPARATOR REFERENCE? type IDENTIFIER? ) *;
+method_type			: (LPARENTHESIS method_arguments?  RPARENTHESIS)+ ;
+method_arguments	: (REFERENCE? type ( ITEM_SEPARATOR REFERENCE? type) *) ;
 
 //Protection level. Just stolen from .NET, as we target CLR
 protection_level		: PUBLIC | PRIVATE | PROTECTED | INTERNAL | PROTECTED_INTERNAL ;
 
 //The expression circus. The reason there is a lot is to make sure it parses in the correct order.
-//As an example, in or_expression, it is an and_expression (OR... )*. 
+//As an example, in or_expression, it is an and_expression (OR... )*.
 //This ensures that anything between OR is parsed independently (higher priorty, more grouped)
 //I don't think i can explain it better, you really need the revelation yourself.
 
-//A list of expressions (function calls ect)
+//A list of expressions (method calls ect)
 ref_expression_list		: REFERENCE? expression (ITEM_SEPARATOR REFERENCE? expression)* ;
 
 expression_list			: expression ( ITEM_SEPARATOR expression )* ;
@@ -231,7 +239,7 @@ and_expression			: comparison_expression ( AND comparison_expression )* ;
 
 comparison_expression	: additive_expression (comparison_symbol additive_expression)? ;  //?
 
-additive_expression		: multiplicative_expression (ADDITIVE_SYMBOL multiplicative_expression )* ;
+additive_expression		: multiplicative_expression ((PLUS | MINUS) multiplicative_expression )* ;
 
 multiplicative_expression: exponential_expression (MULTIPLICATIVE_SYMBOL exponential_expression )* ;
 
@@ -239,7 +247,7 @@ exponential_expression	: cast_expression (EXPONENT cast_expression)* ;
 
 cast_expression			: ( LPARENTHESIS type RPARENTHESIS ) * unary_expression ;
 
-unary_expression		: ( unary_symbol )* postfix_expression ;
+unary_expression		: ( INVERT | MINUS )* postfix_expression ;
 
 postfix_expression		: atom ( call_expression | subfield_expression | index_expression | generic_unpack_expression)* ;
 
@@ -261,13 +269,12 @@ atom					: IDENTIFIER
 //More nuts and bolts
 //Symbols used for different things. Should maybe be changed to tokens, but Antlr does magic and I don't.
 comparison_symbol		: RANGLEBRACKET | '>=' | '==' | '!=' | '<=' | LANGLEBRACKET ;
-ADDITIVE_SYMBOL			: '+' |MINUS ;
 MULTIPLICATIVE_SYMBOL	: '*' | '/' | '%' ;
-unary_symbol			: INVERT | MINUS;
-
 MINUS					: '-' ;
+PLUS					: '+' ;
+
 //All the literals. Values
-literal					: boolean_literal 
+literal					: boolean_literal
 						| integer_literal
 						| real_literal
 						| string_literal;
@@ -308,6 +315,8 @@ AND						: 'og' ;
 OR						: 'eller' ;
 IMPORT					: 'importer' ;
 REFERENCE				: 'reference' ;
+CONSTRUCT				: 'opret' ;
+PACKAGE					: 'pakke' ;
 
 //Symbols with meaning
 FOR_LOOP_SEPERATOR		: 'fra' ;
@@ -323,7 +332,7 @@ RANGLEBRACKET           : '>' ;
 INVERT					: 'ikke' ;
 DOT						: '.' ;
 EXPONENT				: '**' ;
-INHERITANCE_OPERATOR	: ':';
+INHERITANCE_OPERATOR	: 'er';
 
 ///////////////////////////////////////////////////////////////////////////////
 //Finally some tokens that is more than just a specific string.
@@ -346,7 +355,7 @@ fragment DIGIT 			: '0' .. '9' ;
 
 fragment STRING_ESCAPE_SEQ : '\\' . ;
 
-fragment EXPONENT_END	: ('e' |'E' ) (ADDITIVE_SYMBOL)? NUMBER ;
+fragment EXPONENT_END	: ('e' |'E' ) (PLUS | MINUS)? NUMBER ;
 
 
 //Code used to handle emitting DEDENT/INDENT after newlines. Newlines itself is hidden (ignored by the parser unless told not to)
@@ -359,7 +368,7 @@ NEWLINE
 	 string spaces = new string(Text.Where(x => !(x == '\n' || x == '\r')).ToArray());
      int next = InputStream.LA(1);
      if (opened > 0 || next == '\r' || next == '\n' || next == '#') {
-       // If we're inside a list or on a blank line, ignore all indents, 
+       // If we're inside a list or on a blank line, ignore all indents,
        // dedents and line breaks.
        Skip();
      }
@@ -385,12 +394,12 @@ NEWLINE
      }
    } -> channel(HIDDEN)
  ;
- 
+
 
 //Taken from https://github.com/antlr/grammars-v4/blob/master/python3/Python3.g4
 //A lot of symbols that python thinks are reasonable unicode symbols in identifiers
 
-fragment STARTSYMBOL 
+fragment STARTSYMBOL
  : '_'
  | [A-Z]
  | [a-z]
