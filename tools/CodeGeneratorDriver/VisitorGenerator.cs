@@ -291,32 +291,54 @@ namespace CodeGeneratorDriver
 
         protected override SyntaxNode VisitMethod(Node node)
         {
-            
-            List<SyntaxNode> statements =
-                node.AllChildren()
-                    .Select(
-                        x =>
-                            generator.LocalDeclarationStatement(
-                                SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(x.Type)),
-                                x.Name.AsParameter(),
-                                generator.CastExpression(SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(x.Type)),
-                                    generator.InvocationExpression(generator.IdentifierName(options.Visit),
-                                        generator.MemberAccessExpression(
-                                            generator.IdentifierName(options.Node.AsParameter()), x.Name))))).ToList();
+            string parametername = node.Name.AsParameter();
 
+            //Visits, in order
+            List<SyntaxNode> statements = node.AllMembers.Where(member => member.IsNode)
+                .Select(n =>
+                    generator.LocalDeclarationStatement(n.ParameterName(),
+                        generator.CastExpression(
+                            n.GetRepresentation(TypeClassContext.Red),
+                            generator.InvocationExpression(generator.IdentifierName(options.Visit),
+                                generator.MemberAccessExpression(generator.IdentifierName(parametername),
+                                    n.PropertyName()))))
+
+                )
+                .ToList();
+
+            //Call to an "Update" method that returns a copy of a node with new children
+            //Nodes get their value from visists, rest just pulled out
             statements.Add(
                 generator.ReturnStatement(
                     generator.InvocationExpression(
-                        generator.MemberAccessExpression(generator.IdentifierName(options.Node.AsParameter()),
-                            options.Update),
-                        node.AllChildren().Select(x => generator.IdentifierName(x.Name.AsParameter()))
-                    )));
+                        generator.MemberAccessExpression(generator.IdentifierName(parametername), options.Update),
+                        node
+                            .AllMembers
+                            .Where(member => !member.IsImplicitlyAssigned(node.Name))
+                            .Select(member =>
+                            member.IsNode
+                                ? generator.IdentifierName(member.ParameterName())
+                                : generator.MemberAccessExpression(
+                                    generator.IdentifierName(parametername),
+                                    member.PropertyName()
+                                )
+                        )
+                    )
+                )
+            );
 
-            return generator.MethodDeclaration(options.Visit + node.Name, new[]
-            {
-                generator.ParameterDeclaration(options.Node.AsParameter(),
-                    SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)))
-            }, null, ReturnType(), Accessibility.Protected, DeclarationModifiers.Override, statements);
+            return generator.MethodDeclaration(
+                options.Visit + node.Name,
+                new[]
+                {
+                    generator.ParameterDeclaration(parametername, node.GetRepresentation())
+                },
+                null,
+                ReturnType(),
+                Accessibility.Protected, DeclarationModifiers.Override,
+                statements
+
+            );
         }
 
         protected override TypeSyntax ReturnType()

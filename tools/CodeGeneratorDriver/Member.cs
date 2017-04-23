@@ -1,4 +1,5 @@
 ﻿using System;
+using libcompiler.SyntaxTree;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -35,6 +36,18 @@ namespace CodeGeneratorDriver
                 _genericPart = parts[1];
 
             Name = property.Name;
+        }
+
+        public bool IsImplicitlyAssigned(string name)
+        {
+            if (Type == "NodeType")
+                return true;
+
+            ExpressionType type;
+            if (Type == "ExpressionType" && Enum.TryParse(name, true, out type))
+                return true;
+
+            return false;
         }
 
         public TypeSyntax GetRepresentation(TypeClassContext context = TypeClassContext.None)

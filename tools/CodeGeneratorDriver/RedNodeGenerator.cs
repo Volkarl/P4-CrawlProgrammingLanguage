@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.CodeAnalysis.Editing;
 
 namespace CodeGeneratorDriver
@@ -47,11 +42,13 @@ namespace CodeGeneratorDriver
 
             members.Add(CreateCtor(generator, node, options));
 
-            members.Add(CreateGetChildAt(generator, node, options));
+            if (!node.Abstract)
+            {
+                members.Add(CreateGetChildAt(generator, node, options));
+                members.Add(CreateToString(generator, node, options));
+                members.Add(CreateUpdate(generator, node, options));
+            }
 
-            members.Add(CreateToString(generator, node, options));
-
-            //members.Add(CreateUpdate(generator, node, options));
 
             return generator.ClassDeclaration(
                 SharedGeneratorion.RedNodeName(node.Name),
@@ -92,34 +89,66 @@ namespace CodeGeneratorDriver
 
         private static SyntaxNode CreateUpdate(SyntaxGenerator generator, Node node, Options options)
         {
-            IEnumerable<string> allArguments = node.AllProperties()
-                .Skip(1)
-                .Select(x => x.Name)
-                .Concat(node.AllChildren().Select(x => x.Name));
+            //Create the first comparison. This is the second member, as type will never change
+            //This will be Interval, which don't support == so we need .Equals
+            var first = generator.LogicalNotExpression(
+                generator.InvocationExpression(
+                    generator.MemberAccessExpression(
+                        generator.IdentifierName(
+                            node.AllMembers[1].PropertyName()
+                        ),
+                        "Equals"
+                    ),
+                    generator.IdentifierName(
+                        node.AllMembers[1].ParameterName()
+                    )
+                )
+            );
 
-            var first = allArguments.Take(1).First();
+            //Create all the other comparisons. Those use ==
+            var rest = node.AllMembers.Skip(2)
+                .Where(m => !m.IsImplicitlyAssigned(node.Name))
+                .Select(member => generator.ReferenceNotEqualsExpression(
+                    generator.IdentifierName(member.PropertyName()),
+                    generator.IdentifierName(member.ParameterName())
+                ));
 
-            var q = generator.InvocationExpression(
-                generator.MemberAccessExpression(generator.IdentifierName(first), "Equals"),
-                generator.IdentifierName(first.AsParameter()));
+            //Reduce (Aggregate) all those comparisons (first + rest) into one big that checks if any are true
+            var comparison = rest.Aggregate(first, generator.LogicalOrExpression);
 
-            var v = allArguments.Skip(1).Aggregate( q,
-                (syntaxNode, s) => generator.LogicalOrExpression(syntaxNode, CreateComparison(generator, s)));
+            //.Select(n => n.WithLeadingTrivia(SyntaxFactory.CarriageReturnLineFeed))
+            var changereturn = generator.ReturnStatement(
+                generator.CastExpression(
+                    node.GetRepresentation(TypeClassContext.Red),
+                    generator.InvocationExpression(
+                        generator.IdentifierName("Translplant"),
+                        generator.InvocationExpression(
+                            generator.MemberAccessExpression(
+                                generator.IdentifierName("CrawlSyntaxNode"),
+                                node.Name == "Type" ? "TypeNode" : node.Name
+                            ),
+                            node
+                                .AllMembers
+                                .Where(m => !m.IsImplicitlyAssigned(node.Name))
+                                .Select(p =>
+                                    generator.IdentifierName(p.ParameterName())
+                                )
+                        )
+                    )
+                )
+            );
 
-
-            SyntaxNode changeifstmt = generator.IfStatement(v
-                , new SyntaxNode[0]);
+            SyntaxNode changeifstmt = generator.IfStatement(comparison
+                , new []{changereturn});
 
             return generator.MethodDeclaration("Update",
-                node.AllProperties().Skip(1)
-                    .Select(p =>
-                        generator.ParameterDeclaration(p.Name.AsParameter(), SyntaxFactory.ParseTypeName(p.Type))
-                    )
-                    .Concat(
-                        node.AllChildren()
-                            .Select(p => generator.ParameterDeclaration(p.Name.AsParameter(),
-                                SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(p.Type))))
-                    ),
+                node
+                    .AllMembers
+                    .Where(m => !m.IsImplicitlyAssigned(node.Name))
+                    .Select(m =>
+                        generator.ParameterDeclaration(
+                            m.ParameterName(),
+                            m.GetRepresentation(TypeClassContext.Red))),
                 null,
                 SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)),
                 Accessibility.Public,

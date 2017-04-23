@@ -52,10 +52,10 @@ namespace CodeGeneratorDriver
                 new ComplexTVisitorGenerator(generator, model,
                     SyntaxFactory.ParseTypeName("SyntaxVisitor<T>")).CreateVisitor("SimpleSyntaxVisitor"),
 
-                /*
+
                 new SyntaxRewriterGenerator(generator, model,
                         SyntaxFactory.ParseTypeName($"SyntaxVisitor<{SharedGeneratorion.RedNodeName(model.Options.BaseName)}>"))
-                    .CreateVisitor("SyntaxRewriter") */
+                    .CreateVisitor("SyntaxRewriter")
             };
 
             foreach (Node node in model.Node)
