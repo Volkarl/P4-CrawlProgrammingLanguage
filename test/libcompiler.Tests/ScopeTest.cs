@@ -1,5 +1,5 @@
 ﻿using System;
-using libcompiler.SyntaxTree.Nodes;
+using libcompiler.SyntaxTree;
 using NUnit.Framework;
 using static libcompiler.Tests.Helpers;
 
