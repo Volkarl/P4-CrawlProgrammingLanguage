@@ -229,6 +229,8 @@ namespace libcompiler.SyntaxTree
 
         protected virtual void VisitClassDecleration(ClassDeclerationNode node)
         {
+            Visit(node.Identifier);
+            Visit(node.Ancestor);
             Visit(node.GenericParameters);
             Visit(node.BodyBlock);
         }

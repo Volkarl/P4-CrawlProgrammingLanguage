@@ -139,6 +139,7 @@ namespace libcompiler.SyntaxTree
             Interval interval,
             ProtectionLevel protectionLevel,
             IdentifierNode identifier,
+            IdentifierNode ancestor,
             IEnumerable<GenericParameterNode> genericParameterNodes,
             BlockNode bodyBlock
         )
@@ -148,6 +149,7 @@ namespace libcompiler.SyntaxTree
                     interval,
                     protectionLevel,
                     GetGreenNode<IdentifierNode, _.GreenIdentifierNode>(identifier),
+                    GetGreenNode<IdentifierNode, _.GreenIdentifierNode>(ancestor),
                     GetListOfGreenNodes(genericParameterNodes),
                     GetGreenNode<BlockNode, _.GreenBlockNode>(bodyBlock)
                 )

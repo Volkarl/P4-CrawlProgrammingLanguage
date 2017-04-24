@@ -23,11 +23,13 @@ namespace libcompiler.SyntaxTree.Nodes
             
             if (typeInformation == null)
             {
-                IScope scope;
-                scope = Parent.FindFirstScope();
+                IScope scope = Parent.FindFirstScope();
                 return scope?.FindSymbol(symbol);
             }
             return typeInformation;
         }
+
+        public TypeInformation[] FindSymbolOnlyInLocal(string symbol)
+        {
     }
 }

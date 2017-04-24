@@ -28,7 +28,7 @@ namespace libcompiler.SyntaxTree.Parser
 
 
             ListNode<ImportNode> importNodes = ParseImports(imports);
-            NameSpaceNode namespaceNode = ParseNamespace(nameSpace);   //Forts�t herfra.
+            NameSpaceNode namespaceNode = ParseNamespace(nameSpace);
             BlockNode rootBlock = ParseBlockNode(statements);
 
             return NodeFactory.TranslationUnit(translationUnit.SourceInterval, importNodes, namespaceNode, rootBlock);
@@ -40,7 +40,7 @@ namespace libcompiler.SyntaxTree.Parser
             if (nameSpace.ChildCount != 0)
             {
                 //Child 0 is reserved word "pakke", and is discarded.
-                
+
 
                 path.Append(nameSpace.GetChild(1).GetText());
                 //Stride 2 to avoid dots.
@@ -48,7 +48,7 @@ namespace libcompiler.SyntaxTree.Parser
                 {
                     path.Append(".");
                     path.Append(nameSpace.GetChild(i).GetText());
-                }               
+                }
             }
             return NodeFactory.NameSpaceNode(nameSpace.SourceInterval, path.ToString());
         }
@@ -211,7 +211,7 @@ namespace libcompiler.SyntaxTree.Parser
             {
                 return ParseVariableDecleration(declpart, protectionLevel, rule.SourceInterval);
             }
-            
+
             throw new NotImplementedException("unknown decleration type");
         }
 
@@ -379,9 +379,13 @@ namespace libcompiler.SyntaxTree.Parser
             //The second last child. And one for the zero-indexing.
             int genericParametersIndex = classPart.ChildCount - 2 -1;
 
-            ITerminalNode tn1 = (ITerminalNode)classPart.GetChild(0);
+            ITerminalNode classSymbol = (ITerminalNode)classPart.GetChild(0);   //Just says "class"
 
-            ITerminalNode tn2 = (ITerminalNode)classPart.GetChild(1);
+            ITerminalNode identifierSymbol = (ITerminalNode)classPart.GetChild(1);
+
+            CrawlParser.InheritanceContext inheritancesContext = (CrawlParser.InheritanceContext) classPart.GetChild(2);
+
+            IdentifierNode ancestor = ParseInheritances(inheritancesContext);
 
             CrawlParser.Generic_parametersContext genericParametersContext =
                 classPart.GetChild(genericParametersIndex) as CrawlParser.Generic_parametersContext;
@@ -393,11 +397,31 @@ namespace libcompiler.SyntaxTree.Parser
             if (genericParametersContext != null)
                 genericParameters.AddRange(ParseGenericParameters(genericParametersContext));
 
-            if(tn1.Symbol.Type != CrawlLexer.CLASS) throw new CrawlImpossibleStateException("Trying to parse a class that is not a class", interval);
+            if(classSymbol.Symbol.Type != CrawlLexer.CLASS) throw new CrawlImpossibleStateException("Trying to parse a class that is not a class", interval);
 
             BlockNode bodyBlock = ParseBlockNode(body);
 
-            return NodeFactory.ClassDecleration(interval, protectionLevel, ParseIdentifier(tn2), genericParameters, bodyBlock);
+            return NodeFactory.ClassDecleration(interval, protectionLevel, ParseIdentifier(identifierSymbol), ancestor, genericParameters, bodyBlock);
+        }
+
+        private static IdentifierNode ParseInheritances(CrawlParser.InheritanceContext inheritanceContext)
+        {
+            IdentifierNode result;
+            List<IdentifierNode> resultPart2 = new List<IdentifierNode>();
+            if (inheritanceContext.ChildCount > 0)
+            {
+                ITerminalNode identifierSymbol =
+                    (ITerminalNode) inheritanceContext.GetChild(1);
+                result =
+                    NodeFactory.TokenNode(identifierSymbol.SourceInterval, identifierSymbol.GetText());
+            }
+            else
+            {
+                result =
+                    NodeFactory.TokenNode(new Interval(0, 0), "$OBJECT");
+            }
+
+            return result;
         }
 
         #endregion
@@ -425,7 +449,7 @@ namespace libcompiler.SyntaxTree.Parser
                     return ProtectionLevel.ProtectedInternal;
                 default:
                     throw new CrawlImpossibleStateException("Unknown protection level", protectionLevel.SourceInterval);
-            }   
+            }
         }
 
         public static CrawlSyntaxNode ParseStatement(RuleContext rule)
@@ -451,7 +475,7 @@ namespace libcompiler.SyntaxTree.Parser
 
         private static CrawlSyntaxNode ParseReturn(RuleContext rule)
         {
-            
+
             if (rule.ChildCount == 3)
             {
                 ExpressionNode retvalue = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(1));
