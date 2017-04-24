@@ -8,24 +8,23 @@ namespace libcompiler.SyntaxTree.Nodes
     /// </summary>
     public class BlockNode : ListNode<CrawlSyntaxNode>, IScope
     {
-        private BlockScope scopeInfo;
+        private readonly BlockScope _scopeInfo;
         //TODO: This would be a good place to save scope information.
         
         public BlockNode(CrawlSyntaxNode parent, GreenCrawlSyntaxNode self, int indexInParent)
             : base(parent, self, indexInParent)
         {
-            scopeInfo = new BlockScope(this);
+            _scopeInfo = new BlockScope(this);
         }
         //Checks if the symbol is in this block node scope or the nodes predecessor
-        public TypeInformation[] GetScope(string symbol)
+        public TypeInformation[] FindSymbol(string symbol)
         {
-            TypeInformation[] typeInformation = scopeInfo.GetScope(symbol);
+            TypeInformation[] typeInformation = _scopeInfo.FindSymbol(symbol);
             
             if (typeInformation == null)
             {
-                IScope scope;
-                scope = Parent.FindFirstScope();
-                return scope?.GetScope(symbol);
+                IScope scope = Parent.FindFirstScope();
+                return scope?.FindSymbol(symbol);
             }
             return typeInformation;
         }
