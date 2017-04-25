@@ -30,6 +30,7 @@ namespace libcompiler.SyntaxTree
         Reference,
         ConstructorNode,
         Identifier,
-        NameSpace
+        NameSpace,
+        Parameter
     }
 }

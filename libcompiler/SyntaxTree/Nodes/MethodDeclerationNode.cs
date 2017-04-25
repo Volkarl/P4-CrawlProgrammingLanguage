@@ -1,10 +1,12 @@
 ﻿using libcompiler.SyntaxTree.Nodes.Internal;
+using libcompiler.TypeChecker;
 
 namespace libcompiler.SyntaxTree.Nodes
 {
-    public class MethodDeclerationNode : CallableDeclarationNode, INodeThatTakesGenericParameters
+    public class MethodDeclerationNode : CallableDeclarationNode, INodeThatTakesGenericParameters, IScope
     {
         private ListNode<IdentifierNode> _parameterIdentifiers;
+        private MethodScope _scope;
         private ListNode<GenericParameterNode> _genericParameters;
         
 
@@ -17,7 +19,7 @@ namespace libcompiler.SyntaxTree.Nodes
 
         public override string ToString()
         {
-            return $"decl {MethodType.ExportedType.Textdef} {Identfier} =";
+            return $"decl {MethodType.ExportedType} {Identfier} =";
         }
 
         public override CrawlSyntaxNode GetChildAt(int index)
@@ -38,6 +40,11 @@ namespace libcompiler.SyntaxTree.Nodes
                 default:
                     return default(CrawlSyntaxNode);
             }
+        }
+
+        public TypeInformation[] FindSymbol(string symbol)
+        {
+            return  _scope.FindSymbol(symbol) ?? Parent.FindFirstScope()?.FindSymbol(symbol);
         }
     }
 }

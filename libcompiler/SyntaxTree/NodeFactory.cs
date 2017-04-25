@@ -145,6 +145,7 @@ namespace libcompiler.SyntaxTree
             Interval interval,
             ProtectionLevel protectionLevel,
             IdentifierNode identifier,
+            IdentifierNode ancestor,
             IEnumerable<GenericParameterNode> genericParameterNodes,
             BlockNode bodyBlock
         )
@@ -154,6 +155,7 @@ namespace libcompiler.SyntaxTree
                     interval,
                     protectionLevel,
                     GetGreenNode<IdentifierNode, _.GreenIdentifierNode>(identifier),
+                    GetGreenNode<IdentifierNode, _.GreenIdentifierNode>(ancestor),
                     GetListOfGreenNodes(genericParameterNodes),
                     GetGreenNode<BlockNode, _.GreenBlockNode>(bodyBlock)
                 )
@@ -346,6 +348,11 @@ namespace libcompiler.SyntaxTree
         public static ReferenceNode ReferenceNode(ExpressionNode target)
         {
             return (ReferenceNode) Wrap(new _.GreenReferenceNode(GetGreenNode<ExpressionNode, _.GreenExpressionNode>(target)));
+        }
+
+        public static ParameterNode Parameter(Interval interval, bool isReference, TypeNode type, string identifier)
+        {
+            return (ParameterNode) Wrap(new _.GreenParameterNode(interval, isReference, GetGreenNode<TypeNode, _.GreenTypeNode>(type), identifier));
         }
     }
 }

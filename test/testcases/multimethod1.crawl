@@ -1,0 +1,12 @@
+klasse a =
+  tal (tal a) b =
+    skriv("I b(tal)");
+    returner a;
+  tal (tekst a) b =
+    skriv("I b(tekst)");
+    returner 4;
+
+a z = a();
+
+tal q = z.b("") + z.b(4);
+skriv(q);

@@ -120,7 +120,7 @@ namespace libcompiler.SyntaxTree
             Visit(node.Target);
         }
 
-        private void VisitGenericParameter(GenericParameterNode node)
+        protected virtual void VisitGenericParameter(GenericParameterNode node)
         {
         }
 
@@ -239,6 +239,8 @@ namespace libcompiler.SyntaxTree
 
         protected virtual void VisitClassDecleration(ClassDeclerationNode node)
         {
+            Visit(node.Identifier);
+            Visit(node.Ancestor);
             Visit(node.GenericParameters);
             Visit(node.BodyBlock);
         }
@@ -263,9 +265,4 @@ namespace libcompiler.SyntaxTree
             }
         }
     }
-
-    public class FooVisitor : SyntaxTreeVistitor
-    {
-    }
-    
 }

@@ -89,7 +89,7 @@ namespace libcompiler
         protected override void VisitVariableDecleration(VariableDeclerationNode node)
         {
             BuildString.Append(' ');
-            BuildString.Append(node.DeclerationType.ExportedType.Textdef);
+            BuildString.Append(node.DeclerationType.ExportedType);
 
             if (node.Declerations.ChildCount == 1)
             {

@@ -51,15 +51,15 @@ namespace libcompiler.SyntaxTree
                 case NodeType.VariableDeclerationSingle:
                     return VisitVariableDeclerationSingle((SingleVariableDecleration)node);
                     
-                case NodeType.FunctionDecleration:
-                    return VisitFunctionDecleration((FunctionDeclerationNode)node);
+                case NodeType.MethodDecleration:
+                    return VisitFunctionDecleration((MethodDeclerationNode)node);
                     
                 case NodeType.Block:
                     return VisitBlock((BlockNode)node);
                     
                 case NodeType.Import:
                     throw new NotImplementedException();
-                case NodeType.CompilationUnit:
+                case NodeType.TranslationUnit:
                     return VisitCompiliationUnit((TranslationUnitNode)node);
                     
                 case NodeType.Literal:
@@ -69,11 +69,8 @@ namespace libcompiler.SyntaxTree
                     return VisitList((IEnumerable<CrawlSyntaxNode>)node);
                 case NodeType.UnaryExpression:
                     return VisitUnary((UnaryNode)node);
-
                 case NodeType.Type:
                     return VisitType((TypeNode) node);
-
-                case NodeType.Token:
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -121,7 +118,7 @@ namespace libcompiler.SyntaxTree
 
         protected abstract T VisitCall(CallishNode node);
 
-        protected virtual T VisitFunctionDecleration(FunctionDeclerationNode node)
+        protected virtual T VisitFunctionDecleration(MethodDeclerationNode node)
         {
             return Visit(node.BodyBlock);
         }

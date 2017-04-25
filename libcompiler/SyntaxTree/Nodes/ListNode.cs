@@ -46,7 +46,7 @@ namespace libcompiler.SyntaxTree.Nodes
 
         public override string ToString()
         {
-            return $"{base.ToString()} <{typeof(T).Name}>";
+            return $"[{typeof(T).Name}]";
         }
     }
 }

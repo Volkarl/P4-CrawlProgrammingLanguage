@@ -30,7 +30,7 @@ namespace libcompiler.SyntaxTree.Nodes.Internal
         {
             switch (slot)
             {
-                case 0:
+                 case 0:
                     return MethodSignature;
                 case 1:
                     return Identfier;

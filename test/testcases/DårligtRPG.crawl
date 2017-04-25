@@ -3,10 +3,14 @@ importer Console;
 offentlig klasse Helt =
   offentlig tekst Navn;
   offentlig bool ErILive;
-  offentligt heltal Sytrke;
-  offentligt heltal Smidighed;
-  offentligt heltal Intellligens;
-  offentligt heltal Hygiejne;
+  offentligt tal Sytrke;
+  offentligt tal Smidighed;
+  offentligt tal Intellligens;
+  offentligt tal Hygiejne;
+
+  offentlig tal(tal mågethedsmængde) BlivMåget =
+    Hygiejne = Hygiejne - mågethedsmængde;
+    returner Hygiejne;
 
 offentlig klasse Sted =
   offentlig tekst() Hændelse;
@@ -21,7 +25,7 @@ offentlig intet(Sted sted) PrintMuligheder =
 
 offentlig intet(Sted sted) AflæsKommando =
   tekst kommando = LæsLinje();
-  for heltal i fra sted.Muligheder.Antal
+  for tal i fra sted.Muligheder.Antal
     hvis kommando == sted.MulighederNavne
       sted.Muligheder[i]();
 
@@ -84,7 +88,7 @@ Blomstereng.Borgruin = StenSkred;
 
 offentlig tekst() StSuHæn =
   for Helt h fra Helte
-    h.Hygiejne = h.Hygiejne - 2;
+    h.BlivMåget(2);
   returner "I befinder Jer i startsumpen. Der lugter.";
 
 offentlig tekst() Vent =

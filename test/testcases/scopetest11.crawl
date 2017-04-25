@@ -1,0 +1,2 @@
+intet (tal a) foo =
+	returner a;
