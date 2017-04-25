@@ -18,7 +18,14 @@ namespace compilerconsolehost
             CrawlCompilerConfiguration configuration;
             if (ParseOptions(args, out configuration))
             {
-                CrawlCompiler.Compile(configuration);
+                CompilationResult result = CrawlCompiler.Compile(configuration);
+
+                string line = new String('=', Console.BufferWidth);
+                foreach (CompilationMessage message in result.Messages.OrderBy(message => message.Severity))
+                {
+                    message.WriteToConsole();
+                    Console.Write(line);
+                }
             }
             Console.WriteLine("Press enter to exit...");
             Console.ReadLine();

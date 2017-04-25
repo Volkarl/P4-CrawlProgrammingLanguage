@@ -18,13 +18,8 @@ namespace libcompiler.SyntaxTree
             CompilationUnitName = name;
         }
 
-        public static CrawlSyntaxTree ParseTree(TextReader textReader, string compilationUnitName)
+        public static CrawlSyntaxTree ParseTree(ITokenStream tStream, string compilationUnitName)
         {
-            //An ITokenSource lets us get the tokens one at a time.
-            ITokenSource tSource = new CrawlLexer(new AntlrInputStream(textReader));
-            //An ITokenStream lets us go forwards and backwards in the token-series.
-            ITokenStream tStream = new CommonTokenStream(tSource);
-            //That's what our parser wants.
             CrawlParser parser = new CrawlParser(tStream);
 
             //The translation_unit is the top rule in our grammar.
