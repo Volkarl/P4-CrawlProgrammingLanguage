@@ -292,6 +292,8 @@ namespace libcompiler.SyntaxTree.Parser
                 int starti = i;
                 bool reference = ((argList.GetChild(i) as ITerminalNode)?.Symbol?.Type == CrawlLexer.REFERENCE);
 
+                if (reference) i++;
+
                 Interval interval = argList.GetChild(starti).SourceInterval;
                 interval = interval.Union(argList.GetChild(starti + (reference ? 1 : 0)).SourceInterval);
                 yield return CrawlSyntaxNode.Argument(interval, reference,

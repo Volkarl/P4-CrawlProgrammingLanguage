@@ -5,8 +5,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Antlr4.Runtime;
+using libcompiler.Parser;
 using libcompiler.SyntaxTree;
-using libcompiler.SyntaxTree.Nodes;
 using NUnit.Framework;
 
 namespace libcompiler.Tests
@@ -24,7 +25,13 @@ namespace libcompiler.Tests
         public static TranslationUnitNode ReadTestFile(string name)
         {
             string fullpath = Path.Combine(TestCaseFolderPath, name);
-            return (TranslationUnitNode) CrawlSyntaxTree.ParseTree(new StreamReader(File.OpenRead(fullpath)), fullpath).RootNode;
+
+            TextReader textReader = new StreamReader(File.OpenRead(fullpath));
+            //An ITokenSource lets us get the tokens one at a time.
+            ITokenSource tSource = new CrawlLexer(new AntlrInputStream(textReader));
+            //An ITokenStream lets us go forwards and backwards in the token-series.
+            ITokenStream tStream = new CommonTokenStream(tSource);
+            return (TranslationUnitNode) CrawlSyntaxTree.ParseTree(tStream, fullpath).RootNode;
         }
     }
 }

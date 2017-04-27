@@ -116,10 +116,10 @@ namespace CodeGeneratorDriver
         public TypeSyntax GetRepresentation(TypeClassContext context = TypeClassContext.None)
         {
             if ((context & TypeClassContext.NotList) != 0 && Name.StartsWith("List'"))
-                return SyntaxFactory.ParseTypeName($"IEnumerable<{Name.Split('\'')[1]}Nodes>");
+                return SyntaxFactory.ParseTypeName($"IEnumerable<{Name.Split('\'')[1]}Node>");
 
 
-            return SyntaxFactory.ParseTypeName($"{Name}Nodes");
+            return SyntaxFactory.ParseTypeName($"{Name}Node");
             throw new NotImplementedException();
         }
 

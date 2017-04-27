@@ -24,7 +24,7 @@
             <properties>
                 <property>
                     <name>Type</name>
-                    <type>NodesType</type>
+                    <type>NodeType</type>
                 </property>
                 <property>
                     <name>Interval</name>

@@ -78,10 +78,10 @@ namespace CodeGeneratorDriver
             {
 
 
-                return $"{genericPart}Nodes";
+                return $"{genericPart}Node";
             }
             else if ((context & TypeClassContext.GreenIEnumerableParameter) != 0)
-                return $"Green{genericPart}Nodes";
+                return $"Green{genericPart}Node";
             return genericPart;
         }
 
@@ -94,11 +94,11 @@ namespace CodeGeneratorDriver
             {
                 if ((context & TypeClassContext.Red) != 0)
                 {
-                    return $"{type}Nodes";
+                    return $"{type}Node";
                 }
                 else
                 {
-                    return $"Green{type}Nodes";
+                    return $"Green{type}Node";
                 }
             }
             else
