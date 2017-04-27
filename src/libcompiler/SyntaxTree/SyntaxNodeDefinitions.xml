@@ -14,7 +14,7 @@
         <new_child>newChild</new_child>
         <self>self</self>
         <visit>Visit</visit>
-        <node>Node</node>
+        <node>Nodes</node>
         <combine>Combine</combine>
         <update>Update</update>
     </options>
@@ -24,7 +24,7 @@
             <properties>
                 <property>
                     <name>Type</name>
-                    <type>NodeType</type>
+                    <type>NodesType</type>
                 </property>
                 <property>
                     <name>Interval</name>
@@ -308,7 +308,7 @@
             <manual>true</manual>
             <properties>
                 <property>
-                    <type>IEnumerable'CrawlSyntaxNode</type>
+                    <type>IEnumerable'CrawlSyntaxNodes</type>
                     <name>Children</name>
                 </property>
             </properties>

@@ -31,11 +31,10 @@ namespace CodeGeneratorDriver
                 Environment.Exit(-1);
 
             string xmlPath = args[0];
-            string nodes = args[1];
-            string factory = args[2];
-            string @internal = args[3];
-            string visitor = args[4];
-
+            string nodesSavePath = args[1];          //Where we want the red nodes
+            string factorySavePath = args[2];        //Where we want the factory
+            string internalNodesSavePath = args[3];  //Where we want the green ones
+            string visitorsSavePath = args[4];       //Where we want the visitors
 
             Model model = ReadDefinition(xmlPath);
 
@@ -43,22 +42,29 @@ namespace CodeGeneratorDriver
             SyntaxGenerator generator = SyntaxGenerator.GetGenerator(workspace, LanguageNames.CSharp);
 
             List<SyntaxNode> redNodes = new List<SyntaxNode>();
+
             List<SyntaxNode> factoryMethods = new List<SyntaxNode>();
+
             List<SyntaxNode> greenNodes = new List<SyntaxNode>();
-            List<SyntaxNode> visitors = new List<SyntaxNode>()
-            {
+
+            List<SyntaxNode> visitors = new List<SyntaxNode> {
                 new VoidVisitorGenerator(generator, model).CreateVisitor("SyntaxVisitor"),
                 new SimpleTVisitorGenerator(generator, model).CreateVisitor("SyntaxVisitor"),
-                new ComplexTVisitorGenerator(generator, model,
-                    SyntaxFactory.ParseTypeName("SyntaxVisitor<T>")).CreateVisitor("SimpleSyntaxVisitor"),
 
+                new ComplexTVisitorGenerator(
+                    generator,
+                    model,
+                    SyntaxFactory.ParseTypeName("SyntaxVisitor<T>")
+                ).CreateVisitor("SimpleSyntaxVisitor"),
 
-                new SyntaxRewriterGenerator(generator, model,
-                        SyntaxFactory.ParseTypeName($"SyntaxVisitor<{SharedGeneratorion.RedNodeName(model.Options.BaseName)}>"))
-                    .CreateVisitor("SyntaxRewriter")
+                new SyntaxRewriterGenerator(
+                        generator,
+                        model,
+                        SyntaxFactory.ParseTypeName($"SyntaxVisitor<{SharedGeneratorion.RedNodeName(model.Options.BaseName)}>")
+                ).CreateVisitor("SyntaxRewriter")
             };
 
-            foreach (Node node in model.Node)
+            foreach (Node node in model.Nodes)
             {
                 if(node.Manual) continue;
 
@@ -69,28 +75,43 @@ namespace CodeGeneratorDriver
                 factoryMethods.AddRange(Factory.CreateFactoryFor(generator, node, model.Options));
             }
 
+            //Every red node is partial and has 3 parts: The node itself, a static factory node, and the internal green node.
+            var factoryMethodsPartOfRedNode = new[]
+            {
+                generator.ClassDeclaration(
+                    SharedGeneratorion.RedNodeName(model.Options.BaseName),
+                    null,
+                    Accessibility.Public,
+                    DeclarationModifiers.Partial,
+                    null, null,
+                    factoryMethods
+                )
+            };
+
+            var greenNodesPartOfRedNodes = new[]
+            {
+                generator.ClassDeclaration(
+                    SharedGeneratorion.RedNodeName(model.Options.BaseName),
+                    null,
+                    Accessibility.Public,
+                    DeclarationModifiers.Partial,
+                    null, null,
+                    greenNodes
+                )
+            };
+
             //Generated enum for all NodeTypes
-            redNodes.Add(GeneratedTypeEnum(generator, model.Node));
+            redNodes.Add(GeneratedTypeEnum(generator, model.Nodes));
 
+            Save(Finalize(generator, model.Options.NameSpace, workspace, redNodes), nodesSavePath);
 
-            Save(Patch(generator, model.Options.NameSpace, workspace, redNodes), nodes);
+            Save(Finalize(generator, model.Options.NameSpace, workspace, visitors), visitorsSavePath);
 
-            Save(Patch(generator, model.Options.NameSpace, workspace, visitors), visitor);
+            Save(Finalize(generator, model.Options.NameSpace, workspace, factoryMethodsPartOfRedNode), factorySavePath);
 
-            Save(Patch(generator, model.Options.NameSpace, workspace, new[]
-            {
-                generator.ClassDeclaration(SharedGeneratorion.RedNodeName(model.Options.BaseName), null, Accessibility.Public,
-                    DeclarationModifiers.Partial, null, null, members: factoryMethods)
-            }), factory);
-
-            Save(Patch(generator, model.Options.NameSpace, workspace, new[]
-            {
-                generator.ClassDeclaration(SharedGeneratorion.RedNodeName(model.Options.BaseName), null, Accessibility.Public,
-                    DeclarationModifiers.Partial, null, null, members: greenNodes)
-            }), @internal);
+            Save(Finalize(generator, model.Options.NameSpace, workspace, greenNodesPartOfRedNodes), internalNodesSavePath);
 
             Console.WriteLine("Finished");
-
         }
 
         private static SyntaxNode GeneratedTypeEnum(SyntaxGenerator generator, Node[] nodes)
@@ -100,26 +121,28 @@ namespace CodeGeneratorDriver
             );
         }
 
-        private static SyntaxNode Patch(SyntaxGenerator generator, string nameSpace, Workspace workspace, IEnumerable<SyntaxNode> original)
+        private static SyntaxNode Finalize(SyntaxGenerator generator, string nameSpace, Workspace workspace, IEnumerable<SyntaxNode> original)
         {
             var cu = generator.CompilationUnit(new[]
-            {
-                generator.NamespaceImportDeclaration("System"),
-                generator.NamespaceImportDeclaration("System.Collections.Generic"),
-                generator.NamespaceImportDeclaration("System.Linq"),
-                generator.NamespaceImportDeclaration("Antlr4.Runtime.Misc"),
-                generator.NamespaceImportDeclaration("libcompiler.TypeSystem"),
-                generator.NamespaceDeclaration(nameSpace, original)
-            });
-
+                {
+                    //TODO: Add comment "this was auto-generated do not touch"
+                    generator.NamespaceImportDeclaration("System"),
+                    generator.NamespaceImportDeclaration("System.Collections.Generic"),
+                    generator.NamespaceImportDeclaration("System.Linq"),
+                    generator.NamespaceImportDeclaration("Antlr4.Runtime.Misc"),
+                    generator.NamespaceImportDeclaration("libcompiler.TypeSystem"),
+                    generator.NamespaceDeclaration(nameSpace, original)
+                }
+            );
 
             return Formatter.Format(cu, workspace);
         }
 
+        /// <summary>
+        /// Save to file
+        /// </summary>
         private static void Save(SyntaxNode tree, string path)
         {
-            //TODO: Fix comment
-
             File.WriteAllText(path, tree.ToString());
         }
 
@@ -127,9 +150,9 @@ namespace CodeGeneratorDriver
         {
             var nodes = (Model)new XmlSerializer(typeof(Model)).Deserialize(XmlReader.Create(File.OpenRead(path)));
 
-            var dictionary = nodes.Node.ToDictionary(x => x.Name.Split('\'')[0]);
+            Dictionary<string, Node> dictionary = nodes.Nodes.ToDictionary(x => x.Name.Split('\'')[0]);
 
-            foreach (Node node in nodes.Node)
+            foreach (Node node in nodes.Nodes)
             {
                 if(node.BaseClass == null && node.Name == nodes.Options.BaseName) continue;
 
@@ -137,7 +160,7 @@ namespace CodeGeneratorDriver
             }
 
             //Don't take the top level node, too much special stuff so implemented in hand anyway
-            nodes.Node = nodes.Node.Where(node => node.BaseNode != null).ToArray();
+            nodes.Nodes = nodes.Nodes.Where(node => node.BaseNode != null).ToArray();
 
             return nodes;
         }

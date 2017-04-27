@@ -15,32 +15,51 @@ namespace CodeGeneratorDriver
             List<SyntaxNode> members = new List<SyntaxNode>();
 
             //Parse extra code that might be required inserted into the class body
-            //text manipulation as it is (afaik) impossible to ask it to parse as inside a class so we cheat...
+            //We parse it within a temprorary class f, because it's impossible (afaik) to ask it to parse code as though it is inside a specified class
             if (!string.IsNullOrWhiteSpace(node.ExtraClassCode))
             {
                 SyntaxTree tree = CSharpSyntaxTree.ParseText("class f{ " + node.ExtraClassCode + " }");
                 var cu = (CompilationUnitSyntax)tree.GetRoot();
-                var @class = (ClassDeclarationSyntax)cu.Members[0];
-                members.AddRange(@class.Members);
+                var extraCode = (ClassDeclarationSyntax)cu.Members[0];
+                members.AddRange(extraCode.Members);
 
             }
 
+            //Private field for containing children.
             members.AddRange(
-                node.Children.Select(
+                node.Children.Select(    //For every child
                     x =>
-                        generator.FieldDeclaration("_" + x.Name.AsParameter(),
-                            SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(x.Type)),
-                            Accessibility.Private)));
+                        generator.FieldDeclaration(        //We create a field declaration node
+                            "_" + x.Name.AsParameter(),    //With this name
+                            SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(x.Type)),    //Of this type
+                            Accessibility.Private          //And it's private.
+                        )
+                )
+            );
 
-            int parrentChildCount = node.BaseNode?.AllChildren()?.Count() ?? 0;
+            int parentChildCount = node.BaseNode?.AllChildren()?.Count() ?? 0;
+
+            //Public get-only property for children.
             members.AddRange(
                 node.Children.Select(
-                    (x, i) =>
-                        generator.PropertyDeclaration(x.Name,
-                            SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(x.Type)), Accessibility.Public,
-                            DeclarationModifiers.ReadOnly, CreateGetter(generator, x, i, parrentChildCount, options))));
+                    (x, i) => generator.PropertyDeclaration(
+                            x.Name,
+                            SyntaxFactory.ParseTypeName( SharedGeneratorion.RedNodeName(x.Type) ),
+                            Accessibility.Public,
+                            DeclarationModifiers.ReadOnly,
+                            CreateGetter( generator, x, i, parentChildCount, options )
+                    )
+                )
+            );
 
-            members.AddRange(node.Properties.Select(x => SharedGeneratorion.GetOnlyAccessor(x.Name, SyntaxFactory.ParseTypeName(x.Type))));
+            //Public get-only properties for the non-child properties.
+            members.AddRange(node.Properties.Select(
+                x => SharedGeneratorion.GetOnlyAccessor(
+                    x.Name,
+                    SyntaxFactory.ParseTypeName(x.Type)
+                    )
+                )
+            );
 
             members.Add(CreateCtor(generator, node, options));
 
@@ -118,7 +137,8 @@ namespace CodeGeneratorDriver
             //Reduce (Aggregate) all those comparisons (first + rest) into one big that checks if any are true
             var comparison = rest.Aggregate(first, generator.LogicalOrExpression);
 
-            //.Select(n => n.WithLeadingTrivia(SyntaxFactory.CarriageReturnLineFeed))
+            //Half-baked line change per parameter: .Select(n => n.WithLeadingTrivia(SyntaxFactory.CarriageReturnLineFeed))
+
             var changereturn = generator.ReturnStatement(
                 generator.CastExpression(
                     node.GetRepresentation(TypeClassContext.Red),
@@ -170,7 +190,8 @@ namespace CodeGeneratorDriver
 
         private static SyntaxNode CreateGetChildAt(SyntaxGenerator generator, Node node, Options options)
         {
-            return generator.MethodDeclaration(options.GetChildAt,
+            return generator.MethodDeclaration(
+                options.GetChildAt,
                 new[]
                 {
                     generator.ParameterDeclaration(options.Index, generator.TypeExpression(SpecialType.System_Int32))
@@ -184,16 +205,21 @@ namespace CodeGeneratorDriver
                     generator.SwitchStatement(generator.IdentifierName(options.Index),
                         node.AllChildren()
                             .Select(
-                                (x, i) =>
-                                    generator.SwitchSection(generator.LiteralExpression(i),
-                                        new[] {generator.ReturnStatement(generator.IdentifierName(x.Name))}))),
+                                (x, i) => generator.SwitchSection(
+                                    generator.LiteralExpression(i),
+                                    new[] {generator.ReturnStatement( generator.IdentifierName(x.Name) )}
+                                )
+                            )
+                    ),
                     generator.ReturnStatement(generator.DefaultExpression(options.RedBase()))
-                });
+                }
+            );
         }
 
         private static SyntaxNode CreateCtor(SyntaxGenerator generator, Node node, Options options)
         {
             List<SyntaxNode> extraNodes = new List<SyntaxNode>();
+
             if (!string.IsNullOrWhiteSpace(node.ExtraConstructorCode))
             {
                 SyntaxTree tree = CSharpSyntaxTree.ParseText("class f{ public f(){" + node.ExtraConstructorCode + "}}");
@@ -203,13 +229,13 @@ namespace CodeGeneratorDriver
                 extraNodes.AddRange(ctor.Body.Statements);
 
             }
+
             return generator.ConstructorDeclaration(
                 null,
                 new[]
                 {
                     generator.ParameterDeclaration(options.Parent, options.RedBase()),
-                    generator.ParameterDeclaration(options.Self,
-                        SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(node.Name))),
+                    generator.ParameterDeclaration(options.Self, SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(node.Name))),
                     generator.ParameterDeclaration(options.IndexInParent,
                         generator.TypeExpression(SpecialType.System_Int32))
                 },

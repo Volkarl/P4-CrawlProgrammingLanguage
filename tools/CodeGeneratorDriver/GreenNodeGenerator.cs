@@ -9,6 +9,7 @@ using Microsoft.Isam.Esent.Interop;
 
 namespace CodeGeneratorDriver
 {
+    //If you're just browsing, do have a look at RedNodeGenerator.cs, it has more comments.
     public class GreenNodeGenerator
     {
         public static SyntaxNode CreateGreenNode(SyntaxGenerator generator, Node node, Options options)

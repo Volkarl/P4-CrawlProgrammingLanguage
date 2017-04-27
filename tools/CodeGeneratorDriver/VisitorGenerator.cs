@@ -7,59 +7,60 @@ using Microsoft.CodeAnalysis.Editing;
 
 namespace CodeGeneratorDriver
 {
+    //If you're just browsing, do have a look at RedNodeGenerator.cs, it has more comments.
     abstract class VisitorGenerator
     {
-        protected readonly SyntaxGenerator generator;
-        protected readonly Model model;
-        private readonly bool notVoid;
-        protected readonly Options options;
+        protected readonly SyntaxGenerator Generator;
+        protected readonly Model Model;
+        private readonly bool _notVoid;
+        protected readonly Options Options;
 
-        protected virtual bool noT => notVoid;
-        protected SyntaxNode baseType = null;
+        protected virtual bool noT => _notVoid;
+        protected SyntaxNode BaseType = null;
         
 
         protected VisitorGenerator(SyntaxGenerator generator, Model model, bool T = false)
         {
-            options = model.Options;
-            this.generator = generator;
-            this.model = model;
-            notVoid = T;
+            Options = model.Options;
+            this.Generator = generator;
+            this.Model = model;
+            _notVoid = T;
         }
 
         public SyntaxNode CreateVisitor(string name)
         {
-            SyntaxNode bailIfNull = generator.IfStatement(
-                generator.ValueEqualsExpression(generator.IdentifierName(options.Node.AsParameter()),
-                    generator.LiteralExpression(null)),
+            SyntaxNode bailIfNull = Generator.IfStatement(
+                Generator.ValueEqualsExpression(Generator.IdentifierName(Options.Node.AsParameter()),
+                    Generator.LiteralExpression(null)),
                 new[]
                 {
-                    generator.ReturnStatement(notVoid ? generator.DefaultExpression(ReturnType()) : null)
+                    Generator.ReturnStatement(_notVoid ? Generator.DefaultExpression(ReturnType()) : null)
                 });
 
 
-            SyntaxNode theBigVisitMethod = generator.MethodDeclaration(
-                options.Visit,
+            SyntaxNode theBigVisitMethod = Generator.MethodDeclaration(
+                Options.Visit,
                 new[]
                 {
-                    generator.ParameterDeclaration(options.Node.AsParameter(), options.RedBase())
+                    Generator.ParameterDeclaration(Options.Node.AsParameter(), Options.RedBase())
                 },
                 null,
                 ReturnType(),
                 Accessibility.Public,
-                baseType == null ? DeclarationModifiers.Virtual : DeclarationModifiers.Override,
+                BaseType == null ? DeclarationModifiers.Virtual : DeclarationModifiers.Override,
                 new[]
                 {
                     bailIfNull,
-                    generator.SwitchStatement(
-                        generator.MemberAccessExpression(generator.IdentifierName(options.Node.AsParameter()), "Type"),
-                        model.Node.Where(x => x.Abstract == false).Select(SwitchSectionVoid)
+                    Generator.SwitchStatement(
+                        Generator.MemberAccessExpression(Generator.IdentifierName(Options.Node.AsParameter()), "Type"),
+                        Model.Nodes.Where(x => x.Abstract == false).Select(SwitchSectionVoid)
                     ),
-                    generator.ThrowStatement(
-                        generator.ObjectCreationExpression(SyntaxFactory.ParseTypeName("ArgumentOutOfRangeException")))
+                    Generator.ThrowStatement(
+                        Generator.ObjectCreationExpression(SyntaxFactory.ParseTypeName("ArgumentOutOfRangeException")))
                 });
 
 
-            List<SyntaxNode> theSmallVisitMethods = model.Node
+            List<SyntaxNode> theSmallVisitMethods = Model.Nodes
                 .Where(x => !x.Manual)
                 .Where(x => x.Abstract == false)
                 .Where(Filter)
@@ -71,14 +72,14 @@ namespace CodeGeneratorDriver
             allMethods.AddRange(ExtraMembers());
             allMethods.AddRange(theSmallVisitMethods);
 
-            return generator.ClassDeclaration(name, noT ? new[] {"T"} : null, Accessibility.Public,
-                DeclarationModifiers.Abstract.WithPartial(true), baseType, null,
+            return Generator.ClassDeclaration(name, noT ? new[] {"T"} : null, Accessibility.Public,
+                DeclarationModifiers.Abstract.WithPartial(true), BaseType, null,
                 allMethods);
         }
 
         protected virtual TypeSyntax ReturnType()
         {
-            return notVoid? SyntaxFactory.ParseTypeName("T"): null;
+            return _notVoid? SyntaxFactory.ParseTypeName("T"): null;
         }
 
         protected abstract bool Filter(Node arg);
@@ -89,25 +90,25 @@ namespace CodeGeneratorDriver
 
         protected virtual SyntaxNode SwitchSectionVoid(Node arg)
         {
-            return generator.SwitchSection(SyntaxFactory.ParseExpression("NodeType." + arg.Name.NonGenericPart()),
+            return Generator.SwitchSection(SyntaxFactory.ParseExpression("NodeType." + arg.Name.NonGenericPart()),
                 new[]
                 {
-                    generator.ReturnStatement(
-                        generator.InvocationExpression(NameOfVisitMethod(arg),
+                    Generator.ReturnStatement(
+                        Generator.InvocationExpression(NameOfVisitMethod(arg),
                             GenerateCastExpression(arg)))
                 });
         }
 
         protected SyntaxNode NameOfVisitMethod(Node arg)
         {
-            return generator.IdentifierName(options.Visit+ arg.Name.NonGenericPart());
+            return Generator.IdentifierName(Options.Visit+ arg.Name.NonGenericPart());
         }
 
         protected SyntaxNode GenerateCastExpression(Node arg)
         {
-            return generator.CastExpression(
+            return Generator.CastExpression(
                 arg.GetRepresentation(TypeClassContext.NotList | TypeClassContext.Red),
-                generator.IdentifierName(options.Node.AsParameter()));
+                Generator.IdentifierName(Options.Node.AsParameter()));
         }
 
         protected virtual IEnumerable<SyntaxNode> ExtraMembers()
@@ -127,10 +128,10 @@ namespace CodeGeneratorDriver
 
         protected override SyntaxNode VisitMethod(Node node)
         {
-            return generator.MethodDeclaration(options.Visit + node.Name,
+            return Generator.MethodDeclaration(Options.Visit + node.Name,
                 new[]
                 {
-                    generator.ParameterDeclaration(options.Node.AsParameter(),
+                    Generator.ParameterDeclaration(Options.Node.AsParameter(),
                         SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)))
                 },
                 null, null,
@@ -138,21 +139,21 @@ namespace CodeGeneratorDriver
                 node.AllChildren()
                     .Select(
                         x =>
-                            generator.InvocationExpression(
-                                generator.IdentifierName(options.Visit),
-                                generator.MemberAccessExpression(
-                                    generator.IdentifierName(options.Node.AsParameter()),
+                            Generator.InvocationExpression(
+                                Generator.IdentifierName(Options.Visit),
+                                Generator.MemberAccessExpression(
+                                    Generator.IdentifierName(Options.Node.AsParameter()),
                                     x.Name))));
         }
 
         protected override SyntaxNode SwitchSectionVoid(Node arg)
         {
-            return generator.SwitchSection(SyntaxFactory.ParseExpression("NodeType." + arg.Name.NonGenericPart()),
+            return Generator.SwitchSection(SyntaxFactory.ParseExpression("NodeType." + arg.Name.NonGenericPart()),
                 new[]
                 {
-                    generator.InvocationExpression(NameOfVisitMethod(arg),
+                    Generator.InvocationExpression(NameOfVisitMethod(arg),
                         GenerateCastExpression(arg)),
-                    generator.ReturnStatement()
+                    Generator.ReturnStatement()
                 });
         }
     }
@@ -174,44 +175,44 @@ namespace CodeGeneratorDriver
 
             if (childCount == 0)
             {
-                return generator.MethodDeclaration(options.Visit + node.Name,
+                return Generator.MethodDeclaration(Options.Visit + node.Name,
                     new[]
                     {
-                        generator.ParameterDeclaration(options.Node.AsParameter(),
+                        Generator.ParameterDeclaration(Options.Node.AsParameter(),
                             SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)))
                     },
                     null, ReturnType(),
                     Accessibility.Protected, DeclarationModifiers.Virtual,
                     new[]
                     {
-                        generator.ReturnStatement(generator.DefaultExpression(SyntaxFactory.ParseTypeName("T")))
+                        Generator.ReturnStatement(Generator.DefaultExpression(SyntaxFactory.ParseTypeName("T")))
                     });
             }
             else if (childCount == 1)
             {
-                return generator.MethodDeclaration(options.Visit + node.Name,
+                return Generator.MethodDeclaration(Options.Visit + node.Name,
                     new[]
                     {
-                        generator.ParameterDeclaration(options.Node.AsParameter(),
+                        Generator.ParameterDeclaration(Options.Node.AsParameter(),
                             SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)))
                     },
                     null, ReturnType(),
                     Accessibility.Protected, DeclarationModifiers.Virtual, 
                     new []
                     {
-                        generator.ReturnStatement(generator.InvocationExpression(
-                                generator.IdentifierName(options.Visit),
-                                generator.MemberAccessExpression(
-                                    generator.IdentifierName(options.Node.AsParameter()),
+                        Generator.ReturnStatement(Generator.InvocationExpression(
+                                Generator.IdentifierName(Options.Visit),
+                                Generator.MemberAccessExpression(
+                                    Generator.IdentifierName(Options.Node.AsParameter()),
                                     node.AllChildren().First().Name)))
                     });
             }
             else
             {
-                return generator.MethodDeclaration(options.Visit + node.Name,
+                return Generator.MethodDeclaration(Options.Visit + node.Name,
                     new[]
                     {
-                        generator.ParameterDeclaration(options.Node.AsParameter(),
+                        Generator.ParameterDeclaration(Options.Node.AsParameter(),
                             SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)))
                     },
                     null, ReturnType(),
@@ -226,7 +227,7 @@ namespace CodeGeneratorDriver
     {
         public ComplexTVisitorGenerator(SyntaxGenerator generator, Model model, SyntaxNode baseType) : base(generator, model)
         {
-            this.baseType = baseType;
+            this.BaseType = baseType;
         }
 
         protected override bool Filter(Node arg)
@@ -236,24 +237,24 @@ namespace CodeGeneratorDriver
 
         protected override SyntaxNode VisitMethod(Node node)
         {
-            return generator.MethodDeclaration(options.Visit + node.Name,
+            return Generator.MethodDeclaration(Options.Visit + node.Name,
                 new[]
                 {
-                    generator.ParameterDeclaration(options.Node.AsParameter(),
+                    Generator.ParameterDeclaration(Options.Node.AsParameter(),
                         SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)))
                 },
                 null, ReturnType(),
                 Accessibility.Protected, DeclarationModifiers.Override,
                 new[]
                 {
-                    generator.ReturnStatement(generator.InvocationExpression(
-                        generator.IdentifierName(options.Combine),
+                    Generator.ReturnStatement(Generator.InvocationExpression(
+                        Generator.IdentifierName(Options.Combine),
                         node.AllChildren()
                             .Select(
                                 x =>
-                                    generator.InvocationExpression(generator.IdentifierName(options.Visit),
-                                        generator.MemberAccessExpression(
-                                            generator.IdentifierName(options.Node.AsParameter()), x.Name)))
+                                    Generator.InvocationExpression(Generator.IdentifierName(Options.Visit),
+                                        Generator.MemberAccessExpression(
+                                            Generator.IdentifierName(Options.Node.AsParameter()), x.Name)))
 
                     ))
                 });
@@ -262,12 +263,12 @@ namespace CodeGeneratorDriver
         protected override IEnumerable<SyntaxNode> ExtraMembers()
         {
 
-            yield return generator.MethodDeclaration("Combine",
+            yield return Generator.MethodDeclaration("Combine",
                 new[]
                 {
                     SyntaxFactory.Parameter(SyntaxFactory.List<AttributeListSyntax>(),
                         SyntaxTokenList.Create(SyntaxFactory.Token(SyntaxKind.ParamsKeyword)),
-                        (TypeSyntax) generator.ArrayTypeExpression(ReturnType()), SyntaxFactory.Identifier("parts"),
+                        (TypeSyntax) Generator.ArrayTypeExpression(ReturnType()), SyntaxFactory.Identifier("parts"),
                         null)
                 },
                 null,
@@ -284,7 +285,7 @@ namespace CodeGeneratorDriver
 
         public SyntaxRewriterGenerator(SyntaxGenerator generator, Model model, SyntaxNode baseType) : base(generator, model, true)
         {
-            this.baseType = baseType;
+            this.BaseType = baseType;
         }
 
         protected override bool Filter(Node arg) => true;
@@ -296,11 +297,11 @@ namespace CodeGeneratorDriver
             //Visits, in order
             List<SyntaxNode> statements = node.AllMembers.Where(member => member.IsNode)
                 .Select(n =>
-                    generator.LocalDeclarationStatement(n.ParameterName(),
-                        generator.CastExpression(
+                    Generator.LocalDeclarationStatement(n.ParameterName(),
+                        Generator.CastExpression(
                             n.GetRepresentation(TypeClassContext.Red),
-                            generator.InvocationExpression(generator.IdentifierName(options.Visit),
-                                generator.MemberAccessExpression(generator.IdentifierName(parametername),
+                            Generator.InvocationExpression(Generator.IdentifierName(Options.Visit),
+                                Generator.MemberAccessExpression(Generator.IdentifierName(parametername),
                                     n.PropertyName()))))
 
                 )
@@ -309,17 +310,17 @@ namespace CodeGeneratorDriver
             //Call to an "Update" method that returns a copy of a node with new children
             //Nodes get their value from visists, rest just pulled out
             statements.Add(
-                generator.ReturnStatement(
-                    generator.InvocationExpression(
-                        generator.MemberAccessExpression(generator.IdentifierName(parametername), options.Update),
+                Generator.ReturnStatement(
+                    Generator.InvocationExpression(
+                        Generator.MemberAccessExpression(Generator.IdentifierName(parametername), Options.Update),
                         node
                             .AllMembers
                             .Where(member => !member.IsImplicitlyAssigned(node.Name))
                             .Select(member =>
                             member.IsNode
-                                ? generator.IdentifierName(member.ParameterName())
-                                : generator.MemberAccessExpression(
-                                    generator.IdentifierName(parametername),
+                                ? Generator.IdentifierName(member.ParameterName())
+                                : Generator.MemberAccessExpression(
+                                    Generator.IdentifierName(parametername),
                                     member.PropertyName()
                                 )
                         )
@@ -327,11 +328,11 @@ namespace CodeGeneratorDriver
                 )
             );
 
-            return generator.MethodDeclaration(
-                options.Visit + node.Name,
+            return Generator.MethodDeclaration(
+                Options.Visit + node.Name,
                 new[]
                 {
-                    generator.ParameterDeclaration(parametername, node.GetRepresentation())
+                    Generator.ParameterDeclaration(parametername, node.GetRepresentation())
                 },
                 null,
                 ReturnType(),
@@ -343,7 +344,7 @@ namespace CodeGeneratorDriver
 
         protected override TypeSyntax ReturnType()
         {
-            return options.RedBase();
+            return Options.RedBase();
         }
     }
 }
