@@ -217,6 +217,12 @@
                     <type>Block</type>
                 </child>
             </children>
+            <properties>
+                <property>
+                    <name>Ancestor</name>
+                    <type>CrawlType</type>
+                </property>
+            </properties>
         </node>
         <node>
             <name>Constructor</name>
@@ -435,15 +441,11 @@
                     <name>TypeName</name>
                     <type>string</type>
                 </property>
+                <property>
+                    <name>IsReference</name>
+                    <type>bool</type>
+                </property>
             </properties>
-            <ctor><![CDATA[_expType = new Lazy<CrawlType>(() => new CrawlType(TypeName));]]></ctor>
-            <class><![CDATA[
-        private readonly Lazy<CrawlType> _expType;
-
-        /// <summary>
-        /// The actual type, within context
-        /// </summary>
-        public CrawlType ExportedType => _expType.Value;]]></class>
         </node>
         <node>
             <name>UnaryExpression</name>

@@ -1,0 +1,6 @@
+klasse foo =
+  tal inAncestor = 2;
+
+klasse bar er foo =
+  tal() f =
+    returner inAncestor;

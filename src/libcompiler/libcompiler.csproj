@@ -44,6 +44,7 @@
     <Compile Include="CompilationResult.cs" />
     <Compile Include="CrawlCompiler.cs" />
     <Compile Include="CrawlCompilerConfiguration.cs" />
+    <Compile Include="ExtensionMethods\CrawlSyntaxNodeExtensions.cs" />
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
@@ -62,7 +63,11 @@
     <Compile Include="SyntaxTree\Nodes\GreenCrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GreenListNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ListNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Partials\ClassTypeDeclerationNode.cs" />
     <Compile Include="SyntaxTree\VisitorManualVisits.cs" />
+    <Compile Include="TypeSystem\CrawlArrayType.cs" />
+    <Compile Include="TypeSystem\CrawlConstructedType.cs" />
+    <Compile Include="TypeSystem\CrawlMethodType.cs" />
     <Compile Include="TypeSystem\CrawlType.cs" />
     <Compile Include="$(GeneratedRedSyntaxNodes)" />
     <Compile Include="$(GeneratedGreenSyntaxNodes)" />

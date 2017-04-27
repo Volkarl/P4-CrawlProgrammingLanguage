@@ -1,6 +1,7 @@
 klasse foo =
-	intet(tal a) =
-		
-	
-	tal(tal a) =
-		returner a;
+  intet(tal a) baf =
+    ;
+  
+  tal(tal a) bar =
+    returner a;
+

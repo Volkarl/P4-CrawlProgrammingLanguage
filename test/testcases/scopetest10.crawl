@@ -1,6 +1,6 @@
-klasse k1
-	tal inparrent = 4;
-	
-klassse k2 : k1
-	tal() læs
-		returner inparrent;
+klasse k1 =
+  tal inparrent = 4;
+
+klasse k2 er k1 =
+  tal() læs =
+    returner inparrent;

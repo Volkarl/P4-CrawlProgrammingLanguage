@@ -301,7 +301,7 @@ namespace libcompiler.SyntaxTree.Parser
         private static TypeNode GenerateMethodSignature(TypeNode returnType, List<TypeNode> parameterTypes)
         {
             StringBuilder textDef = new StringBuilder();
-            textDef.Append(returnType.ExportedType.Textdef);
+            textDef.Append(returnType);
 
             textDef.Append('(');
 
@@ -323,9 +323,7 @@ namespace libcompiler.SyntaxTree.Parser
             else
                 interval = new Interval(returnType.Interval.a, returnType.Interval.b);    //TODO: Only roughly correct.
 
-            CrawlType type = new CrawlType(textDef.ToString());
-
-            TypeNode result = CrawlSyntaxNode.TypeNode(interval, textDef.ToString());
+            TypeNode result = CrawlSyntaxNode.TypeNode(interval, textDef.ToString(), false);
             return result;
         }
 
@@ -417,14 +415,14 @@ namespace libcompiler.SyntaxTree.Parser
 
             BlockNode bodyBlock = ParseBlockNode(body);
 
-            return CrawlSyntaxNode.ClassTypeDecleration(interval, protectionLevel, ParseIdentifier(tn2), genericParameters, bodyBlock);
+            return CrawlSyntaxNode.ClassTypeDecleration(interval, protectionLevel, null, ParseIdentifier(tn2), genericParameters, bodyBlock);
         }
 
         #endregion
 
         public static TypeNode ParseType(CrawlParser.TypeContext type, bool isReference=false)
         {
-           return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText());
+           return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(), false);
         }
 
         private static ProtectionLevel ParseProtectionLevel(CrawlParser.Protection_levelContext protectionLevel)

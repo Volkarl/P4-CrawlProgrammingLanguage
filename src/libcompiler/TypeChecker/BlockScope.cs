@@ -39,7 +39,7 @@ namespace libcompiler.TypeChecker
             }
         }
         //checks if the symbol is in the scopeDictionary else return null
-        public TypeInformation[] GetScope(string symbol)
+        public TypeInformation[] FindSymbol(string symbol)
         {
             TypeInformation[] typeArray;
             if (scopeDictionary.TryGetValue(symbol, out typeArray) == true)
