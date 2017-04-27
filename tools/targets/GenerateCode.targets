@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c)  Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information. -->
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<Import Project="$(SolutionDir)\tools\targets\GenerateCode.props"/>
+	<PropertyGroup>
+		<CompileDependsOn>
+			BuildCodeGenerator;
+			MarkCodeGeneratorExecutable;
+			RunCodeGenerator;
+			$(CompileDependsOn)
+		</CompileDependsOn>
+	</PropertyGroup>
+
+
+	<Target Name="BuildCodeGenerator">
+		<MSBuild Projects="$(CodeGeneratorDriverProject)" />
+	</Target>
+
+	<!-- On linux machines, exe needs to be executable -->
+	<Target Name="MarkCodeGeneratorExecutable" Condition="'$(OS)' != 'Windows_NT' AND Exists('$(CodeGeneratorExe)')">
+		<Exec Command="chmod +x &quot;$(CodeGeneratorExe)&quot;" />
+	</Target>
+
+
+	<!-- Actually run the tool generating code -->
+	<Target 
+		Name="RunCodeGenerator"
+        DependsOnTargets="BuildCodeGenerator"
+		Inputs="$(SyntaxDefinitionFile)"
+		Outputs="$(GeneratedRedSyntaxNodes);$(GeneratedNodeFactory);$(GeneratedGreenSyntaxNodes);$(GeneratedVisitorClasses)"
+	>
+	<Exec Command="&quot;$(CodeGeneratorExe)&quot; &quot;$(SyntaxDefinitionFile)&quot; &quot;$(GeneratedRedSyntaxNodes)&quot; &quot;$(GeneratedNodeFactory)&quot; &quot;$(GeneratedGreenSyntaxNodes)&quot; &quot;$(GeneratedVisitorClasses)&quot;"></Exec>
+	</Target>
+</Project>
