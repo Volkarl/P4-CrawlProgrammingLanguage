@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization.Formatters;
 using libcompiler.SyntaxTree.Nodes.Internal;
 using libcompiler.TypeChecker;
 
@@ -49,8 +50,7 @@ namespace libcompiler.SyntaxTree.Nodes
         public TypeInformation[] FindSymbol(string symbol)
         {
             //Kig i eget scope
-            TypeInformation[] result =
-                BodyBlock.FindSymbol(symbol);
+            TypeInformation[] result = FindSymbolOnlyInThisScope(symbol);
 
                 //TODO Kig i forfader-klasse
 
@@ -61,6 +61,11 @@ namespace libcompiler.SyntaxTree.Nodes
                 return scope?.FindSymbol(symbol);
             }
             return result;
+        }
+
+        public TypeInformation[] FindSymbolOnlyInThisScope(string symbol)
+        {
+            return BodyBlock.FindSymbol(symbol);
         }
     }
 }

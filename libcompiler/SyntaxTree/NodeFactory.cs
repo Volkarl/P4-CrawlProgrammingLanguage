@@ -301,9 +301,9 @@ namespace libcompiler.SyntaxTree
             return (IdentifierNode) Wrap(new _.GreenIdentifierNode(interval, name));
         }
 
-        public static TypeNode Type(Interval interval, CrawlType crawlType, bool isReference)
+        public static TypeNode Type(Interval interval, string typeTextDefinition, CrawlType crawlType, bool isReference)
         {
-            return (TypeNode) Wrap(new _.GreenTypeNode(interval, crawlType, isReference));
+            return (TypeNode) Wrap(new _.GreenTypeNode(interval, typeTextDefinition, crawlType, isReference));
         }
 
         /// <summary>

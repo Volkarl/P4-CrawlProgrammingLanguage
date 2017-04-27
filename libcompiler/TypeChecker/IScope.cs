@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using libcompiler.SyntaxTree;
 
 namespace libcompiler.TypeChecker
 {
@@ -15,8 +16,17 @@ namespace libcompiler.TypeChecker
         TypeInformation[] FindSymbol(string symbol);
     }
 
-    //TODO: This isn't how you TypeInformation
+
     public class TypeInformation
     {
+        public TypeInformation(CrawlType type, ProtectionLevel protectionLevel)
+        {
+            Type = type;
+            ProtectionLevel = protectionLevel;
+        }
+
+        public CrawlType Type { get; }
+        public ProtectionLevel ProtectionLevel { get; }
+        //TODO Save place where it was declared
     }
 }

@@ -305,9 +305,7 @@ namespace libcompiler.SyntaxTree.Parser
             else
                 interval = new Interval(returnType.Interval.a, returnType.Interval.b);    //TODO: Only roughly correct.
 
-            CrawlType type = new TypeImplementationThatJustContainsATextString(textDef.ToString());
-
-            TypeNode result = NodeFactory.Type(interval, type, false);
+            TypeNode result = NodeFactory.Type(interval, textDef.ToString(), null, false);
             return result;
         }
 
@@ -428,7 +426,7 @@ namespace libcompiler.SyntaxTree.Parser
 
         public static TypeNode ParseType(CrawlParser.TypeContext type, bool isReference=false)
         {
-           return NodeFactory.Type(type.SourceInterval, new TypeImplementationThatJustContainsATextString(type.GetText()), isReference);
+           return NodeFactory.Type(type.SourceInterval, type.GetText(), null, isReference);
         }
 
         private static ProtectionLevel ParseProtectionLevel(CrawlParser.Protection_levelContext protectionLevel)
