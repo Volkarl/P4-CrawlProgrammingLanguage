@@ -149,7 +149,7 @@ namespace libcompiler.Tests
         {
             TranslationUnitNode tree = ReadTestFile("scopetest9.crawl");
             MethodDeclerationNode m = (MethodDeclerationNode) tree.Code[1];
-            Assert.IsNull(m.Body.FindSymbol("z"));
+            Assert.IsNull(m.BodyBlock.FindSymbol("z"));
 
         }
 
@@ -162,7 +162,7 @@ namespace libcompiler.Tests
         {
             TranslationUnitNode tree = ReadTestFile("scopetest9.crawl");
             MethodDeclerationNode m = (MethodDeclerationNode)tree.Code[1];
-            Assert.NotNull(m.Body.FindSymbol("a"));
+            Assert.NotNull(m.BodyBlock.FindSymbol("a"));
 
         }
 
@@ -174,7 +174,7 @@ namespace libcompiler.Tests
         {
             TranslationUnitNode tree = ReadTestFile("scopetest1.crawl");
             MethodDeclerationNode method = (MethodDeclerationNode) tree.Code[1];
-            BlockNode block = method.Body;
+            BlockNode block = method.BodyBlock;
             Assert.NotNull(block.FindSymbol("abe"));
         }
 
@@ -186,7 +186,7 @@ namespace libcompiler.Tests
         {
             TranslationUnitNode tree = ReadTestFile("scopetest1.crawl");
             MethodDeclerationNode method = (MethodDeclerationNode)tree.Code[1];
-            BlockNode block = method.Body;
+            BlockNode block = method.BodyBlock;
             Assert.NotNull(block.FindSymbol("UdregnOrangutanger"));
         }
 

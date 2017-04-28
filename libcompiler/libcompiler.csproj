@@ -40,11 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompilerStage\AstData.cs" />
     <Compile Include="CompilationMessage.cs" />
+    <Compile Include="Antlr\CompilationMessageErrorListner.cs" />
     <Compile Include="CompilationResult.cs" />
     <Compile Include="CrawlCompiler.cs" />
     <Compile Include="CrawlCompilerConfiguration.cs" />
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
+    <Compile Include="CompilerStage\ParsePipeline.cs" />
+    <Compile Include="CompilerStage\ParseTreeData.cs" />
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxNodeExtensions.cs" />

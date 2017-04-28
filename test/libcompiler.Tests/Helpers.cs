@@ -24,7 +24,7 @@ namespace libcompiler.Tests
         public static TranslationUnitNode ReadTestFile(string name)
         {
             string fullpath = Path.Combine(TestCaseFolderPath, name);
-            return (TranslationUnitNode) CrawlSyntaxTree.ParseTree(new StreamReader(File.OpenRead(fullpath)), fullpath).RootNode;
+            return (TranslationUnitNode) CrawlSyntaxTree.ReadFile(fullpath).RootNode;
         }
     }
 }

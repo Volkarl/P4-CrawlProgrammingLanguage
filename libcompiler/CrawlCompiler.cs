@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
-using libcompiler.Parser;
-using libcompiler.SyntaxTree;
-using libcompiler.SyntaxTree.Nodes;
+using System.Threading.Tasks;
+using libcompiler.CompilerStage;
 
 namespace libcompiler
 {
@@ -15,72 +11,49 @@ namespace libcompiler
     {
         public static CompilationResult Compile(CrawlCompilerConfiguration configuration)
         {
-            //The ConcurrentBag is an unordered 
             ConcurrentBag<CompilationMessage> messages = new ConcurrentBag<CompilationMessage>();
-            TextWriter output = Utils.GetPrimaryOutputStream(configuration);
+            CompilationStatus status = CompilationStatus.Success;
 
-            if (configuration.TargetStage == TargetStage.ParseTree)
+            try
             {
-                ParseTreeHelper.WriteParseTrees(output, configuration);
+                ConcurrentBag<AstData> files = new ConcurrentBag<AstData>();
+                bool parallel = !configuration.ForceSingleThreaded;
+                
+                Execute(configuration.Files, ParsePipeline.CreateParsePipeline(files, messages, configuration.TargetStage), parallel);
+
+                //TODO: Collect information on referenced assemblies
+
+                //TODO: Semantic analysis
+
+                //TODO: Interpeter or code generation
+
+                if (messages.Count(message => message.Severity >= MessageSeverity.Error) > 0)
+                    status = CompilationStatus.Failure;
+                
+            }
+            catch (Exception e)
+            {
+                messages.Add(CompilationMessage.CreateNonCodeMessage(MessageCode.InternalCompilerError, e.StackTrace, MessageSeverity.Fatal));
+                status = CompilationStatus.Failure;
             }
 
-            //TODO: If filenotfound, log Fatal message and exit
-            List<TreeAndStream> parsedFiles = configuration.Files.ConfigureableParallelSelect(!configuration.ForceSingleThreaded,
-                    ParseFileToAst).ToList();
-
-            if (configuration.TargetStage == TargetStage.AbstractSyntaxTree)
-            {
-                foreach (TreeAndStream crawlSyntaxTree in parsedFiles)
-                {
-                    SuperPrettyPrintVisitor printer = new SuperPrettyPrintVisitor(true);
-                    string s = printer.PrettyPrint(crawlSyntaxTree.Tree.RootNode);
-                    output.WriteLine("File {0}:", crawlSyntaxTree.Tree.CompilationUnitName);
-                    output.WriteLine(s);
-                }
-            }
-
-            if (configuration.TargetStage == TargetStage.TypeCheck)
-            {
-                foreach (TreeAndStream syntaxTree in parsedFiles)
-                {
-                    SuperPrettyPrintVisitor printer = new SuperPrettyPrintVisitor(false);
-                    string s = printer.PrettyPrint(syntaxTree.Tree.RootNode);
-                    output.WriteLine("File {0}:", syntaxTree.Tree.CompilationUnitName);
-                    output.WriteLine(s);
-                }
-            }
-
-
-            return new CompilationResult(CompilationStatus.Failure, messages);
-
+            return new CompilationResult(status, messages);
         }
 
-        //TODO: A method that takes same arguments as compile but returns set of decorated ast instead of writing to file
-        //TODO: if ast is different from decorated ast, 2 methods that take each other
-
-        //TODO: A method that takes decorated ast instead and writes output to file
-
-        private static TreeAndStream ParseFileToAst(string arg)
+        private static void Execute<TIn>(IEnumerable<TIn> indata, Action<TIn> action, bool parallel) where TIn : class
         {
-            TextReader textReader = new StreamReader(File.OpenRead(arg));
-            //An ITokenSource lets us get the tokens one at a time.
-            ITokenSource tSource = new CrawlLexer(new AntlrInputStream(textReader));
-            //An ITokenStream lets us go forwards and backwards in the token-series.
-            ITokenStream tStream = new CommonTokenStream(tSource);
-
-            return new TreeAndStream(CrawlSyntaxTree.ParseTree(tStream, arg), tStream);
-        }
-
-        private class TreeAndStream
-        {
-            public CrawlSyntaxTree Tree { get; }
-            public ITokenStream TokenStream { get; }
-
-            public TreeAndStream(CrawlSyntaxTree tree, ITokenStream tStream)
+            if (parallel)
             {
-                this.Tree = tree;
-                this.TokenStream = tStream;
+                Task.WaitAll(indata.Select(item => Task.Run(() => action(item))).ToArray());
+            }
+            else
+            {
+                foreach (TIn @in in indata)
+                {
+                    action(@in);
+                }
             }
         }
     }
 }
+ 
