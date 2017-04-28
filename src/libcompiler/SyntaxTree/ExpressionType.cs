@@ -28,6 +28,7 @@
         Not,
         Divide,
         Modulous,
-        GenericsUnpack
+        GenericsUnpack,
+        ArrayConstructor
     }
 }

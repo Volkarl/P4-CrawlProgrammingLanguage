@@ -445,7 +445,21 @@
                     <name>IsReference</name>
                     <type>bool</type>
                 </property>
+                <property>
+                    <name>ArrayDimensions</name>
+                    <type>int</type>
+                </property>
             </properties>
+        </node>
+        <node>
+            <name>ArrayConstructor</name>
+            <baseclass>Expression</baseclass>
+            <children>
+                <child>
+                    <name>Target</name>
+                    <type>Type</type>
+                </child>
+            </children>
         </node>
         <node>
             <name>UnaryExpression</name>
