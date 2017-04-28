@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
+using Microsoft.Isam.Esent.Interop;
 
 namespace CodeGeneratorDriver
 {
@@ -68,7 +69,14 @@ namespace CodeGeneratorDriver
                 members.Add(CreateGetChildAt(generator, node, options));
                 members.Add(CreateToString(generator, node, options));
                 members.Add(CreateUpdate(generator, node, options));
+                members.AddRange(
+                    node.AllMembers
+                        .Where(m => !m.IsImplicitlyAssigned(node.Name))
+                        .Skip(1) //This will be Interval, does not implement ==, waaa...
+                        .Select(m => CreateWithXXX(generator, node, m))
+                );
             }
+
 
 
             return generator.ClassDeclaration(
@@ -80,6 +88,48 @@ namespace CodeGeneratorDriver
                 null,
                 members
             );
+        }
+
+        private static SyntaxNode CreateWithXXX(SyntaxGenerator generator, Node node, Member member)
+        {
+            List<SyntaxNode> statements = new List<SyntaxNode>
+            {
+                generator.IfStatement(
+                    generator.ReferenceEqualsExpression(
+                        generator.IdentifierName(member.ParameterName()),
+                        generator.IdentifierName(member.PropertyName())),
+                    new[]
+                    {
+                        generator.ReturnStatement(generator.ThisExpression())
+                    }),
+                generator.ReturnStatement(
+                    CreateFactoryCall(generator, node, node
+                        .AllMembers
+                        .Where(m => !m.IsImplicitlyAssigned(node.Name))
+                        .Select(p =>
+                            p == member
+                                ? generator.IdentifierName(p.ParameterName())
+                                : generator.IdentifierName(p.PropertyName())
+                        )
+                    )
+                )
+            };
+
+            var modifiers = node == member.Owner || node.BaseNode.Abstract ? DeclarationModifiers.Virtual : DeclarationModifiers.Override;
+
+
+            return generator.MethodDeclaration(
+                "With" + member.PropertyName(),
+                new[]
+                {
+                    generator.ParameterDeclaration(member.ParameterName(),
+                        member.GetRepresentation(TypeClassContext.Red))
+                },
+                null,
+                member.Owner.GetRepresentation(TypeClassContext.Red),
+                Accessibility.Public,
+                modifiers,
+                statements);
         }
 
         private static SyntaxNode CreateToString(SyntaxGenerator generator, Node node, Options options)
@@ -144,17 +194,12 @@ namespace CodeGeneratorDriver
                     node.GetRepresentation(TypeClassContext.Red),
                     generator.InvocationExpression(
                         generator.IdentifierName("Translplant"),
-                        generator.InvocationExpression(
-                            generator.MemberAccessExpression(
-                                generator.IdentifierName("CrawlSyntaxNode"),
-                                node.Name == "Type" ? "TypeNode" : node.Name
-                            ),
-                            node
-                                .AllMembers
-                                .Where(m => !m.IsImplicitlyAssigned(node.Name))
-                                .Select(p =>
-                                    generator.IdentifierName(p.ParameterName())
-                                )
+                        CreateFactoryCall(generator, node, node
+                            .AllMembers
+                            .Where(m => !m.IsImplicitlyAssigned(node.Name))
+                            .Select(p =>
+                                generator.IdentifierName(p.ParameterName())
+                            )
                         )
                     )
                 )
@@ -180,6 +225,17 @@ namespace CodeGeneratorDriver
                     changeifstmt,
                     generator.ReturnStatement(generator.ThisExpression())
                 });
+        }
+
+        private static SyntaxNode CreateFactoryCall(SyntaxGenerator generator, Node node, IEnumerable<SyntaxNode> arguments)
+        {
+            return generator.InvocationExpression(
+                generator.MemberAccessExpression(
+                    generator.IdentifierName("CrawlSyntaxNode"),
+                    node.Name == "Type" ? "TypeNode" : node.Name
+                ),
+                arguments
+            );
         }
 
         private static SyntaxNode CreateComparison(SyntaxGenerator generator, string item)
