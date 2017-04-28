@@ -56,7 +56,14 @@
     <Compile Include="ScopeTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libcompiler\libcompiler.csproj">
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\external_dependencies\antlr4\runtime\CSharp\runtime\CSharp\Antlr4.Runtime\Antlr4.Runtime.vs2013.csproj">
+      <Project>{E1A46D9D-66CB-46E8-93B0-7FC87299ABEF}</Project>
+      <Name>Antlr4.Runtime.vs2013</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\libcompiler\libcompiler.csproj">
       <Project>{249AA939-BC96-470B-891F-CED708E7263C}</Project>
       <Name>libcompiler</Name>
     </ProjectReference>

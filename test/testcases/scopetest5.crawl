@@ -1,6 +1,6 @@
 klasse foo =
-	intet(tal a) =
-		
+	intet(tal a) bar =
+		;
 	
-	intet(heltal a) =
-		
+	intet(heltal a) baf =
+		;

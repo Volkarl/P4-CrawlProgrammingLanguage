@@ -5,8 +5,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Antlr4.Runtime;
+using libcompiler.Parser;
 using libcompiler.SyntaxTree;
-using libcompiler.SyntaxTree.Nodes;
 using NUnit.Framework;
 
 namespace libcompiler.Tests

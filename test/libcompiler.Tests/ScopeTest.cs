@@ -1,5 +1,5 @@
-﻿using System;
-using libcompiler.SyntaxTree.Nodes;
+﻿/*using System;
+using libcompiler.SyntaxTree;
 using NUnit.Framework;
 using static libcompiler.Tests.Helpers;
 
@@ -232,3 +232,4 @@ namespace libcompiler.Tests
         }
     }
 }
+*/
