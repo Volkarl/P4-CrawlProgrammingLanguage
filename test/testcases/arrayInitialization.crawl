@@ -1,0 +1,23 @@
+heltal[] a1 = heltal[](10);
+heltal[,] a2 = heltal[,](10, 5);
+heltal[][][,,] a4 = heltal[][][,,](10, 5, 2);
+a4[3, 2, 1] = heltal[][,](4, 3);
+
+//heltal[][,,,,] a2;
+//a2 = heltal[][,,,,](10, 5, 2, 1, 0);
+//a1[0] = 7;
+//a2[0,0,0,0,0] = heltal[2];
+
+heltal[,,,] b1 = heltal[,,,](10, 5, 2);
+heltal[] b2;
+b2 = heltal[,,,](10, 5, 2);
+b1[0, 0, 0] = 7;
+b2[0, 0, 0] = 7;
+
+// The following should all, individually, cause errors somewhere in the program.
+// heltal[,,] bad1 = heltal[,,](0, 0);
+// heltal[,,] bad2;
+// bad2 = heltal[,,](0, 0);
+
+// a1[-1] = 7;
+// a1[10] = 7;

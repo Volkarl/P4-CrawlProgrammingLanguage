@@ -42,6 +42,8 @@ namespace libcompiler.SyntaxTree.Parser
             {
                 case CrawlParser.RULE_postfix_expression:
                     return ParsePostfix(rule);
+                case CrawlParser.RULE_array_initialization_expression:
+                    return ParseArrayInitialization(rule);
                 case CrawlParser.RULE_comparison_expression:
                 case CrawlParser.RULE_range_expression:
                     return ParseBinary(rule);
@@ -68,6 +70,18 @@ namespace libcompiler.SyntaxTree.Parser
             ExpressionType type = ParseUnaryOp(symbol);
 
             return CrawlSyntaxNode.UnaryExpression(rule.SourceInterval, type, target);
+        }
+
+        private static ExpressionNode ParseArrayInitialization(RuleContext rule)
+        {
+            // An array initialization is the call of a typeNode's constructor
+
+            TypeNode type = ParseTreeParser.ParseType((CrawlParser.TypeContext)rule.GetChild(0));
+            ArrayConstructorNode typeConstructor = CrawlSyntaxNode.ArrayConstructor(type.Interval, type);
+            // TypeConstructorNode is an ExpressionNode that corresponds to a TypeNode
+
+            IEnumerable<ArgumentNode> arguments = ParseCallTail((RuleContext)rule.GetChild(1)).Select(x => CrawlSyntaxNode.Argument(x.Interval, false, x));
+            return CrawlSyntaxNode.Call(rule.SourceInterval, typeConstructor, arguments);
         }
 
         private static ExpressionNode ParseMultu(RuleContext rule)
