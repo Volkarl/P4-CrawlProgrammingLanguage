@@ -108,7 +108,7 @@ namespace libcompiler
         /// <returns>Error code as string</returns>
         private string GetErrorCodeText(MessageCode code) => $"CRAWL{(int) code}";
 
-        private string GetErrorDescription(MessageCode code) => $"An error happened with {code}";
+        private string GetErrorDescription(MessageCode code) => $"An error of type {code} ";
 
         public static CompilationMessage CreateNonCodeMessage(
             MessageCode code,

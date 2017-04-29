@@ -9,9 +9,9 @@ using libcompiler.SyntaxTree;
 
 namespace libcompiler.TypeChecker
 {
-    class BlockScope : IScope
+    public class BlockScope : IScope
     {
-        Dictionary<string, TypeInformation[]> scopeDictionary = new Dictionary<string, TypeInformation[]>();
+        readonly Dictionary<string, TypeInformation[]> _scopeDictionary;
         //checks if the blockNode is a variable, class or method decleration and adds them to the scopeDictionary    
         public BlockScope(BlockNode node)
         {
@@ -21,9 +21,9 @@ namespace libcompiler.TypeChecker
                 if(child.Type == NodeType.VariableDecleration)
                 {
                     VariableDeclerationNode variableNode = (VariableDeclerationNode)child;
-                    foreach (var Decleration in variableNode.Declerations)
+                    foreach (var decleration in variableNode.Declerations)
                     {
-                        string name = Decleration.Identifier.Name;
+                        string name = decleration.Identifier.Name;
                         scope.Add(name, new TypeInformation(null, variableNode.ProtectionLevel));
                     }
                 }
@@ -41,13 +41,13 @@ namespace libcompiler.TypeChecker
                 }
             }
 
-            scopeDictionary = scope.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToArray());
+            _scopeDictionary = scope.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToArray());
         }
         //checks if the symbol is in the scopeDictionary else return null
         public TypeInformation[] FindSymbol(string symbol)
         {
             TypeInformation[] typeArray;
-            if (scopeDictionary.TryGetValue(symbol, out typeArray) == true)
+            if (_scopeDictionary.TryGetValue(symbol, out typeArray) == true)
             {
                 return typeArray;
             }
@@ -56,5 +56,7 @@ namespace libcompiler.TypeChecker
                 return null;
             }
         }
+
+        public IEnumerable<string> SymbolList => _scopeDictionary.Keys;
     }
 }

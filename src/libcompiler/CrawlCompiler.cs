@@ -16,16 +16,25 @@ namespace libcompiler
 
             try
             {
-                ConcurrentBag<AstData> files = new ConcurrentBag<AstData>();
+                ConcurrentBag<AstData> parsedFiles = new ConcurrentBag<AstData>();
                 bool parallel = !configuration.ForceSingleThreaded;
-                
-                Execute(configuration.Files, ParsePipeline.CreateParsePipeline(files, messages, configuration.TargetStage), parallel);
 
-                //TODO: Collect information on referenced assemblies
+                Execute(configuration.Files, ParsePipeline.CreateParsePipeline(parsedFiles, messages, configuration.TargetStage), parallel);
+
+
+                //TODO: Collect information on referenced assemblies (This can actually be started in the background asap)
 
                 //TODO: Semantic analysis
+                ConcurrentBag<AstData> filesWithScope = new ConcurrentBag<AstData>();
+                Execute(parsedFiles, SemanticAnalysisPipeline.DataCollection(filesWithScope, messages, configuration.TargetStage), parallel);
+
+
 
                 //TODO: Interpeter or code generation
+
+                //Until meaningfull end, print everything
+
+                Execute(filesWithScope, Utils.GetPrimaryOutputStream(configuration).WriteLine, parallel);
 
                 if (messages.Count(message => message.Severity >= MessageSeverity.Error) > 0)
                     status = CompilationStatus.Failure;
@@ -33,7 +42,7 @@ namespace libcompiler
             }
             catch (Exception e)
             {
-                messages.Add(CompilationMessage.CreateNonCodeMessage(MessageCode.InternalCompilerError, e.StackTrace, MessageSeverity.Fatal));
+                messages.Add(CompilationMessage.CreateNonCodeMessage(MessageCode.InternalCompilerError, e.ToString(), MessageSeverity.Fatal));
                 status = CompilationStatus.Failure;
             }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Antlr4.Runtime.Misc;
+using libcompiler.TypeChecker;
 
 namespace libcompiler.SyntaxTree
 {
@@ -22,10 +23,12 @@ namespace libcompiler.SyntaxTree
 
         public class GreenBlockNode : GreenListNode<CrawlSyntaxNode>
         {
-            internal GreenBlockNode(NodeType type, Interval interval, IEnumerable<GreenCrawlSyntaxNode> children) : base(
+            internal BlockScope Scope { get; }
+
+            internal GreenBlockNode(NodeType type, Interval interval, IEnumerable<GreenCrawlSyntaxNode> children, BlockScope scope = null) : base(
                 type, interval, children)
             {
-
+                Scope = scope;
             }
 
             internal override CrawlSyntaxNode CreateRed(CrawlSyntaxNode parent, int indexInParent)

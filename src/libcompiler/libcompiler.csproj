@@ -44,6 +44,7 @@
     <Compile Include="CompilationMessage.cs" />
     <Compile Include="Antlr\CompilationMessageErrorListner.cs" />
     <Compile Include="CompilationResult.cs" />
+    <Compile Include="CompilerStage\SemanticAnalysisPipeline.cs" />
     <Compile Include="CrawlCompiler.cs" />
     <Compile Include="CrawlCompilerConfiguration.cs" />
     <Compile Include="Datatypes\ListDictionary.cs" />
