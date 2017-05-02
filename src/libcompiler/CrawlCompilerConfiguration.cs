@@ -8,6 +8,8 @@ namespace libcompiler
         //TODO: Non insane way of having this be a tuple of (path, Stream)
         public List<string> Files { get; } = new List<string>();
 
+        public List<string> Assemblies { get; } = new List<string>{ "mscorlib.dll"};
+
         public TargetStage TargetStage { get; set; } = TargetStage.Compile;
 
         public HashSet<string> Optimizations { get; } = new HashSet<string>();
@@ -118,6 +120,10 @@ namespace libcompiler
                             foreach (string optimiaztion in parts[1].Split(','))
                                 crawlCompilerConfiguration.Optimizations.Add(optimiaztion);
 
+                        break;
+
+                    case "assembly":
+                        crawlCompilerConfiguration.Assemblies.Add(parts[1]);
                         break;
 
                     case "output":

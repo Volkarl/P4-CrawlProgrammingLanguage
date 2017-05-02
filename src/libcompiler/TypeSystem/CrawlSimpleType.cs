@@ -4,6 +4,8 @@ namespace libcompiler.TypeSystem
 {
     public class CrawlSimpleType : CrawlType
     {
+        private readonly Type _clrType;
+
         public static CrawlSimpleType Tal { get; } = new CrawlSimpleType(typeof(int));
 
         public static CrawlSimpleType Kommatal { get; } = new CrawlSimpleType(typeof(double));
@@ -14,11 +16,7 @@ namespace libcompiler.TypeSystem
 
         public static CrawlSimpleType Tekst { get; } = new CrawlSimpleType(typeof(string));
 
-        public CrawlSimpleType(string identifier, string @namespace, string assembly = "CrawlCode") : base(identifier, @namespace, assembly)
-        {
-        }
-
-        private CrawlSimpleType(Type type) : base(type.FullName , type.Namespace, type.Assembly.FullName)
+        public CrawlSimpleType(Type type) : base(type.FullName , type.Namespace, type.Assembly.FullName)
         {
         }
 

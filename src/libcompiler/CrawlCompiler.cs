@@ -14,6 +14,10 @@ namespace libcompiler
     {
         public static CompilationResult Compile(CrawlCompilerConfiguration configuration)
         {
+            TraceListners.AssemblyResolverListner =
+                new System.Diagnostics.TextWriterTraceListener(Utils.GetPrimaryOutputStream(configuration));
+            var importedstuff = Namespace.NamespaceLoader.LoadAll(configuration.Assemblies);
+
             //The ConcurrentBag is an unordered 
             ConcurrentBag<CompilationMessage> messages = new ConcurrentBag<CompilationMessage>();
             TextWriter output = Utils.GetPrimaryOutputStream(configuration);
