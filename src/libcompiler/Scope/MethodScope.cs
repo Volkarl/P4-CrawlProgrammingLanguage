@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using libcompiler.SyntaxTree;
 
-namespace libcompiler.TypeChecker
+namespace libcompiler.Scope
 {
     class MethodScope : IScope
     {
@@ -28,5 +25,7 @@ namespace libcompiler.TypeChecker
                 return null;
             }
         }
+
+        public IEnumerable<string> LocalSymbols() => _scopeInfo.Keys;
     }
 }

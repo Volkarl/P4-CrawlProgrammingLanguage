@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Antlr4.Runtime.Misc;
-using libcompiler.TypeChecker;
+using libcompiler.Scope;
 
 namespace libcompiler.SyntaxTree
 {

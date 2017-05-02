@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using libcompiler.Datatypes;
 using libcompiler.SyntaxTree;
 
-namespace libcompiler.TypeChecker
+namespace libcompiler.Scope
 {
     public class BlockScope : IScope
     {
@@ -24,20 +20,20 @@ namespace libcompiler.TypeChecker
                     foreach (var decleration in variableNode.Declerations)
                     {
                         string name = decleration.Identifier.Name;
-                        scope.Add(name, new TypeInformation(null, variableNode.ProtectionLevel));
+                        scope.Add(name, new TypeInformation(null, variableNode.ProtectionLevel, decleration.Interval.b));
                     }
                 }
                 else if(child.Type == NodeType.ClassTypeDecleration)
                 {
                     ClassTypeDeclerationNode classNode = (ClassTypeDeclerationNode) child;
                     string name = classNode.Identifier.Value;
-                    scope.Add(name, new TypeInformation(null, classNode.ProtectionLevel));
+                    scope.Add(name, new TypeInformation(null, classNode.ProtectionLevel, classNode.Interval.b));
                 }
                 else if(child.Type == NodeType.MethodDecleration)
                 {
                     MethodDeclerationNode methodNode = (MethodDeclerationNode) child;
                     string name = methodNode.Identifier.Value;
-                    scope.Add(name, new TypeInformation(null, methodNode.ProtectionLevel));;
+                    scope.Add(name, new TypeInformation(null, methodNode.ProtectionLevel, methodNode.Interval.b));;
                 }
             }
 
@@ -57,6 +53,6 @@ namespace libcompiler.TypeChecker
             }
         }
 
-        public IEnumerable<string> SymbolList => _scopeDictionary.Keys;
+        public IEnumerable<string> LocalSymbols() => _scopeDictionary.Keys;
     }
 }

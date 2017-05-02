@@ -27,7 +27,7 @@ namespace libcompiler.Antlr
             IntervalSet set = parser.GetExpectedTokens();
 
             string help = 
-                $"Symbolet {0} er ikke tilladt på dette punkt. En af de følgende var forventet:\n\t" +
+                $"Symbolet {CrawlLexer.ruleNames[offendingSymbol.Type]} er ikke tilladt på dette punkt. En af de følgende var forventet:\n\t" +
                 string.Join("\n\t", set.ToArray().Select(x => parser.Vocabulary.GetDisplayName(x)));
 
             int intrestinglocation = offendingSymbol.TokenIndex;

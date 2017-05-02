@@ -1,7 +1,7 @@
-﻿using libcompiler.ExtensionMethods;
+﻿using System.Collections.Generic;
+using libcompiler.ExtensionMethods;
+using libcompiler.Scope;
 using libcompiler.SyntaxTree;
-
-using libcompiler.TypeChecker;
 
 namespace libcompiler.TypeSystem
 {
@@ -28,6 +28,7 @@ namespace libcompiler.TypeSystem
             return _declaration.FindSymbolOnlyInThisScope(symbol);
         }
 
+        public IEnumerable<string> LocalSymbols() => default(IEnumerable<string>);
 
         /// <summary>
         /// Checks if assigning this to target is legal(according to Cräwl specification).

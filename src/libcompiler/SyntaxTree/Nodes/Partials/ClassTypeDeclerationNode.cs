@@ -1,10 +1,11 @@
-﻿using libcompiler.TypeChecker;
+﻿using System.Collections.Generic;
+using libcompiler.Scope;
 
 namespace libcompiler.SyntaxTree
 {
     public partial class ClassTypeDeclerationNode : IScope
     {
-
+        public IEnumerable<string> LocalSymbols() => default(IEnumerable<string>);
 
         public TypeInformation[] FindSymbol(string symbol)
         {

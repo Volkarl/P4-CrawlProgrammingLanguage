@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using libcompiler.CompilerStage;
@@ -28,6 +29,8 @@ namespace libcompiler
                 ConcurrentBag<AstData> filesWithScope = new ConcurrentBag<AstData>();
                 Execute(parsedFiles, SemanticAnalysisPipeline.DataCollection(filesWithScope, messages, configuration.TargetStage), parallel);
 
+                ConcurrentBag<AstData> decoratedAsts = new ConcurrentBag<AstData>();
+                Execute(filesWithScope, SemanticAnalysisPipeline.Analyse(decoratedAsts, messages, configuration.TargetStage), parallel);
 
 
                 //TODO: Interpeter or code generation
@@ -40,10 +43,12 @@ namespace libcompiler
                     status = CompilationStatus.Failure;
                 
             }
-            catch (Exception e)
+            catch (Exception e) when(!Debugger.IsAttached)
             {
+                
                 messages.Add(CompilationMessage.CreateNonCodeMessage(MessageCode.InternalCompilerError, e.ToString(), MessageSeverity.Fatal));
                 status = CompilationStatus.Failure;
+                
             }
 
             return new CompilationResult(status, messages);

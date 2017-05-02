@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime.Misc;
-using libcompiler.TypeChecker;
+using libcompiler.Scope;
 
 namespace libcompiler.SyntaxTree
 {
@@ -52,7 +52,9 @@ namespace libcompiler.SyntaxTree
         {
             if (Scope == null) return $"Block {Interval}";
 
-            return $"Block {Interval} -> {{{string.Join(", ", Scope.SymbolList)}}}";
+            return $"Block {Interval} -> {{{string.Join(", ", Scope.LocalSymbols())}}}";
         }
+
+        public IEnumerable<string> LocalSymbols() => Scope.LocalSymbols();
     }
 }

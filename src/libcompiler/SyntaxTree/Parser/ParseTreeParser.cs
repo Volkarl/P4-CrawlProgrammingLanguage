@@ -227,7 +227,7 @@ namespace libcompiler.SyntaxTree.Parser
 
             BlockNode body = ParseBlockNode((RuleContext)ConstructContex.GetChild(3).GetChild(1));
 
-            return CrawlSyntaxNode.Constructor(interval,protectionlevel, null /*TODO: */, body);
+            return CrawlSyntaxNode.Constructor(interval,protectionlevel, null /*TODO: */, null, body);
 
 
         }
@@ -269,7 +269,16 @@ namespace libcompiler.SyntaxTree.Parser
             IdentifierNode identifier = ParseIdentifier(identifierTerminal);
 
             //Combine it all.
-            return CrawlSyntaxNode.MethodDecleration(interval, protectionLevel, methodSignature, body, identifier, parameterIdentifiers, genericParameters);
+            return CrawlSyntaxNode.MethodDecleration(
+                interval, 
+                protectionLevel, 
+                null /*scope has no stuff yet*/, 
+                methodSignature, 
+                body, 
+                identifier, 
+                parameterIdentifiers, 
+                genericParameters
+            );
         }
 
         private static Tuple<List<TypeNode>, List<IdentifierNode>> ParseParameters(CrawlParser.ParametersContext context)

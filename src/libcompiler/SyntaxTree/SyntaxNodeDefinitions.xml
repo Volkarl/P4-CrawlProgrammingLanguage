@@ -199,6 +199,13 @@
                     <type>Block</type>
                 </child>
             </children>
+            <properties>
+              <property>
+                <name>Scope</name>
+                <type>IScope</type>
+                <nulldefault>true</nulldefault> 
+              </property>
+            </properties>
         </node>
         <node>
             <name>ClassTypeDecleration</name>
@@ -276,6 +283,7 @@
                     <type>Block</type>
                 </child>
             </children>
+          <!-- Scope-->
         </node>
         <node>
             <name>GenericParameter</name>
@@ -432,6 +440,7 @@
                     <type>Block</type>
                 </child>
             </children>
+          <!-- Imports scope-->
         </node>
         <node>
             <name>Type</name>

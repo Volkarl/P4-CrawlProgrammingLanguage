@@ -125,7 +125,9 @@ namespace libcompiler
         UnexpectedSymbol,
 
         GenericScopeError = (1 << 16) * 1,
-
+        HidesOtherSymbol,
+        NoSuchSymbol,
+        UseBeforeDecleration,
 
         GenericTypeError = (1 << 16) * 2,
 
