@@ -7,11 +7,11 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using libcompiler.Scope;
 using libcompiler.SyntaxTree;
-using libcompiler.TypeChecker;
 using libcompiler.TypeSystem;
 
-namespace libcompiler.Namespace
+namespace libcompiler.Namespaces
 {
     public static class NamespaceLoader
     {
@@ -72,10 +72,7 @@ namespace libcompiler.Namespace
             ConcurrentDictionary<string, Namespace> allNameSpaces = new ConcurrentDictionary<string, Namespace>();
             foreach (string name in assemblyName)
             {
-                foreach (Namespace ns in LoadSmart(name))
-                {
-                    allNameSpaces.AddOrUpdate(ns.Name, ns, (key, oldNamespace) => Namespace.Merge(oldNamespace, ns));
-                }
+                allNameSpaces.MergeInto(LoadSmart(name));
             }
             return allNameSpaces;
         }
@@ -96,6 +93,15 @@ namespace libcompiler.Namespace
                     )
                     .ToList();
         }
+
+        public static void MergeInto(this ConcurrentDictionary<string, Namespace> namespaceDictionary,
+            IEnumerable<Namespace> newNamespaces)
+        {
+            foreach (Namespace ns in newNamespaces)
+            {
+                namespaceDictionary.AddOrUpdate(ns.Name, ns, (key, oldNamespace) => Namespace.Merge(oldNamespace, ns));
+            }
+        }
     }
 
     //This would really be much more elegant if it could derive from type
@@ -109,7 +115,7 @@ namespace libcompiler.Namespace
         {
             foreach (CrawlType type in contents)
             {
-                _scope.TryAdd(type.Identifier, new[] {new TypeInformation(type, ProtectionLevel.Public)});
+                _scope.TryAdd(type.Identifier, new[] {new TypeInformation(type, ProtectionLevel.Public, -1)});
             }
         }
 
@@ -121,15 +127,17 @@ namespace libcompiler.Namespace
 
         public TypeInformation[] FindSymbol(string symbol)
         {
-            throw new NotImplementedException();
+            TypeInformation[] stuff;
+            if (_scope.TryGetValue(symbol, out stuff))
+                return stuff;
+            return null;
         }
 
         public static Namespace Merge(params Namespace[] namespaces)
         {
-            if(namespaces.Select(x => x.Name).Distinct().Count() > 1)
-                throw new ArgumentException("Cannot merge namespaces with different names");
-
-            string name = namespaces.First().Name;
+            //BUG: If multiple namespaces contain the same type, this will crash. Should really contain special value
+            //that says not sure, don't try this pls
+            string name = string.Join(";", namespaces.Select(n => n.Name));
 
             //Pull out every value in each namespace, then pull out individual TypeInformation, then pull out the CrawlType
             return new Namespace(name,
@@ -139,5 +147,9 @@ namespace libcompiler.Namespace
                     .Select(tinf => tinf.Type)
             );
         }
+
+        public IEnumerable<string> LocalSymbols() => _scope.Keys;
     }
+
+
 }

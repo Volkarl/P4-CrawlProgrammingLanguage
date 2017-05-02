@@ -49,11 +49,12 @@
     <Compile Include="CrawlCompilerConfiguration.cs" />
     <Compile Include="Datatypes\ListDictionary.cs" />
     <Compile Include="ExtensionMethods\CrawlSyntaxNodeExtensions.cs" />
+    <Compile Include="ExtensionMethods\IEnumerableHelpers.cs" />
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
     <Compile Include="CompilerStage\ParsePipeline.cs" />
     <Compile Include="CompilerStage\ParseTreeData.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
-    <Compile Include="Namespace\NamespaceLoader.cs" />
+    <Compile Include="Namespaces\NamespaceLoader.cs" />
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
     <Compile Include="Scope\GenericScope.cs" />

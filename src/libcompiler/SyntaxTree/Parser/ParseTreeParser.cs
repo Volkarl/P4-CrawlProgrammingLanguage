@@ -7,6 +7,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using libcompiler.ExtensionMethods;
+using libcompiler.Namespaces;
 using libcompiler.Parser;
 using libcompiler.TypeSystem;
 
@@ -30,7 +31,12 @@ namespace libcompiler.SyntaxTree.Parser
             NamespaceNode namespaceNode = ParseNamespace(nameSpace);   //Forts�t herfra.
             BlockNode rootBlock = ParseBlockNode(statements);
 
-            return CrawlSyntaxNode.TranslationUnit(translationUnit.SourceInterval, importNodes, namespaceNode, rootBlock);
+
+            Namespace ownTypes = new Namespace(namespaceNode.Module,rootBlock.OfType<ClassTypeDeclerationNode>()
+                .Select(x => x.Identifier.Value)
+                .Concat(rootBlock.OfType<MethodDeclerationNode>().Select(q => q.Identifier.Value)).Select(x => new FutureType(x, namespaceNode.Module)) );
+
+            return CrawlSyntaxNode.TranslationUnit(translationUnit.SourceInterval, ownTypes, null, importNodes, namespaceNode, rootBlock);
         }
 
         private static NamespaceNode ParseNamespace(RuleContext nameSpace)
@@ -588,6 +594,29 @@ namespace libcompiler.SyntaxTree.Parser
 
             ExpressionNode value = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(rule.ChildCount - 2));
             return CrawlSyntaxNode.Assignment(rule.SourceInterval, target, value);
+        }
+    }
+
+    public class FutureType : CrawlType
+    {
+        public FutureType(string identifier, string ns) : base(identifier, ns, "<<<===NONE===>>>")
+        {
+
+        }
+
+        public override bool IsAssignableTo(CrawlType target)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public override bool ImplicitlyCastableTo(CrawlType target)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public override bool CastableTo(CrawlType target)
+        {
+            throw new InvalidOperationException();
         }
     }
 }

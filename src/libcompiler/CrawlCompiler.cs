@@ -5,6 +5,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using libcompiler.CompilerStage;
+using libcompiler.ExtensionMethods;
+using libcompiler.Namespaces;
+using libcompiler.SyntaxTree;
 
 namespace libcompiler
 {
@@ -14,9 +17,9 @@ namespace libcompiler
         {
             TraceListners.AssemblyResolverListner =
                 new System.Diagnostics.TextWriterTraceListener(Utils.GetPrimaryOutputStream(configuration));
-            var importedstuff = Namespace.NamespaceLoader.LoadAll(configuration.Assemblies);
+            ConcurrentDictionary<string, Namespace> allNamespaces = NamespaceLoader.LoadAll(configuration.Assemblies);
 
-            //The ConcurrentBag is an unordered 
+            //The ConcurrentBag is an unordered
 
             ConcurrentBag<CompilationMessage> messages = new ConcurrentBag<CompilationMessage>();
             CompilationStatus status = CompilationStatus.Success;
@@ -28,12 +31,18 @@ namespace libcompiler
 
                 Execute(configuration.Files, ParsePipeline.CreateParsePipeline(parsedFiles, messages, configuration.TargetStage), parallel);
 
+                foreach (AstData file in parsedFiles)
+                {
+                    TranslationUnitNode node = (TranslationUnitNode) file.Tree.RootNode;
+                    allNamespaces.MergeInto(node.ContainedTypes.AsSingleIEnumerable());
+                }
+
 
                 //TODO: Collect information on referenced assemblies (This can actually be started in the background asap)
 
                 //TODO: Semantic analysis
                 ConcurrentBag<AstData> filesWithScope = new ConcurrentBag<AstData>();
-                Execute(parsedFiles, SemanticAnalysisPipeline.DataCollection(filesWithScope, messages, configuration.TargetStage), parallel);
+                Execute(parsedFiles, SemanticAnalysisPipeline.DataCollection(filesWithScope, messages, configuration.TargetStage, allNamespaces), parallel);
 
                 ConcurrentBag<AstData> decoratedAsts = new ConcurrentBag<AstData>();
                 Execute(filesWithScope, SemanticAnalysisPipeline.Analyse(decoratedAsts, messages, configuration.TargetStage), parallel);

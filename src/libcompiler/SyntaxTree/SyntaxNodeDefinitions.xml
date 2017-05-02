@@ -440,6 +440,18 @@
                     <type>Block</type>
                 </child>
             </children>
+            <properties>
+                <property>
+                    <name>ContainedTypes</name>
+                    <type>Namespace</type>
+                    <nulldefault>true</nulldefault>
+                </property>
+                <property>
+                    <name>ImportedNamespaces</name>
+                    <type>Namespace</type>
+                    <nulldefault>true</nulldefault>
+                </property>
+            </properties>
           <!-- Imports scope-->
         </node>
         <node>

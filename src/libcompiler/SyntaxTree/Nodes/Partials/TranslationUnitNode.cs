@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using libcompiler.TypeChecker;
+using libcompiler.Scope;
 using libcompiler.TypeSystem;
 
 namespace libcompiler.SyntaxTree
@@ -11,33 +11,32 @@ namespace libcompiler.SyntaxTree
             {
                 {
                     "tal",
-                    new TypeInformation( CrawlSimpleType.Tal, ProtectionLevel.Public)
+                    new TypeInformation( CrawlSimpleType.Tal, ProtectionLevel.Public, -1)
                 },
                 {
                     "kommatal",
-                    new TypeInformation( CrawlSimpleType.Kommatal, ProtectionLevel.Public)
+                    new TypeInformation( CrawlSimpleType.Kommatal, ProtectionLevel.Public, -1)
                 },
                 {
                     "bool",
-                    new TypeInformation(  CrawlSimpleType.Bool, ProtectionLevel.Public)
+                    new TypeInformation(  CrawlSimpleType.Bool, ProtectionLevel.Public, -1)
                 },
                 {
                     "tegn",
-                    new TypeInformation( CrawlSimpleType.Tegn, ProtectionLevel.Public)
+                    new TypeInformation( CrawlSimpleType.Tegn, ProtectionLevel.Public, -1)
                 },
                 {
                     "tekst",
-                    new TypeInformation( CrawlSimpleType.Tekst, ProtectionLevel.Public)
+                    new TypeInformation( CrawlSimpleType.Tekst, ProtectionLevel.Public, -1)
                 }
             };
 
         //TODO Also look in imports.
         public TypeInformation[] FindSymbol(string symbol)
         {
-            TypeInformation result;
-            SimpleTypes.TryGetValue(symbol, out result);
-
-            return new[] {result};
+            return ImportedNamespaces.FindSymbol(symbol);
         }
+
+        public IEnumerable<string> LocalSymbols() => new List<string>();
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using libcompiler.Namespaces;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 
@@ -12,25 +13,44 @@ namespace libcompiler.CompilerStage
     internal class SemanticAnalysisPipeline
     {
         private readonly ConcurrentBag<CompilationMessage> _messages;
+        private readonly ConcurrentDictionary<string, Namespace> _allNamespaces;
 
-        private SemanticAnalysisPipeline(ConcurrentBag<CompilationMessage> messages)
+        private SemanticAnalysisPipeline(ConcurrentBag<CompilationMessage> messages, ConcurrentDictionary<string, Namespace> allNamespaces)
         {
             _messages = messages;
+            _allNamespaces = allNamespaces;
         }
 
         public static Action<AstData> DataCollection(ConcurrentBag<AstData> astDestination,
-            ConcurrentBag<CompilationMessage> messages, TargetStage stopAt)
+            ConcurrentBag<CompilationMessage> messages, TargetStage stopAt, ConcurrentDictionary<string, Namespace> allNamespaces)
         {
-            SemanticAnalysisPipeline self = new SemanticAnalysisPipeline(messages);
-            Func<AstData, AstData> collect = self.CollectScopeInformation;
+            SemanticAnalysisPipeline self = new SemanticAnalysisPipeline(messages, allNamespaces);
+            Func<AstData, AstData> export = self.AddExport;
+            Func<AstData, AstData> collect = export.Then(self.CollectScopeInformation);
             return collect.EndWith(astDestination.Add);
+
+        }
+
+        private AstData AddExport(AstData arg)
+        {
+            var tu = ((TranslationUnitNode) arg.Tree.RootNode);
+
+            return new AstData(
+                arg.TokenStream,
+                arg.Filename,
+                tu
+                    .WithImportedNamespaces(
+                        Namespace.Merge(tu.Imports.Select(x => _allNamespaces[x.Module]).ToArray())
+                    )
+                    .OwningTree
+            );
 
         }
 
         public static Action<AstData> Analyse(ConcurrentBag<AstData> dastDestination,
             ConcurrentBag<CompilationMessage> messages, TargetStage stopat)
         {
-            SemanticAnalysisPipeline self = new SemanticAnalysisPipeline(messages);
+            SemanticAnalysisPipeline self = new SemanticAnalysisPipeline(messages, null);
             Func<AstData, AstData> collect = self.DeclerationOrderCheck;
             return collect.EndWith(dastDestination.Add);
         }
@@ -102,6 +122,7 @@ namespace libcompiler.CompilerStage
         }
     }
 
+
     internal class CheckDeclerationOrderVisitor : SyntaxVisitor
     {
         private readonly ConcurrentBag<CompilationMessage> _messages;
@@ -125,8 +146,9 @@ namespace libcompiler.CompilerStage
 
         protected override void VisitVariable(VariableNode nodes)
         {
-            TypeInformation[] decl =  nodes.FindFirstScope().FindSymbol(nodes.Name);
-            if (decl.Length == 0)
+            IScope scope = nodes.FindFirstScope();
+            TypeInformation[] decl =  scope.FindSymbol(nodes.Name);
+            if (decl == null || decl.Length == 0 )
             {
                 //TODO: Edit lenght on everything...
                 _messages.Add(CompilationMessage.Create(_data.TokenStream, nodes.Interval, MessageCode.NoSuchSymbol,
@@ -134,7 +156,8 @@ namespace libcompiler.CompilerStage
             }
             else if (decl.Length == 1)
             {
-                if (decl[0].DeclarationLocation < nodes.Interval.a)
+                //TODO: If TypeInformation needs a ScopeType that contains MethodLine and ClassLike. Supress for classLike
+                if (decl[0].DeclarationLocation > nodes.Interval.a)
                 {
                     //TODO: Make CompilationMessage.Create take an IntervalSet of intresting locations instead of one location...
                     _messages.Add(CompilationMessage.Create(_data.TokenStream, nodes.Interval, MessageCode.UseBeforeDecleration, _data.Filename, null));

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using libcompiler.SyntaxTree;
+using libcompiler.SyntaxTree.Parser;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.Scope
 {
@@ -10,7 +12,7 @@ namespace libcompiler.Scope
         public MethodScope(MethodDeclerationNode m)
         {
             //TODO: Save real info in typeinformation....
-            _scopeInfo = m.Parameters.ToDictionary(x => x.Value, y => new TypeInformation[1]);
+            _scopeInfo = m.Parameters.ToDictionary(x => x.Value, y => new TypeInformation[1]{new TypeInformation(new FutureType(m.Identifier.Value, "NONE"), m.ProtectionLevel, m.Interval.a)});
         }
 
         public TypeInformation[] FindSymbol(string symbol)

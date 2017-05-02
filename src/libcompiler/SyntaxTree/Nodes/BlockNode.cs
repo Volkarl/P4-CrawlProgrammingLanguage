@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Antlr4.Runtime.Misc;
 using libcompiler.Scope;
@@ -22,12 +23,13 @@ namespace libcompiler.SyntaxTree
         public TypeInformation[] FindSymbol(string symbol)
         {
             TypeInformation[] typeInformation = Scope?.FindSymbol(symbol);
-            
+
             if (typeInformation == null)
             {
                 IScope scope = Parent.FindFirstScope();
-                return scope?.FindSymbol(symbol);
+                return  scope?.FindSymbol(symbol);
             }
+
             return typeInformation;
         }
 
