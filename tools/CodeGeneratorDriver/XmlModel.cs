@@ -98,10 +98,10 @@ namespace CodeGeneratorDriver
 
         [XmlIgnore]
         public List<Member> AllMembers => _allMembers ?? (_allMembers =
-                                              this.AllProperties()
-                                                  .Select(p => new Member(p))
-                                                  .Concat(this.AllChildren().Select(c => new Member(c)))
-                                                  .ToList());
+                                              BaseNode  ?.  AllMembers.Concat(Members)
+                                                  .ToList()
+                                              ?? Members
+                                          );
 
         [XmlIgnore]
         private List<Member> _members;
@@ -109,8 +109,8 @@ namespace CodeGeneratorDriver
         [XmlIgnore]
         public List<Member> Members => _members ?? (_members =
                                            Properties
-                                               .Select(p => new Member(p))
-                                               .Concat(Children.Select(c => new Member(c)))
+                                               .Select(p => new Member(p, this))
+                                               .Concat(Children.Select(c => new Member(c, this)))
                                                .ToList());
 
         public TypeSyntax GetRepresentation(TypeClassContext context = TypeClassContext.None)

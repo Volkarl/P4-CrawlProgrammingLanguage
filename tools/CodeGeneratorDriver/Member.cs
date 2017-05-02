@@ -13,9 +13,10 @@ namespace CodeGeneratorDriver
 
         public string Name { get; }
         public string Type { get; }
+        public Node Owner { get; }
         private readonly string _genericPart;
 
-        public Member(Child child)
+        public Member(Child child, Node owner) :this(owner)
         {
             string[] parts = child.Type.Split('\'');
             Type = parts[0];
@@ -28,7 +29,7 @@ namespace CodeGeneratorDriver
             NullAllowed = child.NullDefault;
         }
 
-        public Member(Property property)
+        public Member(Property property, Node owner) :this(owner)
         {
             string[] parts = property.Type.Split('\'');
             Type = parts[0];
@@ -36,6 +37,11 @@ namespace CodeGeneratorDriver
                 _genericPart = parts[1];
 
             Name = property.Name;
+        }
+
+        private Member(Node owner)
+        {
+            Owner = owner;
         }
 
         public bool IsImplicitlyAssigned(string name)
