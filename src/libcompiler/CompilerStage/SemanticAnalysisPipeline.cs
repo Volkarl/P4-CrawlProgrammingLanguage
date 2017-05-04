@@ -7,7 +7,6 @@ using Antlr4.Runtime.Tree;
 using libcompiler.Namespaces;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
-using libcompiler.TypeSystem;
 
 namespace libcompiler.CompilerStage
 {

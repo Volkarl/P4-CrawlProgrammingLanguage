@@ -3,7 +3,7 @@ using System.Linq;
 using libcompiler.ExtensionMethods;
 using libcompiler.SyntaxTree;
 
-namespace libcompiler.TypeSystem
+namespace libcompiler.SyntaxTree
 {
     public class CrawlMethodType : CrawlType
     {

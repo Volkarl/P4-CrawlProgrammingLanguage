@@ -2,7 +2,7 @@
 using System.Linq;
 using libcompiler.Scope;
 
-namespace libcompiler.TypeSystem
+namespace libcompiler.SyntaxTree
 {
     public abstract class CrawlType
     {

@@ -10,7 +10,6 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
-using libcompiler.TypeSystem;
 
 namespace libcompiler.Namespaces
 {
