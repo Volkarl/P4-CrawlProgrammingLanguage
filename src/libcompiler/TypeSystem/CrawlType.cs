@@ -4,6 +4,11 @@ namespace libcompiler.TypeSystem
 {
     public abstract class CrawlType
     {
+        public static CrawlStatusType UnspecifiedType { get; } =
+            new CrawlStatusType("$UNSPECIFIED_TYPE", "$UNSPECIFIED_TYPE", "$UNSPECIFIED_TYPE");
+        public static CrawlType ErrorType { get; } =
+            new CrawlStatusType("$TYPE_ERROR", "$TYPE_ERROR", "$TYPE_ERROR");
+
         public static CrawlType ParseDecleration(string text)
         {
             throw new NotImplementedException();
@@ -34,6 +39,8 @@ namespace libcompiler.TypeSystem
         {
             return CanonicalName.GetHashCode();
         }
+
+        public override string ToString() => $"{Identifier}";
 
 
         /// <summary>

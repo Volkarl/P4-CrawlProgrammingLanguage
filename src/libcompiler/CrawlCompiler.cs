@@ -21,6 +21,7 @@ namespace libcompiler
             if (configuration.TargetStage == TargetStage.ParseTree)
             {
                 ParseTreeHelper.WriteParseTrees(output, configuration);
+                return new CompilationResult(CompilationStatus.Success, messages);
             }
 
             //TODO: If filenotfound, log Fatal message and exit
@@ -36,6 +37,7 @@ namespace libcompiler
                     output.WriteLine("File {0}:", crawlSyntaxTree.Tree.CompilationUnitName);
                     output.WriteLine(s);
                 }
+                return new CompilationResult(CompilationStatus.Success, messages);
             }
 
             if (configuration.TargetStage == TargetStage.TypeCheck)
@@ -80,14 +82,6 @@ namespace libcompiler
                 this.Tree = tree;
                 this.TokenStream = tStream;
             }
-        }
-    }
-
-    public class ReplaceLocalVariablesRewriter : SyntaxRewriter
-    {
-        protected override CrawlSyntaxNode VisitIntegerLiteral(IntegerLiteralNode integerLiteral)
-        {
-            return CrawlSyntaxNode.IntegerLiteral(integerLiteral.Interval, 9001);
         }
     }
 }
