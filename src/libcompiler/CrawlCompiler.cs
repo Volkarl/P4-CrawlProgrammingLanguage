@@ -7,6 +7,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using libcompiler.Parser;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeChecker;
 
 namespace libcompiler
 {
@@ -40,20 +41,31 @@ namespace libcompiler
                 return new CompilationResult(CompilationStatus.Success, messages);
             }
 
+            List<TreeAndStream> typechecked = parsedFiles.ConfigureableParallelSelect(!configuration.ForceSingleThreaded,
+                TypeCheckTree).ToList();
+
             if (configuration.TargetStage == TargetStage.TypeCheck)
             {
-                foreach (TreeAndStream syntaxTree in parsedFiles)
+                foreach (TreeAndStream syntaxTree in typechecked)
                 {
                     SuperPrettyPrintVisitor printer = new SuperPrettyPrintVisitor(false);
                     string s = printer.PrettyPrint(syntaxTree.Tree.RootNode);
                     output.WriteLine("File {0}:", syntaxTree.Tree.CompilationUnitName);
                     output.WriteLine(s);
                 }
+                return new CompilationResult(CompilationStatus.Success, messages);
             }
 
 
             return new CompilationResult(CompilationStatus.Failure, messages);
 
+        }
+
+        private static TreeAndStream TypeCheckTree(TreeAndStream arg)
+        {
+            CrawlSyntaxNode result = new TypeVisitor().Visit(arg.Tree.RootNode);
+
+            return new TreeAndStream(result.OwningTree, arg.TokenStream);
         }
 
         //TODO: A method that takes same arguments as compile but returns set of decorated ast instead of writing to file

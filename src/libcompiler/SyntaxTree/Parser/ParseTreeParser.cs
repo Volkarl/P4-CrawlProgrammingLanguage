@@ -344,7 +344,7 @@ namespace libcompiler.SyntaxTree.Parser
 
         private static VariableNode ParseVariable(ITerminalNode node)
         {
-            return CrawlSyntaxNode.Variable(node.SourceInterval, node.GetText());
+            return CrawlSyntaxNode.Variable(node.SourceInterval, CrawlType.UnspecifiedType, node.GetText());
         }
 
         private static IdentifierNode ParseIdentifier(ITerminalNode node)
@@ -569,12 +569,12 @@ namespace libcompiler.SyntaxTree.Parser
                 CrawlParser.Subfield_expressionContext subfield = (CrawlParser.Subfield_expressionContext) rule.GetChild(1);
 
                 IdentifierNode sub = CrawlSyntaxNode.Identifier(subfield.GetChild(1).SourceInterval, subfield.GetChild(1).GetText());
-                target = CrawlSyntaxNode.MemberAccess(subfield.SourceInterval, target, sub);
+                target = CrawlSyntaxNode.MemberAccess(subfield.SourceInterval, CrawlType.UnspecifiedType, target, sub);
             }
             else if(rule.GetChild(1) is CrawlParser.Index_expressionContext)
             {
                 RuleContext idx = (RuleContext) rule.GetChild(1);
-                target = CrawlSyntaxNode.Index(idx.SourceInterval, target, ExpressionParser.ParseArgumentList(idx));
+                target = CrawlSyntaxNode.Index(idx.SourceInterval, CrawlType.UnspecifiedType, target, ExpressionParser.ParseArgumentList(idx));
             }
 
             ExpressionNode value = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(rule.ChildCount - 2));

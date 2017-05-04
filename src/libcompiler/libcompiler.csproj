@@ -67,6 +67,8 @@
     <Compile Include="SyntaxTree\Nodes\Partials\ClassTypeDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Partials\TranslationUnitNode.cs" />
     <Compile Include="SyntaxTree\VisitorManualVisits.cs" />
+    <Compile Include="TypeChecker\ExpressionEvaluator.cs" />
+    <Compile Include="TypeChecker\TypeVisitor.cs" />
     <Compile Include="TypeSystem\CrawlArrayType.cs" />
     <Compile Include="TypeSystem\CrawlConstructedType.cs" />
     <Compile Include="TypeSystem\CrawlMethodType.cs" />

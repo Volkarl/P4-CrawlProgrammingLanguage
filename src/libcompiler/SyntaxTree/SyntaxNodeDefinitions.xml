@@ -248,6 +248,10 @@
                     <name>ExpressionType</name>
                     <type>ExpressionType</type>
                 </property>
+                <property>
+                    <name>ResultType</name>
+                    <type>CrawlType</type>
+                </property>
             </properties>
         </node>
         <node>
