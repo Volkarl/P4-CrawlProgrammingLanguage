@@ -21,7 +21,10 @@ namespace compilerconsolehost
                 CompilationResult result = CrawlCompiler.Compile(configuration);
 
                 string line = new String('=', Console.BufferWidth);
-                foreach (CompilationMessage message in result.Messages.OrderBy(message => message.Severity))
+                foreach (CompilationMessage message in result.Messages
+                    .OrderBy(message => message.Severity)
+                    .ThenBy(x => x.File)
+                    .ThenBy(x => x.FirstPoint))
                 {
                     message.WriteToConsole();
                     Console.Write(line);

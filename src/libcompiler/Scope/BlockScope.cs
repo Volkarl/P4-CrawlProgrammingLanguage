@@ -12,6 +12,13 @@ namespace libcompiler.Scope
         //checks if the blockNode is a variable, class or method decleration and adds them to the scopeDictionary    
         public BlockScope(BlockNode node)
         {
+            DeclaringScope declaringScope = DeclaringScope.MethodLike;
+            
+            if (node.Parent is ClassTypeDeclerationNode)
+            {
+                declaringScope = DeclaringScope.ClassLike;
+
+            }
             ListDictionary<string, TypeInformation> scope = new ListDictionary<string, TypeInformation>();
             foreach (var child in node)
             {
@@ -21,20 +28,20 @@ namespace libcompiler.Scope
                     foreach (var decleration in variableNode.Declerations)
                     {
                         string name = decleration.Identifier.Name;
-                        scope.Add(name, new TypeInformation(new FutureType(name, ""), variableNode.ProtectionLevel, decleration.Interval.b));
+                        scope.Add(name, new TypeInformation(new FutureType(name, ""), variableNode.ProtectionLevel, decleration.Interval.a, declaringScope));
                     }
                 }
                 else if(child.Type == NodeType.ClassTypeDecleration)
                 {
                     ClassTypeDeclerationNode classNode = (ClassTypeDeclerationNode) child;
                     string name = classNode.Identifier.Value;
-                    scope.Add(name, new TypeInformation(new FutureType(name, ""), classNode.ProtectionLevel, classNode.Interval.b));
+                    scope.Add(name, new TypeInformation(new FutureType(name, ""), classNode.ProtectionLevel, classNode.Interval.a, declaringScope));
                 }
                 else if(child.Type == NodeType.MethodDecleration)
                 {
                     MethodDeclerationNode methodNode = (MethodDeclerationNode) child;
                     string name = methodNode.Identifier.Value;
-                    scope.Add(name, new TypeInformation(new FutureType(name, ""), methodNode.ProtectionLevel, methodNode.Interval.b));;
+                    scope.Add(name, new TypeInformation(new FutureType(name, ""), methodNode.ProtectionLevel, methodNode.Interval.a, declaringScope));;
                 }
             }
 

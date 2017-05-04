@@ -73,7 +73,9 @@
     <Compile Include="SyntaxTree\Nodes\GreenCrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GreenListNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ListNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Partials\CallableDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Partials\ClassTypeDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Partials\ForLoopNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Partials\TranslationUnitNode.cs" />
     <Compile Include="TypeSystem\FutureType.cs" />
     <Compile Include="SyntaxTree\VisitorManualVisits.cs" />

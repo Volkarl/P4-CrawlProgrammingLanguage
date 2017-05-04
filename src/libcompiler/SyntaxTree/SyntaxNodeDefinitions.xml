@@ -283,6 +283,12 @@
                     <type>Block</type>
                 </child>
             </children>
+          <properties>
+            <property>
+              <name>Scope</name>
+              <type>IScope</type>
+            </property>
+          </properties>
           <!-- Scope-->
         </node>
         <node>

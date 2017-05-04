@@ -22,16 +22,24 @@ namespace libcompiler.Scope
 
     public class TypeInformation
     {
-        public TypeInformation(CrawlType type, ProtectionLevel protectionLevel, int declarationLocation)
+        public TypeInformation(CrawlType type, ProtectionLevel protectionLevel, int declarationLocation, DeclaringScope declaringScope = DeclaringScope.MethodLike)
         {
             Type = type;
             ProtectionLevel = protectionLevel;
             DeclarationLocation = declarationLocation;
+            DeclaringScope = declaringScope;
         }
 
         public int DeclarationLocation { get; }
         public CrawlType Type { get; }
         public ProtectionLevel ProtectionLevel { get; }
+        public DeclaringScope DeclaringScope { get; }
         //TODO Save place where it was declared
+    }
+
+    public enum DeclaringScope
+    {
+        MethodLike,
+        ClassLike
     }
 }

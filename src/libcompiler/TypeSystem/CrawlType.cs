@@ -43,10 +43,6 @@ namespace libcompiler.SyntaxTree
                 }
 
                 return new CrawlMethodType(returnType, parameterTypes);
-
-                throw new NotImplementedException();
-
-
             }
             else
             {

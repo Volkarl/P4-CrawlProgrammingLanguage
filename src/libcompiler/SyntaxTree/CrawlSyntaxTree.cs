@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using Antlr4.Runtime;
-using libcompiler.Antlr;
 using libcompiler.Parser;
-using libcompiler.SyntaxTree;
+using libcompiler.SyntaxTree.Parser;
 
 namespace libcompiler.SyntaxTree
 {

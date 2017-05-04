@@ -7,6 +7,7 @@ using Antlr4.Runtime.Tree;
 using libcompiler.Namespaces;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.CompilerStage
 {
@@ -65,7 +66,7 @@ namespace libcompiler.CompilerStage
         }
 
         private AstData DeclerationOrderCheck(AstData arg)
-        {
+         {
             new CheckDeclerationOrderVisitor(_messages, arg).Visit(arg.Tree.RootNode);
             return arg;
         }
@@ -83,8 +84,9 @@ namespace libcompiler.CompilerStage
             protected override CrawlSyntaxNode VisitBlock(BlockNode block)
             {
                 BlockScope scope = new BlockScope(block);
-                var tmp = ((BlockNode)base.VisitBlock(block)).WithScope(scope);
-                return tmp;
+                var tmp = ((BlockNode)base.VisitBlock(block));
+                var after =  tmp.WithScope(scope);
+                return after;
             }
 
             protected override CrawlSyntaxNode VisitMethodDecleration(MethodDeclerationNode methodDecleration)
@@ -93,7 +95,7 @@ namespace libcompiler.CompilerStage
                     methodDecleration
                         .Parameters
                         .Select(
-                            parameter =>
+                            parameter=>
                                 new KeyValuePair<string, TypeInformation>(parameter.Value,
                                     new TypeInformation(
                                         null, 
@@ -104,11 +106,9 @@ namespace libcompiler.CompilerStage
                         )
                 );
 
-                MethodDeclerationNode afterupdate = methodDecleration.Update(methodDecleration.Interval,
-                    methodDecleration.ProtectionLevel, scope,
-                    methodDecleration.MethodSignature, methodDecleration.Body, methodDecleration.Identifier,
-                    methodDecleration.Parameters, methodDecleration.GenericParameters);
-                return base.VisitMethodDecleration(afterupdate);
+                MethodDeclerationNode node = (MethodDeclerationNode) base.VisitMethodDecleration(methodDecleration);
+
+                return node.WithScope(scope);
             }
 
             protected override CrawlSyntaxNode VisitConstructor(ConstructorNode constructor)
@@ -124,10 +124,21 @@ namespace libcompiler.CompilerStage
             //NB: This one might break, there was talk about refactoring all for loops to while loops behind the scenes
             protected override CrawlSyntaxNode VisitForLoop(ForLoopNode forLoop)
             {
-                return base.VisitForLoop(forLoop);
+                GenericScope scope = new GenericScope(new[]
+                {
+                    new KeyValuePair<string, TypeInformation>(
+                        forLoop.LoopVariable.Value,
+                        new TypeInformation(
+                            null, 
+                            ProtectionLevel.NotApplicable, 
+                            forLoop.LoopVariable.Interval.a,
+                            DeclaringScope.MethodLike)
+                        ),
+                });
+
+                ForLoopNode afterVisit = (ForLoopNode) base.VisitForLoop(forLoop);
+                return afterVisit.WithScope(scope);
             }
-
-
         }
     }
 
@@ -178,7 +189,7 @@ namespace libcompiler.CompilerStage
             else if (decl.Length == 1)
             {
                 //TODO: If TypeInformation needs a ScopeType that contains MethodLine and ClassLike. Supress for classLike
-                if (decl[0].DeclarationLocation > nodes.Interval.a)
+                if (decl[0].DeclarationLocation > nodes.Interval.a && decl[0].DeclaringScope == DeclaringScope.MethodLike)
                 {
                     //TODO: Make CompilationMessage.Create take an IntervalSet of intresting locations instead of one location...
                     _messages.Add(CompilationMessage.Create(_data.TokenStream, nodes.Interval, MessageCode.UseBeforeDecleration, _data.Filename, null));

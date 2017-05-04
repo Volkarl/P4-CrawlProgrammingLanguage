@@ -8,6 +8,7 @@ using Antlr4.Runtime.Tree;
 using libcompiler.ExtensionMethods;
 using libcompiler.Namespaces;
 using libcompiler.Parser;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.SyntaxTree.Parser
 {
@@ -185,7 +186,7 @@ namespace libcompiler.SyntaxTree.Parser
             ExpressionNode iteratior = ExpressionParser.ParseExpression(expression);
             BlockNode block = ParseBlockNode(blockCtx);
 
-            return CrawlSyntaxNode.ForLoop(rule.SourceInterval, type, ParseIdentifier(identifierNode), iteratior, block);
+            return CrawlSyntaxNode.ForLoop(rule.SourceInterval, null, type, ParseIdentifier(identifierNode), iteratior, block);
         }
 
         public static DeclerationNode ParseDeclerationNode(RuleContext rule)

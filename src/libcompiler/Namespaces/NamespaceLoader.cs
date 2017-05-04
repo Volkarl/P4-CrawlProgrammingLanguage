@@ -62,6 +62,8 @@ namespace libcompiler.Namespaces
                     TraceListners.AssemblyResolverListner?.WriteLine($"Failed to load {assembly} as {loader.Item1} due ReflectionTypeLoad",
                         "AssemblyResolver");
                 }
+
+                TraceListners.AssemblyResolverListner?.WriteLine($"Successfully loaded {assembly}", "AssemblyResolver");
             }
 
             throw new Exception("Failed to load assembly");
@@ -114,11 +116,11 @@ namespace libcompiler.Namespaces
         {
             BuiltinNamespace = new Namespace("");
 
-            BuiltinNamespace._scope.TryAdd("tal", new[] { new TypeInformation(CrawlSimpleType.Tal, ProtectionLevel.Public, -1) });
-            BuiltinNamespace._scope.TryAdd("tekst", new[] { new TypeInformation(CrawlSimpleType.Tekst, ProtectionLevel.Public, -1) });
-            BuiltinNamespace._scope.TryAdd("tegn", new[] { new TypeInformation(CrawlSimpleType.Tegn, ProtectionLevel.Public, -1) });
-            BuiltinNamespace._scope.TryAdd("kommatal", new[] { new TypeInformation(CrawlSimpleType.Kommatal, ProtectionLevel.Public, -1) });
-            BuiltinNamespace._scope.TryAdd("bool", new[] {new TypeInformation(CrawlSimpleType.Bool, ProtectionLevel.Public, -1)});
+            BuiltinNamespace._scope.TryAdd("tal", new[] { new TypeInformation(CrawlSimpleType.Tal, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
+            BuiltinNamespace._scope.TryAdd("tekst", new[] { new TypeInformation(CrawlSimpleType.Tekst, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
+            BuiltinNamespace._scope.TryAdd("tegn", new[] { new TypeInformation(CrawlSimpleType.Tegn, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
+            BuiltinNamespace._scope.TryAdd("kommatal", new[] { new TypeInformation(CrawlSimpleType.Kommatal, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
+            BuiltinNamespace._scope.TryAdd("bool", new[] {new TypeInformation(CrawlSimpleType.Bool, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
 
             //
         }
@@ -130,7 +132,7 @@ namespace libcompiler.Namespaces
         {
             foreach (CrawlType type in contents)
             {
-                _scope.TryAdd(type.Identifier, new[] {new TypeInformation(type, ProtectionLevel.Public, -1)});
+                _scope.TryAdd(type.Identifier, new[] {new TypeInformation(type, ProtectionLevel.Public, -1, DeclaringScope.ClassLike)});
             }
         }
 

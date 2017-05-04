@@ -14,9 +14,10 @@ namespace libcompiler
 
         private readonly string beforeerror, error, aftererror;
         private readonly string helpfullmessage;
-        private readonly string _file;
+        public string File { get; }
+        public int FirstPoint { get; }
 
-        public CompilationMessage(MessageSeverity severity, MessageCode messageCode, string beforeerror, string error, string aftererror, string helpfullmessage, string file)
+        public CompilationMessage(MessageSeverity severity, MessageCode messageCode, string beforeerror, string error, string aftererror, string helpfullmessage, string file, int firstPoint)
         {
             Severity = severity;
             MessageCode = messageCode;
@@ -24,7 +25,8 @@ namespace libcompiler
             this.error = error;
             this.aftererror = aftererror;
             this.helpfullmessage = helpfullmessage;
-            _file = file;
+            File = file;
+            FirstPoint = firstPoint;
         }
 
         public static CompilationMessage Create(ITokenStream source, Interval errorLocation, MessageCode code, string file,
@@ -44,14 +46,14 @@ namespace libcompiler
             string afterstring = source.GetText(after);
 
 
-            return new CompilationMessage(severity, code, beforestring, error, afterstring, helpfullmessage, file);
+            return new CompilationMessage(severity, code, beforestring, error, afterstring, helpfullmessage, file, errorLocation.a);
 
         }
 
         public override string ToString()
         {
             string s = 
-                $"In {_file}\n{GetFriendlyName(Severity)}: {GetErrorCodeText(MessageCode)}\n{GetErrorDescription(MessageCode)}\n{beforeerror}{error}{aftererror}";
+                $"In {File}\n{GetFriendlyName(Severity)}: {GetErrorCodeText(MessageCode)}\n{GetErrorDescription(MessageCode)}\n{beforeerror}{error}{aftererror}";
 
             if (helpfullmessage != null)
             {
@@ -66,7 +68,7 @@ namespace libcompiler
         {
             ConsoleColor originalColor = Console.ForegroundColor;
 
-            Console.WriteLine(_file);
+            Console.WriteLine(File);
 
             Console.ForegroundColor = ForSeverity(Severity, originalColor);
             Console.Write(GetFriendlyName(Severity));
@@ -115,7 +117,7 @@ namespace libcompiler
             string helpfullmessage = null,
             MessageSeverity severity = MessageSeverity.Error)
         {
-            return new CompilationMessage(severity, code, "", "", "", helpfullmessage, null);
+            return new CompilationMessage(severity, code, "", "", "", helpfullmessage, null, -1);
         }
     }
 
