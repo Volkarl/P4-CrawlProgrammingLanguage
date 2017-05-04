@@ -14,7 +14,7 @@ klasse Node =
     //En funktioner er (næsten) også bare en variable som laves med et par andre så funktioner beskrives som returtype(parametre) navn = 
     offentlig kommatal() Værdi =
         hvis Børn.Længde == 0
-            retuner Tal;
+            returner Tal;
         ellers
             kommatal(kommatal, kommatal) op = FindOperator(Operator);
             kommatal sum = Børn[0].Værdi();
@@ -38,7 +38,7 @@ kommatal(kommatal, kommatal)(tekst operatorNavn) FindOperator =
     hvis operatorNavn == "*"
         returner Gange;
     ellers hvis operatorNavn == "+"
-        retuner Plus;
+        returner Plus;
     ellers
         fejl("Ukendt operator");
 
@@ -52,7 +52,7 @@ Node(tekst[] underdele) Forstå =
         returner sandt;
     
     
-    int parentesTæller = 0;
+    tal parentesTæller = 0;
     Node[] noder; //Ikke semantisk korrent men vi har ingen syntax for at oprette arrays
     tekst[] operatorer; //Det var tidligere planen bare at give en List<T> ala c# men vi har heller ikke generics
     tekst[] indkapslet; //Indtil vidre, lad som om det er lister. Specifik fremtid usikker.
@@ -99,7 +99,7 @@ Node(tekst[] underdele) Forstå =
             ellers
                 i = i + 1;
     
-    //Hvis vi brugte alting op retuner det, ellers er der sket en fejl
+    //Hvis vi brugte alting op returner det, ellers er der sket en fejl
     hvis noder.Længde == 1 og operatore.Længde == 0
         returner noder[0];
     ellers

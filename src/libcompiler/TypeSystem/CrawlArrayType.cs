@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using libcompiler.ExtensionMethods;
 using libcompiler.SyntaxTree;
 
@@ -6,17 +7,14 @@ namespace libcompiler.TypeSystem
 {
     public class CrawlArrayType : CrawlType
     {
-        private readonly SingleVariableDeclerationNode _decleration;
+        public int Rank { get; }
+        public CrawlType ElementType { get; }
 
-        public int Dimensions { get; }
-        public CrawlType ArrayElementType { get; }
-
-        public CrawlArrayType(SingleVariableDeclerationNode declaration, int dimensions, CrawlType arrayElementType)
-            : base(declaration.Identifier.Name, declaration.FindNameSpace().Module)
+        public CrawlArrayType(int rank, CrawlType elementType)
+            : base(elementType.Identifier + "[" + new string(',', rank - 1) + "]", elementType.Namespace)
         {
-            _decleration = declaration;
-            Dimensions = dimensions;
-            ArrayElementType = arrayElementType;
+            Rank = rank;
+            ElementType = elementType;
         }
 
         public override bool IsAssignableTo(CrawlType target)
@@ -27,8 +25,8 @@ namespace libcompiler.TypeSystem
 
             CrawlArrayType t = target as CrawlArrayType;
             return t != null &&
-                   t.Dimensions == Dimensions &&
-                   t.ArrayElementType.Equals(ArrayElementType);
+                   t.Rank == Rank &&
+                   t.ElementType.Equals(ElementType);
         }
 
         public override bool ImplicitlyCastableTo(CrawlType target)
@@ -56,6 +54,11 @@ namespace libcompiler.TypeSystem
             //    return true;
             //else
             return false;
+        }
+
+        public override string ToString()
+        {
+            return $"{ElementType}[{new String(',', Rank -1 )}]";
         }
     }
 }

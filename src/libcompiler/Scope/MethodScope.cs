@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using libcompiler.SyntaxTree;
-using libcompiler.SyntaxTree.Parser;
-using libcompiler.TypeSystem;
 
 namespace libcompiler.Scope
 {

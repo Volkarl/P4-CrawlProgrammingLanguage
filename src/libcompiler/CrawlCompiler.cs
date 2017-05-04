@@ -18,6 +18,7 @@ namespace libcompiler
             TraceListners.AssemblyResolverListner =
                 new System.Diagnostics.TextWriterTraceListener(Utils.GetPrimaryOutputStream(configuration));
             ConcurrentDictionary<string, Namespace> allNamespaces = NamespaceLoader.LoadAll(configuration.Assemblies);
+            allNamespaces.MergeInto(Namespace.BuiltinNamespace.AsSingleIEnumerable());
 
             //The ConcurrentBag is an unordered
 
@@ -44,6 +45,8 @@ namespace libcompiler
                 ConcurrentBag<AstData> filesWithScope = new ConcurrentBag<AstData>();
                 Execute(parsedFiles, SemanticAnalysisPipeline.DataCollection(filesWithScope, messages, configuration.TargetStage, allNamespaces), parallel);
 
+
+
                 ConcurrentBag<AstData> decoratedAsts = new ConcurrentBag<AstData>();
                 Execute(filesWithScope, SemanticAnalysisPipeline.Analyse(decoratedAsts, messages, configuration.TargetStage), parallel);
 
@@ -52,13 +55,13 @@ namespace libcompiler
 
                 //Until meaningfull end, print everything
 
-                Execute(filesWithScope, Utils.GetPrimaryOutputStream(configuration).WriteLine, parallel);
+                Execute(decoratedAsts, Utils.GetPrimaryOutputStream(configuration).WriteLine, parallel);
 
                 if (messages.Count(message => message.Severity >= MessageSeverity.Error) > 0)
                     status = CompilationStatus.Failure;
                 
             }
-            catch (Exception e) when(!Debugger.IsAttached)
+            catch (Exception e) when(false && !Debugger.IsAttached)
             {
                 
                 messages.Add(CompilationMessage.CreateNonCodeMessage(MessageCode.InternalCompilerError, e.ToString(), MessageSeverity.Fatal));

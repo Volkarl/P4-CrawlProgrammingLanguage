@@ -7,6 +7,7 @@ using Antlr4.Runtime.Tree;
 using libcompiler.Namespaces;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.CompilerStage
 {
@@ -51,8 +52,17 @@ namespace libcompiler.CompilerStage
             ConcurrentBag<CompilationMessage> messages, TargetStage stopat)
         {
             SemanticAnalysisPipeline self = new SemanticAnalysisPipeline(messages, null);
-            Func<AstData, AstData> collect = self.DeclerationOrderCheck;
-            return collect.EndWith(dastDestination.Add);
+            Func<AstData, AstData> orderCheck = self.DeclerationOrderCheck;
+            Func<AstData, AstData> decorateLeafs = orderCheck.Then(self.PutTypes);
+            return decorateLeafs.EndWith(dastDestination.Add);
+        }
+
+        private AstData PutTypes(AstData arg)
+        {
+            return new AstData(
+                arg.TokenStream,
+                arg.Filename,
+                new PutTypeVisitor().Visit(arg.Tree.RootNode).OwningTree);
         }
 
         private AstData DeclerationOrderCheck(AstData arg)
@@ -119,6 +129,18 @@ namespace libcompiler.CompilerStage
             }
 
 
+        }
+    }
+
+    internal class PutTypeVisitor : SyntaxRewriter
+    {
+        protected override CrawlSyntaxNode VisitType(TypeNode type)
+        {
+            IScope scope = type.FindFirstScope();
+            CrawlType actualType = CrawlType.ParseDecleration(scope, type.TypeName);
+
+            var v =  type.WithActualType(actualType);
+            return v;
         }
     }
 

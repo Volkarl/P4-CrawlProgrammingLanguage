@@ -2,6 +2,7 @@
 using System.Linq;
 using libcompiler.Datatypes;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.Scope
 {
@@ -20,20 +21,20 @@ namespace libcompiler.Scope
                     foreach (var decleration in variableNode.Declerations)
                     {
                         string name = decleration.Identifier.Name;
-                        scope.Add(name, new TypeInformation(null, variableNode.ProtectionLevel, decleration.Interval.b));
+                        scope.Add(name, new TypeInformation(new FutureType(name, ""), variableNode.ProtectionLevel, decleration.Interval.b));
                     }
                 }
                 else if(child.Type == NodeType.ClassTypeDecleration)
                 {
                     ClassTypeDeclerationNode classNode = (ClassTypeDeclerationNode) child;
                     string name = classNode.Identifier.Value;
-                    scope.Add(name, new TypeInformation(null, classNode.ProtectionLevel, classNode.Interval.b));
+                    scope.Add(name, new TypeInformation(new FutureType(name, ""), classNode.ProtectionLevel, classNode.Interval.b));
                 }
                 else if(child.Type == NodeType.MethodDecleration)
                 {
                     MethodDeclerationNode methodNode = (MethodDeclerationNode) child;
                     string name = methodNode.Identifier.Value;
-                    scope.Add(name, new TypeInformation(null, methodNode.ProtectionLevel, methodNode.Interval.b));;
+                    scope.Add(name, new TypeInformation(new FutureType(name, ""), methodNode.ProtectionLevel, methodNode.Interval.b));;
                 }
             }
 

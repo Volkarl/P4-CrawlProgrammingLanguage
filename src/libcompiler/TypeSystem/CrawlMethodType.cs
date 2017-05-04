@@ -10,8 +10,8 @@ namespace libcompiler.TypeSystem
         public CrawlType ReturnType { get; }
         public List<CrawlType> Parameters { get; }
 
-        public CrawlMethodType(MethodDeclerationNode decleration, CrawlType returnType, IEnumerable<CrawlType> parameters)
-            : base(decleration.Identifier.Value, decleration.FindNameSpace().Module)
+        public CrawlMethodType(CrawlType returnType, IEnumerable<CrawlType> parameters)
+            : base("", "")
         {
             ReturnType = returnType;
             Parameters = parameters.ToList();
@@ -30,6 +30,11 @@ namespace libcompiler.TypeSystem
         public override bool CastableTo(CrawlType target)
         {
             return Equals(target);
+        }
+
+        public override string ToString()
+        {
+            return $"{ReturnType}({string.Join(",", Parameters)})";
         }
     }
 }

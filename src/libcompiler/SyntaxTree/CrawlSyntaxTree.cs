@@ -5,7 +5,7 @@ using System.Text;
 using Antlr4.Runtime;
 using libcompiler.Antlr;
 using libcompiler.Parser;
-using libcompiler.SyntaxTree.Parser;
+using libcompiler.SyntaxTree;
 
 namespace libcompiler.SyntaxTree
 {

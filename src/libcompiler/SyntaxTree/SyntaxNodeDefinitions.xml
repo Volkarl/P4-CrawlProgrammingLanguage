@@ -470,6 +470,10 @@
                     <name>ArrayDimensions</name>
                     <type>int</type>
                 </property>
+              <property>
+                <name>ActualType</name>
+                <type>CrawlType</type>
+              </property>
             </properties>
         </node>
         <node>

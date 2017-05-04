@@ -9,7 +9,6 @@ using Antlr4.Runtime.Tree;
 using libcompiler.ExtensionMethods;
 using libcompiler.Namespaces;
 using libcompiler.Parser;
-using libcompiler.TypeSystem;
 
 namespace libcompiler.SyntaxTree.Parser
 {
@@ -28,6 +27,8 @@ namespace libcompiler.SyntaxTree.Parser
 
 
             IEnumerable<ImportNode> importNodes = ParseImports(imports);
+            //Add the "No namespace" namespace
+            importNodes = importNodes.Concat(CrawlSyntaxNode.Import(Interval.Invalid, "").AsSingleIEnumerable());
             NamespaceNode namespaceNode = ParseNamespace(nameSpace);   //Forts�t herfra.
             BlockNode rootBlock = ParseBlockNode(statements);
 
@@ -316,17 +317,17 @@ namespace libcompiler.SyntaxTree.Parser
         private static TypeNode GenerateMethodSignature(TypeNode returnType, List<TypeNode> parameterTypes)
         {
             StringBuilder textDef = new StringBuilder();
-            textDef.Append(returnType);
+            textDef.Append(returnType.TypeName);
 
             textDef.Append('(');
 
             if (parameterTypes.Count > 0)
             {
-                textDef.Append(parameterTypes[0]);
+                textDef.Append(parameterTypes[0].TypeName);
                 for (var i = 1; i < parameterTypes.Count; i++)
                 {
                     textDef.Append(", ");
-                    textDef.Append(parameterTypes[i]);
+                    textDef.Append(parameterTypes[i].TypeName);
                 }
             }
 
@@ -338,7 +339,7 @@ namespace libcompiler.SyntaxTree.Parser
             else
                 interval = new Interval(returnType.Interval.a, returnType.Interval.b);    //TODO: Only roughly correct.
 
-            TypeNode result = CrawlSyntaxNode.TypeNode(interval, textDef.ToString(), false, 0);
+            TypeNode result = CrawlSyntaxNode.TypeNode(interval, textDef.ToString(), false, 0, null);
             return result;
         }
 
@@ -439,7 +440,7 @@ namespace libcompiler.SyntaxTree.Parser
         {
             // No array specified -> the type is not an array
             var array = type.GetChild(1) as CrawlParser.Array_typeContext ?? type.GetChild(2) as CrawlParser.Array_typeContext;
-            if (array == null) return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(), isReference, 0);
+            if (array == null) return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(), isReference, 0, null);
 
             // Array is specified -> We count the dimensions. 
             //// Then we remove the trailing [] from the type definition, because we now keep track of it within the dimensions?? IS THIS NECESSARY?
@@ -447,7 +448,7 @@ namespace libcompiler.SyntaxTree.Parser
             // string dimensionsAsString = $"[{StringExtensions.AddStringForeach(",", arrayDimensions)}]";
             // string typeText = type.GetText();
             // string typeWithoutLastArray = typeText.Remove(typeText.LastIndexOf(dimensionsAsString, StringComparison.Ordinal));
-            return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(), isReference, arrayDimensions);
+            return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(), isReference, arrayDimensions, null);
         }
 
         private static int CountTypeArrayDimensions(CrawlParser.Array_typeContext array)
@@ -594,29 +595,6 @@ namespace libcompiler.SyntaxTree.Parser
 
             ExpressionNode value = ExpressionParser.ParseExpression((RuleContext) rule.GetChild(rule.ChildCount - 2));
             return CrawlSyntaxNode.Assignment(rule.SourceInterval, target, value);
-        }
-    }
-
-    public class FutureType : CrawlType
-    {
-        public FutureType(string identifier, string ns) : base(identifier, ns, "<<<===NONE===>>>")
-        {
-
-        }
-
-        public override bool IsAssignableTo(CrawlType target)
-        {
-            throw new InvalidOperationException();
-        }
-
-        public override bool ImplicitlyCastableTo(CrawlType target)
-        {
-            throw new InvalidOperationException();
-        }
-
-        public override bool CastableTo(CrawlType target)
-        {
-            throw new InvalidOperationException();
         }
     }
 }

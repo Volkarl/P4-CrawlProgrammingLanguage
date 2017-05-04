@@ -18,6 +18,8 @@ namespace libcompiler.TypeSystem
 
         public CrawlSimpleType(Type type) : base(type.FullName , type.Namespace, type.Assembly.FullName)
         {
+            if(type == null) throw new NullReferenceException(nameof(type));
+            _clrType = type;
         }
 
         public override bool IsAssignableTo(CrawlType target)
@@ -33,6 +35,11 @@ namespace libcompiler.TypeSystem
         public override bool CastableTo(CrawlType target)
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return _clrType.FullName;
         }
     }
 }
