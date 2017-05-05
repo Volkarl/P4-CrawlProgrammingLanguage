@@ -30,7 +30,7 @@ namespace libcompiler.SyntaxTree
                 CrawlType returnType;
                 if (remainingType.Trim() == "intet")
                 {
-                    returnType = CrawlType.Intet;
+                    returnType = Intet;
                 }
                 else
                 {
@@ -50,7 +50,7 @@ namespace libcompiler.SyntaxTree
 
                 if (results == null || results.Length == 0)
                 {
-                    throw new Exception("Unknown type " + text); //TODO: ERROR MSG
+                    throw new TypeNotFoundException("Unknown type " + text); //TODO: ERROR MSG
                 }
                 else if (results.Length == 1)
                 {
@@ -104,5 +104,15 @@ namespace libcompiler.SyntaxTree
         /// Checks if a cast from this to target is legal(according to the Cräwl specification).
         /// </summary>
         public abstract bool CastableTo(CrawlType target);
+    }
+
+    public class TypeNotFoundException : Exception
+    {
+        public string Type { get; }
+
+        public TypeNotFoundException(string type)
+        {
+            Type = type;
+        }
     }
 }

@@ -54,12 +54,30 @@ namespace libcompiler
 
         public static Action<T1> EndWith<T1, T2>(this Func<T1, T2> first, Action<T2> sink)
         {
-            return x => sink(first(x));
+            return x =>
+            {
+                if (ReferenceEquals(x, default(T1)))
+                    return;
+
+                T2 f = first(x);
+
+                if (ReferenceEquals(f, default(T2)))
+                    return;
+
+                sink(f);    
+            };
         }
 
         public static Func<T1, T3> Then<T1, T2, T3>(this Func<T1, T2> first, Func<T2, T3> second)
         {
-            return x => second(first(x));
+            return x =>
+            {
+                //second(first(x)) with jump out if anything is null
+                if (ReferenceEquals(x, default(T1))) return default(T3);
+                T2 f = first(x);
+                if (ReferenceEquals(f, default(T2))) return default(T3);
+                return second(f);
+            };
         }
     }
 }

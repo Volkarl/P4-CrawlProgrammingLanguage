@@ -132,6 +132,8 @@ namespace libcompiler
         UseBeforeDecleration,
 
         GenericTypeError = (1 << 16) * 2,
+        TypeNotFound,
+        NamespaceNotFound,
 
         OtherError = (1 << 16) * 3,
         FileNotFound,

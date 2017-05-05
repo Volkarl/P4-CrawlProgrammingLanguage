@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using libcompiler.Namespaces;
@@ -35,16 +36,32 @@ namespace libcompiler.CompilerStage
         private AstData AddExport(AstData arg)
         {
             var tu = ((TranslationUnitNode) arg.Tree.RootNode);
+            try
+            {
+                return new AstData(
+                    arg.TokenStream,
+                    arg.Filename,
+                    tu
+                        .WithImportedNamespaces(
+                            Namespace.Merge(tu.Imports.Select(TryGetNamespace).ToArray())
+                        )
+                        .OwningTree
+                );
+            }
+            catch (NamespaceNotFoundException nsnfe)
+            {
+                _messages.Add(CompilationMessage.Create(arg.TokenStream, nsnfe.FaultyNode.Interval, MessageCode.NamespaceNotFound, arg.Filename));
+                return null;
+            }
+        }
 
-            return new AstData(
-                arg.TokenStream,
-                arg.Filename,
-                tu
-                    .WithImportedNamespaces(
-                        Namespace.Merge(tu.Imports.Select(x => _allNamespaces[x.Module]).ToArray())
-                    )
-                    .OwningTree
-            );
+        private Namespace TryGetNamespace(ImportNode arg)
+        {
+            Namespace ns;
+            if (_allNamespaces.TryGetValue(arg.Module, out ns))
+                return ns;
+
+            throw new NamespaceNotFoundException(arg);
 
         }
 
@@ -62,7 +79,7 @@ namespace libcompiler.CompilerStage
             return new AstData(
                 arg.TokenStream,
                 arg.Filename,
-                new PutTypeVisitor().Visit(arg.Tree.RootNode).OwningTree);
+                new PutTypeVisitor(_messages, arg.TokenStream, arg.Filename).Visit(arg.Tree.RootNode).OwningTree);
         }
 
         private AstData DeclerationOrderCheck(AstData arg)
@@ -142,15 +159,44 @@ namespace libcompiler.CompilerStage
         }
     }
 
+    internal class NamespaceNotFoundException : Exception
+    {
+        public ImportNode FaultyNode { get; }
+
+        public NamespaceNotFoundException(ImportNode faultyNode)
+        {
+            FaultyNode = faultyNode;
+        }
+    }
+
     internal class PutTypeVisitor : SyntaxRewriter
     {
+        private readonly ConcurrentBag<CompilationMessage> _messages;
+        private readonly ITokenStream _tokens;
+        private readonly string _file;
+
+        public PutTypeVisitor(ConcurrentBag<CompilationMessage> messages, ITokenStream tokens, string file)
+        {
+            _messages = messages;
+            _tokens = tokens;
+            _file = file;
+        }
+
         protected override CrawlSyntaxNode VisitType(TypeNode type)
         {
             IScope scope = type.FindFirstScope();
-            CrawlType actualType = CrawlType.ParseDecleration(scope, type.TypeName);
+            try
+            {
+                CrawlType actualType = CrawlType.ParseDecleration(scope, type.TypeName);
 
-            var v =  type.WithActualType(actualType);
-            return v;
+                var v = type.WithActualType(actualType);
+                return v;
+            }
+            catch (TypeNotFoundException tnfe)
+            {
+                _messages.Add(CompilationMessage.Create(_tokens, type.Interval, MessageCode.TypeNotFound, _file));
+                return type;
+            }
         }
     }
 
