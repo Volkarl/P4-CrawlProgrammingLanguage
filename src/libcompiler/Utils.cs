@@ -52,32 +52,14 @@ namespace libcompiler
             return retstring;
         }
 
-        public static Action<T1> EndWith<T1, T2>(this Func<T1, T2> first, Action<T2> sink)
+        public static Action<T1> EndWith<T1, T2, TExtra>(this Func<T1, TExtra, T2> first, Action<T2> sink, TExtra extra)
         {
-            return x =>
-            {
-                if (ReferenceEquals(x, default(T1)))
-                    return;
-
-                T2 f = first(x);
-
-                if (ReferenceEquals(f, default(T2)))
-                    return;
-
-                sink(f);    
-            };
+            return input => sink(first(input, extra));
         }
 
-        public static Func<T1, T3> Then<T1, T2, T3>(this Func<T1, T2> first, Func<T2, T3> second)
+        public static Func<T1, TExtra, T3> Then<T1, T2, T3, TExtra>(this Func<T1, TExtra, T2> first, Func<T2, TExtra, T3> second)
         {
-            return x =>
-            {
-                //second(first(x)) with jump out if anything is null
-                if (ReferenceEquals(x, default(T1))) return default(T3);
-                T2 f = first(x);
-                if (ReferenceEquals(f, default(T2))) return default(T3);
-                return second(f);
-            };
+            return (input, extra) => second(first(input, extra), extra);
         }
     }
 }
