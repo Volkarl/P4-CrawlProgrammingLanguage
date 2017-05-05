@@ -1,6 +1,6 @@
-This document _briefly_ gives an overview on how the Cräwlpiler (Crawl compiler) is put together.
+This document _briefly_ gives an overview on how the CrÃ¤wlpiler (Crawl compiler) is put together.
 
-#Overview
+# Overview
 
 The compiler (Structurally speaking) is made up of 2 different categories. Transformations and synchronization points.
 
@@ -21,52 +21,52 @@ For an idea how this works, the figure below should give an idea.
 As screens generally scroll downwards and because it would take forever, above figure only contains the start of the compiler. 
 The actual stages is described below.
 
->1: there was supposed to be a note here, keept in place in case i remember it...
+>1: Not strictly true. There is some auxiliary data passed around and some of them have possible side effects of either writing error messages and/or throwing an exception to abort _that_ pipeline
 
-#Stages
+# Stages
 
-##*synchronization point*
-##_transformation_
+If the name is in italics its a  _synchronization point_  
+If the name is in bold its a **transformation**
 
-###*Start*
+### **Start**
 This is the start of compilation. Other than a few options, only thing present is the filenames that make up the program and referenced .dll files (Assemblies).
 
-###_Create parse tree_
+### _Create parse tree_
 A file is read into memory and fed to Antlr which produces a parse tree.
 
-###_Create AST_
+### _Create AST_
 The parse trees are transformed from concrete syntax trees into abstract syntax trees.
 
-###_Collect visible symbols_
+### _Collect visible symbols_
 Scope checker does its first pass on the file and collects everything in the top level scope.
 At time of writing, this is actually done by ParseTreeParser.TranslationUnit but conceptually it is a different stage
 It's just that nobody have bothered to split it out in its own method.
 
-###*Merge visible symbols*
+### **Merge visible symbols**
 Here all files that share a namespace is joined together to create a Namespace scope. Said data is also merged with namespace's from referenced assemblies.
 
-###_Find all visible symbols_
+### _Find all visible symbols_
 All imported modules are merged into one big scope that contains everything visible that isn't defined inside the file.
 
-###_Find scope information_
+### _Find scope information_
 The AST is traversed and all(not quite yet, but in theory) defined variables gets saved in scopes attached to relevant Syntax Nodes
 
-###*Currently unused synchronization point*
+### **Currently unused synchronization point**
 At time of writing, constructed types aren't handled. 
 When scope information is collected, if it encounters a class, it just notes its name and puts an entry in the type table that basically says "There will be a type of this name in the future, pinkie swear" 
 Maybe this will require actual single threaded handling. 
 Maybe later stages will depend on the _real_ types existing.
 This synchronization point exists for that.
 
-###_Order check_
+### _Order check_
 Every symbol is checked against every other symbol. If a collision is detected, a warning is emitted.
 An enterprising soul could optimize this to keep running track of visible symbols instead of rebuilding the table of _ALL_ visible symbols in each scope, as current code is O(lots)
 
-###_Decorate TypeNode_
+### _Decorate TypeNode_
 The Tree is traversed (again...) and all TypeNodes has the actual type they refer to inserted. (Well, some of them just gets the pinkie swear type)
 This _could_ be done inside the typechecker, but it is probably going to complicate it, depending on how variables and pinkie swear types are handled. (I haven't given this much thought, I might need to look in a book and see how other compilers handle this)
 
-#Implementation
+# Implementation
 The implementation has some requirements and some other wishes.
 Among those are
 
@@ -75,7 +75,7 @@ Among those are
 * Switchable between multithreaded and single theaded
 * A way to get diagnostic information (error messages out)
 
-This is archived in large by *function composition* (Technically method composition)
+This is archived in large by [**function composition**](https://en.wikipedia.org/wiki/Function_composition) (Technically method composition)
 Every transformation is implemented as a static function^2, that takes input for the transformation and returns the result.
 Then by the magic of generics and lambda functions, 2 transformations can be joined into one big transformation that takes the input of the first transformation and returns the output of the second on.
 Said process can be repeated until only big stage exists. 
@@ -87,13 +87,4 @@ This transformation is then finished with a method that instead of returning, pu
 This stage is then executed on every file, but a method that either runs it one by one or in parallel. 
 
 >2: This is a lie. There are places where the function is placed on an object to give them access to shared (read only) data 
-
-
-
-
-
-	
-
-
-
 
