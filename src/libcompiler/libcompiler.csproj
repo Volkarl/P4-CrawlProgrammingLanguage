@@ -40,6 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompilerStage\SemanticAnalysis\CheckDeclerationOrderVisitor.cs" />
+    <Compile Include="CompilerStage\SemanticAnalysis\NamespaceNotFoundException.cs" />
+    <Compile Include="CompilerStage\SemanticAnalysis\PutTypeVisitor.cs" />
+    <Compile Include="CompilerStage\SemanticAnalysis\AddScopeVisitor.cs" />
     <Compile Include="CompilerStage\AstData.cs" />
     <Compile Include="CompilationMessage.cs" />
     <Compile Include="Antlr\CompilationMessageErrorListner.cs" />
@@ -102,6 +106,7 @@
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CompilerStage\readme.md" />
     <None Include="Crawl.g4" />
     <None Include="SyntaxTree\Nodes\redgreen.md" />
   </ItemGroup>
