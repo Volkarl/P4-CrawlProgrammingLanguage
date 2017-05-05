@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Antlr4.Runtime.Misc;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.Scope
 {

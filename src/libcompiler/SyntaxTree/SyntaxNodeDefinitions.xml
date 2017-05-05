@@ -14,7 +14,7 @@
         <new_child>newChild</new_child>
         <self>self</self>
         <visit>Visit</visit>
-        <node>Nodes</node>
+        <node>Node</node>
         <combine>Combine</combine>
         <update>Update</update>
     </options>

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using libcompiler.Scope;
+using libcompiler.SyntaxTree;
 
-namespace libcompiler.SyntaxTree
+namespace libcompiler.TypeSystem
 {
     public abstract class CrawlType
     {
@@ -25,7 +26,7 @@ namespace libcompiler.SyntaxTree
                 string remainingType = text.Substring(0, methodMarkStart);
                 string parametersSingleString = text.Substring(methodMarkStart + 1, text.Length - methodMarkStart - 2);
                 //Uhh, probably correct. Well not, but i don't think we can get anything that breaks it. "foo(,)" would lead to no parameters...
-                string[] parameters = parametersSingleString.Split(new []{','}, StringSplitOptions.RemoveEmptyEntries);
+                string[] parameters = parametersSingleString.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
 
                 CrawlType returnType;
                 if (remainingType.Trim() == "intet")
@@ -56,11 +57,20 @@ namespace libcompiler.SyntaxTree
                 {
                     return results[0].Type;
                 }
-                else 
+                else
                     throw new Exception("Ambigious types " + text); //TODO: ERROR MSG
             }
 
+        }
 
+        public static CrawlStatusType UnspecifiedType { get; } =
+            new CrawlStatusType("$UNSPECIFIED_TYPE", "$UNSPECIFIED_TYPE", "$UNSPECIFIED_TYPE");
+        public static CrawlType ErrorType { get; } =
+            new CrawlStatusType("$TYPE_ERROR", "$TYPE_ERROR", "$TYPE_ERROR");
+
+        public static CrawlType ParseDecleration(string text)
+        {
+            throw new NotImplementedException();
         }
 
         protected CrawlType(string identifier, string @namespace, string assembly="CrawlCode")
@@ -88,6 +98,8 @@ namespace libcompiler.SyntaxTree
         {
             return CanonicalName.GetHashCode();
         }
+
+        public override string ToString() => $"{Identifier}";
 
 
         /// <summary>

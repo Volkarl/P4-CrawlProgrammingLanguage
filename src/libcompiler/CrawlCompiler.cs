@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using libcompiler.CompilerStage;
@@ -15,6 +16,7 @@ namespace libcompiler
     {
         public static CompilationResult Compile(CrawlCompilerConfiguration configuration)
         {
+            TextWriter output = Utils.GetPrimaryOutputStream(configuration);
             //TraceListners.AssemblyResolverListner =
             //    new System.Diagnostics.TextWriterTraceListener(Utils.GetPrimaryOutputStream(configuration));
             ConcurrentDictionary<string, Namespace> allNamespaces = NamespaceLoader.LoadAll(configuration.Assemblies);
@@ -36,15 +38,20 @@ namespace libcompiler
                         //_Could_ be hidden in ParsePipeline by making them properties instead....
                         
                         //Get the starting transformaton
-                        Func<string, SideeffectHelper, ParseTreeData> first = ParsePipeline.ReadFileToPt;
+                        Func<string, SideeffectHelper, ParseTreeData> parsePT = ParsePipeline.ReadFileToPt;
 
+                        //Jump out if we are intrested in earlier stage.
+                        if (configuration.TargetStage == TargetStage.ParseTree) return parsePT.EndWith(output.WriteLine, helper);
+                        
                         //.Then adds another stage
-                        var final = first 
-                        .Then(ParsePipeline.CreateAst)
+                        var parseASt = parsePT 
+                        .Then(ParsePipeline.CreateAst);
+
+                        if (configuration.TargetStage == TargetStage.AbstractSyntaxTree)
+                            return parseASt.EndWith(output.WriteLine, helper);
 
                         //.EndWith collects it
-                        .EndWith(destination.Add, helper);
-                        return final;
+                        return parseASt.EndWith(destination.Add, helper);
                     }
                 );
 
@@ -88,7 +95,7 @@ namespace libcompiler
 
                 //Until meaningfull end, print everything
 
-                Execute(decoratedAsts, Utils.GetPrimaryOutputStream(configuration).WriteLine, parallel);
+                Execute(decoratedAsts, output.WriteLine, parallel);
 
                 if (sideeffectHelper.CompilationMessages.Count(message => message.Severity >= MessageSeverity.Error) > 0)
                     status = CompilationStatus.Failure;

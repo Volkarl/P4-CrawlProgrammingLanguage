@@ -3,7 +3,7 @@ using libcompiler.ExtensionMethods;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 
-namespace libcompiler.SyntaxTree
+namespace libcompiler.TypeSystem
 {
     public class CrawlConstructedType : CrawlType, IScope
     {

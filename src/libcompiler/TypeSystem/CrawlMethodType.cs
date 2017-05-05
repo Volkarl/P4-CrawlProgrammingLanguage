@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using libcompiler.ExtensionMethods;
-using libcompiler.SyntaxTree;
 
-namespace libcompiler.SyntaxTree
+namespace libcompiler.TypeSystem
 {
     public class CrawlMethodType : CrawlType
     {

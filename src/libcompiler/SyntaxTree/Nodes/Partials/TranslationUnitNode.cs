@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.SyntaxTree
 {

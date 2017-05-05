@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace libcompiler.SyntaxTree
+namespace libcompiler.TypeSystem
 {
     public class CrawlSimpleType : CrawlType
     {

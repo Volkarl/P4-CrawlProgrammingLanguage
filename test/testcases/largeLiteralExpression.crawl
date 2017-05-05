@@ -1,0 +1,1 @@
+bool a = 2 + 3 + "foo" == "5foo" + "frø" + (-5)  og  " " == "kage"   eller   1  <=  2;

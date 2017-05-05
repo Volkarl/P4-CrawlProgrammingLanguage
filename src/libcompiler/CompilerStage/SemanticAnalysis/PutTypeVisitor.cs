@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using Antlr4.Runtime;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.CompilerStage.SemanticAnalysis
 {

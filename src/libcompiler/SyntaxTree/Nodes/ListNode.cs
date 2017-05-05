@@ -71,7 +71,7 @@ namespace libcompiler.SyntaxTree
 
         public override string ToString()
         {
-            return $"[{typeof(T).Name}]";
+            return $"List of {typeof(T).Name}s";
         }
     }
 }
