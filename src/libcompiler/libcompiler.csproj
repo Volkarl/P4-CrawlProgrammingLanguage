@@ -73,6 +73,7 @@
     <Compile Include="TypeSystem\CrawlConstructedType.cs" />
     <Compile Include="TypeSystem\CrawlMethodType.cs" />
     <Compile Include="TypeSystem\CrawlSimpleType.cs" />
+    <Compile Include="TypeSystem\CrawlStatusType.cs" />
     <Compile Include="TypeSystem\CrawlType.cs" />
     <Compile Include="$(GeneratedRedSyntaxNodes)" />
     <Compile Include="$(GeneratedGreenSyntaxNodes)" />
@@ -89,7 +90,6 @@
     <Compile Include="TypeChecker\BlockScope.cs" />
     <Compile Include="TypeChecker\IScope.cs" />
     <Compile Include="TypeChecker\MethodScope.cs" />
-    <Compile Include="TypeSystem\CrawlStatusType.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -57,5 +57,7 @@ namespace libcompiler.TypeSystem
         /// Checks if a cast from this to target is legal(according to the Cräwl specification).
         /// </summary>
         public abstract bool CastableTo(CrawlType target);
+
+
     }
 }

@@ -134,7 +134,7 @@ namespace CodeGeneratorDriver
 
         private static SyntaxNode CreateToString(SyntaxGenerator generator, Node node, Options options)
         {
-            string formatstring = string.Join(" ▢ ", node.AllProperties().Select((n, i) => "{" + i + "}"));
+            string formatstring = string.Join(" ~ ", node.AllProperties().Select((n, i) => "{" + i + "}"));
 
             List<SyntaxNode> arguments = new List<SyntaxNode>()
             {
