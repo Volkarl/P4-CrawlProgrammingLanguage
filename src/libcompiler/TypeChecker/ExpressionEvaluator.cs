@@ -94,6 +94,36 @@ namespace libcompiler.TypeChecker
                   CrawlSimpleType.Bool
                  },
 #endregion
+#region Equal
+                 {
+                     _talTal(ExpressionType.Equal),
+                     CrawlSimpleType.Bool
+                 },
+                 {
+                    _kommaKomma(ExpressionType.Equal),
+                    CrawlSimpleType.Bool
+                 },
+                 {
+                  _talKomma(ExpressionType.Equal),
+                  CrawlSimpleType.Bool
+                 },
+#endregion
+/*#region NotEqual
+
+                 {
+                     _talTal(ExpressionType.NotEqual),
+                     CrawlSimpleType.Bool
+                 },
+                 {
+                    _kommaKomma(ExpressionType.NotEqual),
+                    CrawlSimpleType.Bool
+                 },
+                 {
+                  _talKomma(ExpressionType.NotEqual),
+                  CrawlSimpleType.Bool
+                 },
+#endregion
+                 */
              };
 
 
