@@ -32,10 +32,11 @@ namespace libcompiler.TypeChecker
         }
         /// <summary>
         /// A dictionary containing a Tuplw With CrawlType, CrawlType and Expressiontype. 
-        /// The output shall be a new Crawltype. 
+        /// The output shall be a new CrawlSimpleType or somekind of error
         /// </summary>
         private static Dictionary<Tuple<CrawlType, CrawlType, ExpressionType>, CrawlType> BinaryExpressinDict
              = new Dictionary<Tuple<CrawlType, CrawlType, ExpressionType>, CrawlType>
+#region Greater 
              {
                 {
                     _talTal(ExpressionType.Greater),
@@ -48,9 +49,53 @@ namespace libcompiler.TypeChecker
                  {
                   _talKomma(ExpressionType.Greater),
                   CrawlSimpleType.Bool   
-                 }
+                 },
+#endregion
+#region GreatEqual
+                 {
+                     _talTal(ExpressionType.GreaterEqual),
+                     CrawlSimpleType.Bool
+                 },
+                 {
+                    _kommaKomma(ExpressionType.GreaterEqual),
+                    CrawlSimpleType.Bool
+                },
+                 {
+                  _talKomma(ExpressionType.GreaterEqual),
+                  CrawlSimpleType.Bool
+                 },
+#endregion
+#region Less
 
-            };
+                 {
+                     _talTal(ExpressionType.Less),
+                     CrawlSimpleType.Bool
+                 },
+                 {
+                    _kommaKomma(ExpressionType.Less),
+                    CrawlSimpleType.Bool
+                 },
+                 {
+                  _talKomma(ExpressionType.Less),
+                  CrawlSimpleType.Bool
+                 },
+#endregion
+#region LessEqual
+                 {
+                     _talTal(ExpressionType.LessEqual),
+                     CrawlSimpleType.Bool
+                 },
+                 {
+                    _kommaKomma(ExpressionType.LessEqual),
+                    CrawlSimpleType.Bool
+                 },
+                 {
+                  _talKomma(ExpressionType.LessEqual),
+                  CrawlSimpleType.Bool
+                 },
+#endregion
+             };
+
 
         /// <summary>
         /// The differient combinations with the specifik binary Expression Greater.
@@ -70,6 +115,7 @@ namespace libcompiler.TypeChecker
         {
             return new Tuple<CrawlType, CrawlType, ExpressionType>(CrawlSimpleType.Tal, CrawlSimpleType.Kommatal, eType);
         }
+        
 
         /// <summary>
         /// This methods purpose is to Look at the right and left side and the swith the left and right operand to to try the other 
@@ -82,7 +128,6 @@ namespace libcompiler.TypeChecker
         public static CrawlType EvaluateBinaryType(CrawlType leftOperand, ExpressionType oprator, CrawlType rightOperand)
         {
             
-
             if (BinaryExpressinDict.ContainsKey(new Tuple<CrawlType,CrawlType,ExpressionType>(leftOperand, rightOperand, oprator)))
             {
                 return BinaryExpressinDict[new Tuple<CrawlType, CrawlType, ExpressionType>(leftOperand, rightOperand, oprator)];
@@ -95,8 +140,11 @@ namespace libcompiler.TypeChecker
                 return CrawlType.ErrorType;
             
         }
+
         
-        
+
+
+
 
     }
 }

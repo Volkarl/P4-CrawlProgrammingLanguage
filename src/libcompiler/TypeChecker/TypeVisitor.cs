@@ -61,6 +61,10 @@ namespace libcompiler.TypeChecker
         {
 
             BinaryExpressionNode expressionNodeThatWeAreChanging = (BinaryExpressionNode) (base.VisitBinaryExpression(binaryExpression) );
+            if (expressionNodeThatWeAreChanging.LeftHandSide.ResultType == CrawlSimpleType.Tekst || expressionNodeThatWeAreChanging.RightHandSide.ResultType == CrawlSimpleType.Tekst)
+            {
+                throw new InvalidEnumArgumentException("Can´t use string in BinaryExpressions evaluations");
+            }
             CrawlType leftOperand = expressionNodeThatWeAreChanging.LeftHandSide.ResultType;
             CrawlType rightOperand = expressionNodeThatWeAreChanging.RightHandSide.ResultType;
             ExpressionType oprator = expressionNodeThatWeAreChanging.ExpressionType;
