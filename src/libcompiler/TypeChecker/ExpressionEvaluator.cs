@@ -1,10 +1,43 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using libcompiler.Parser;
+using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
 
 namespace libcompiler.TypeChecker
 {
     public class ExpressionEvaluator
     {
+        /// <summary>
+        /// Check if given parameters those required by method signature.
+        /// </summary>
+        private static bool ParameterMatch(CrawlMethodType methodSignature, params CrawlType[] givenParameters)
+        {
+            bool result = true;
+            var methodParameters = methodSignature.Parameters.ToArray();
+
+            if (givenParameters.Length != methodParameters.Length)
+                return false;
+
+            for (int i = 0; i < givenParameters.Length; i++)
+            {
+                result = result && givenParameters[i].ImplicitlyCastableTo(methodParameters[i]);
+            }
+
+            return result;
+        }
+
+        public static CrawlType Call(CrawlMethodType methodSignature, params CrawlType[] givenParameters)
+        {
+            CrawlType result = null;
+                if (!ParameterMatch(methodSignature, givenParameters))
+                    return CrawlType.ErrorType;
+                else
+                    return methodSignature.ReturnType;
+        }
+
+
         public static CrawlType UnaryNot(CrawlType operand)
         {
             if (operand.Equals(CrawlSimpleType.Bool))
@@ -22,7 +55,6 @@ namespace libcompiler.TypeChecker
             {
                 return operand;
             }
-
             return CrawlType.ErrorType;
         }
 

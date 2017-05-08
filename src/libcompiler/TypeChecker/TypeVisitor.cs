@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
 
@@ -133,5 +135,21 @@ namespace libcompiler.TypeChecker
 
         #endregion
 
+        protected override CrawlSyntaxNode VisitCall(CallNode call)
+        {
+            CallNode result = (CallNode)base.VisitCall(call);
+            CrawlType resultType;
+            IEnumerable<CrawlType> givenParameters = call.Arguments.Select(x => x.Value.ResultType);
+
+            CrawlMethodType methodSignature = call.Target.ResultType as CrawlMethodType;
+
+            if (methodSignature == null)
+                resultType = CrawlType.ErrorType;
+            else
+                resultType = ExpressionEvaluator.Call(methodSignature, givenParameters.ToArray());
+
+            result = (CallNode)result.WithResultType(resultType);
+            return result;
+        }
     }
 }
