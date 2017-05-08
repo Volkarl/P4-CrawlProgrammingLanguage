@@ -23,7 +23,7 @@
             <name>CrawlSyntax</name>
             <properties>
                 <property>
-                    <name>Type</name>
+                    <name>Type</name> 
                     <type>NodeType</type>
                 </property>
                 <property>

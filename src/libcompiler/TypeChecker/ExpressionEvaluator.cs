@@ -4,9 +4,14 @@ using System.Collections.Generic;
 using libcompiler.Parser;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
+using System.Collections.Generic;
+using libcompiler.SyntaxTree;
 
 namespace libcompiler.TypeChecker
 {
+    /// <summary>
+    /// ExpressionEvaluator class goal is to look at alle the expression types and return the right type of an expression.  
+    /// </summary>
     public class ExpressionEvaluator
     {
         /// <summary>
@@ -57,55 +62,151 @@ namespace libcompiler.TypeChecker
             }
             return CrawlType.ErrorType;
         }
+        /// <summary>
+        /// A dictionary containing a Tuplw With CrawlType, CrawlType and Expressiontype. 
+        /// The output shall be a new CrawlSimpleType or somekind of error
+        /// </summary>
+        private static Dictionary<Tuple<CrawlType, CrawlType, ExpressionType>, CrawlType> BinaryExpressinDict
+             = new Dictionary<Tuple<CrawlType, CrawlType, ExpressionType>, CrawlType>
+#region Greater 
+             {
+                {
+                    _talTal(ExpressionType.Greater),
+                    CrawlSimpleType.Bool
+                },
+                {
+                    _kommaKomma(ExpressionType.Greater),
+                    CrawlSimpleType.Bool
+                },
+                 {
+                  _talKomma(ExpressionType.Greater),
+                  CrawlSimpleType.Bool   
+                 },
+#endregion
+#region GreatEqual
+                 {
+                     _talTal(ExpressionType.GreaterEqual),
+                     CrawlSimpleType.Bool
+                 },
+                 {
+                    _kommaKomma(ExpressionType.GreaterEqual),
+                    CrawlSimpleType.Bool
+                },
+                 {
+                  _talKomma(ExpressionType.GreaterEqual),
+                  CrawlSimpleType.Bool
+                 },
+#endregion
+#region Less
 
-        public static CrawlType BinaryGreater(CrawlType leftOperand, CrawlType rightOperand)
+                 {
+                     _talTal(ExpressionType.Less),
+                     CrawlSimpleType.Bool
+                 },
+                 {
+                    _kommaKomma(ExpressionType.Less),
+                    CrawlSimpleType.Bool
+                 },
+                 {
+                  _talKomma(ExpressionType.Less),
+                  CrawlSimpleType.Bool
+                 },
+#endregion
+#region LessEqual
+                 {
+                     _talTal(ExpressionType.LessEqual),
+                     CrawlSimpleType.Bool
+                 },
+                 {
+                    _kommaKomma(ExpressionType.LessEqual),
+                    CrawlSimpleType.Bool
+                 },
+                 {
+                  _talKomma(ExpressionType.LessEqual),
+                  CrawlSimpleType.Bool
+                 },
+#endregion
+#region Equal
+                 {
+                     _talTal(ExpressionType.Equal),
+                     CrawlSimpleType.Bool
+                 },
+                 {
+                    _kommaKomma(ExpressionType.Equal),
+                    CrawlSimpleType.Bool
+                 },
+                 {
+                  _talKomma(ExpressionType.Equal),
+                  CrawlSimpleType.Bool
+                 },
+#endregion
+/*#region NotEqual
+
+                 {
+                     _talTal(ExpressionType.NotEqual),
+                     CrawlSimpleType.Bool
+                 },
+                 {
+                    _kommaKomma(ExpressionType.NotEqual),
+                    CrawlSimpleType.Bool
+                 },
+                 {
+                  _talKomma(ExpressionType.NotEqual),
+                  CrawlSimpleType.Bool
+                 },
+#endregion
+                 */
+             };
+
+
+        /// <summary>
+        /// The differient combinations with the specifik binary Expression Greater.
+        /// </summary>
+        /// <param name="eType"></param>
+        /// <returns></returns>
+        private static Tuple<CrawlType, CrawlType, ExpressionType> _talTal(ExpressionType eType)
         {
-            throw new NotImplementedException();
+            return new Tuple<CrawlType, CrawlType, ExpressionType>(CrawlSimpleType.Tal, CrawlSimpleType.Tal, eType);
         }
 
-        public static CrawlType BinaryGreaterEqual(CrawlType leftOperand, CrawlType rightOperand)
+        private static Tuple<CrawlType, CrawlType, ExpressionType> _kommaKomma(ExpressionType eType)
         {
-            throw new NotImplementedException();
+            return new Tuple<CrawlType, CrawlType, ExpressionType>(CrawlSimpleType.Kommatal, CrawlSimpleType.Kommatal, eType);
+        }
+        private static Tuple<CrawlType, CrawlType, ExpressionType> _talKomma(ExpressionType eType)
+        {
+            return new Tuple<CrawlType, CrawlType, ExpressionType>(CrawlSimpleType.Tal, CrawlSimpleType.Kommatal, eType);
+        }
+        
+
+        /// <summary>
+        /// This methods purpose is to Look at the right and left side and the swith the left and right operand to to try the other 
+        /// combination as well. And then return the type 
+        /// </summary>
+        /// <param name="leftOperand"></param>
+        /// <param name="oprator"></param>
+        /// <param name="rightOperand"></param>
+        /// <returns></returns>
+        public static CrawlType EvaluateBinaryType(CrawlType leftOperand, ExpressionType oprator, CrawlType rightOperand)
+        {
+            
+            if (BinaryExpressinDict.ContainsKey(new Tuple<CrawlType,CrawlType,ExpressionType>(leftOperand, rightOperand, oprator)))
+            {
+                return BinaryExpressinDict[new Tuple<CrawlType, CrawlType, ExpressionType>(leftOperand, rightOperand, oprator)];
+            }
+            if (BinaryExpressinDict.ContainsKey(new Tuple<CrawlType, CrawlType, ExpressionType>(rightOperand, leftOperand, oprator)))
+            {
+                return BinaryExpressinDict[new Tuple<CrawlType, CrawlType, ExpressionType>(rightOperand, leftOperand, oprator)];
+            }
+            else
+                return CrawlType.ErrorType;
+            
         }
 
-        public static CrawlType BinaryEqual(CrawlType leftOperand, CrawlType rightOperand)
-        {
-            throw new NotImplementedException();
-        }
+        
 
-        public static CrawlType BinaryNotEqual(CrawlType leftOperand, CrawlType rightOperand)
-        {
-            throw new NotImplementedException();
-        }
 
-        public static CrawlType BinaryLessEqual(CrawlType leftOperand, CrawlType rightOperand)
-        {
-            throw new NotImplementedException();
-        }
 
-        public static CrawlType BinaryLess(CrawlType leftOperand, CrawlType rightOperand)
-        {
-            throw new NotImplementedException();
-        }
 
-        public static CrawlType BinaryPower(CrawlType leftOperand, CrawlType rightOperand)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static CrawlType BinaryRange(CrawlType leftOperand, CrawlType rightOperand)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static CrawlType BinaryShortCircuitOr(CrawlType leftOperand, CrawlType rightOperand)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static CrawlType BinaryShortCircuitAnd(CrawlType leftOperand, CrawlType rightOperand)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
