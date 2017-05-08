@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
 
@@ -60,14 +62,10 @@ namespace libcompiler.TypeChecker
         protected override CrawlSyntaxNode VisitBinaryExpression(BinaryExpressionNode binaryExpression)
         {
 
-            BinaryExpressionNode newExpressoinNode = (BinaryExpressionNode) (base.VisitBinaryExpression(binaryExpression) );
-            if (newExpressoinNode.LeftHandSide.ResultType == CrawlSimpleType.Tekst || newExpressoinNode.RightHandSide.ResultType == CrawlSimpleType.Tekst)
-            {
-                throw new InvalidEnumArgumentException("Operator can not be applied to type 'string'");
-            }
-            CrawlType leftOperand = newExpressoinNode.LeftHandSide.ResultType;
-            CrawlType rightOperand = newExpressoinNode.RightHandSide.ResultType;
-            ExpressionType oprator = newExpressoinNode.ExpressionType;
+            BinaryExpressionNode expressionNodeThatWeAreChanging = (BinaryExpressionNode) (base.VisitBinaryExpression(binaryExpression) );
+            CrawlType leftOperand = expressionNodeThatWeAreChanging.LeftHandSide.ResultType;
+            CrawlType rightOperand = expressionNodeThatWeAreChanging.RightHandSide.ResultType;
+            ExpressionType oprator = expressionNodeThatWeAreChanging.ExpressionType;
             
             CrawlType expressionTypeResult = ExpressionEvaluator.EvaluateBinaryType(leftOperand, oprator, rightOperand);
             CrawlSyntaxNode result = newExpressoinNode.WithResultType(expressionTypeResult);
@@ -78,5 +76,21 @@ namespace libcompiler.TypeChecker
 
         #endregion
 
+        protected override CrawlSyntaxNode VisitCall(CallNode call)
+        {
+            CallNode result = (CallNode)base.VisitCall(call);
+            CrawlType resultType;
+            IEnumerable<CrawlType> givenParameters = call.Arguments.Select(x => x.Value.ResultType);
+
+            CrawlMethodType methodSignature = call.Target.ResultType as CrawlMethodType;
+
+            if (methodSignature == null)
+                resultType = CrawlType.ErrorType;
+            else
+                resultType = ExpressionEvaluator.Call(methodSignature, givenParameters.ToArray());
+
+            result = (CallNode)result.WithResultType(resultType);
+            return result;
+        }
     }
 }

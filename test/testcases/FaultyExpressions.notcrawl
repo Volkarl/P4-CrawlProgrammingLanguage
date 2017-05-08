@@ -1,0 +1,8 @@
+bool a = "1" < 2;
+bool b = 1 < "2";
+bool c = 2 < sandt;
+bool d = 2 < falsk;
+bool e = falsk < 2;
+bool f = sandt < 2;
+bool g = sandt < 2.0E10;
+bool h = "a" < "b";
