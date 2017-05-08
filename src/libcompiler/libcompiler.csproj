@@ -58,6 +58,7 @@
     <Compile Include="CompilerStage\ParsePipeline.cs" />
     <Compile Include="CompilerStage\ParseTreeData.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
+    <Compile Include="Namespaces\Namespace.cs" />
     <Compile Include="Namespaces\NamespaceLoader.cs" />
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
