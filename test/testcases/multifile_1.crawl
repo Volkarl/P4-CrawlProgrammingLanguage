@@ -1,0 +1,6 @@
+klasse foo =
+	offentlig bar Bar;
+	offentlig bums Bums;
+
+klasse bums =
+	tal z;

@@ -52,19 +52,14 @@ namespace libcompiler
             return retstring;
         }
 
-        public static  IEnumerable<TOut> ConfigureableParallelSelect<TIn, TOut>(
-            this IEnumerable<TIn> input, 
-            bool parallel,
-            Func<TIn, TOut> transform)
+        public static Action<T1> EndWith<T1, T2, TExtra>(this Func<T1, TExtra, T2> first, Action<T2> sink, TExtra extra)
         {
-            if (parallel)
-            {
-                return input.AsParallel().Select(transform);
-            }
-            else
-            {
-                return input.Select(transform);
-            }
+            return input => sink(first(input, extra));
+        }
+
+        public static Func<T1, TExtra, T3> Then<T1, T2, T3, TExtra>(this Func<T1, TExtra, T2> first, Func<T2, TExtra, T3> second)
+        {
+            return (input, extra) => second(first(input, extra), extra);
         }
     }
 }

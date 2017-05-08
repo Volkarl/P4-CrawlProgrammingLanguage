@@ -2,29 +2,16 @@
 //den eneste form for comments er //
 //vi har bevist fravalgt /* */ style comments for ikke at have 2 versioner af (næsten) samme ting
 
-//Node klasse som enten indeholder et enkelt tal eller en liste af tal
-//Vi har teknisk set syntax for nedarvning, men ingen for abstrakte funktioner eller overskrivning
-//Så den har begge...
-klasse Node =
-    offentlig tekst Operator;
-    offentlig Node[] Børn;
-    offentlig kommatal Tal;
-    
-    //Erklæring af funktion. 
-    //En funktioner er (næsten) også bare en variable som laves med et par andre så funktioner beskrives som returtype(parametre) navn = 
-    offentlig kommatal() Værdi =
-        hvis Børn.Længde == 0
-            retuner Tal;
-        ellers
-            kommatal(kommatal, kommatal) op = FindOperator(Operator);
-            kommatal sum = Børn[0].Værdi();
-
-            //for løkker går over en liste/række
-            //her bruges række operatoren til at skabe en række med indholdet 1,2...Børn.Længde - 1
-            
-            for tal i fra 1 til Børn.Længde
-                sum = op(sum, Børn[i].Værdi());
-            returner sum;
+intet(tekst detalje) fejl = 
+	bool a = falsk;
+	returner;
+	
+intet(tekst t) skriv = 
+	bool b = sandt;
+	returner;
+	
+tekst() LæsLinje= 
+	returner "5+2";
 
 //funktioner kan også erklæres uden for klasser
 kommatal(kommatal op1, kommatal op2) Plus = 
@@ -38,9 +25,35 @@ kommatal(kommatal, kommatal)(tekst operatorNavn) FindOperator =
     hvis operatorNavn == "*"
         returner Gange;
     ellers hvis operatorNavn == "+"
-        retuner Plus;
+        returner Plus;
     ellers
         fejl("Ukendt operator");
+
+//Node klasse som enten indeholder et enkelt tal eller en liste af tal
+//Vi har teknisk set syntax for nedarvning, men ingen for abstrakte funktioner eller overskrivning
+//Så den har begge...
+klasse Node =
+    offentlig tekst Operator;
+    offentlig Node[] Børn;
+    offentlig kommatal Tal;
+    
+    //Erklæring af funktion. 
+    //En funktioner er (næsten) også bare en variable som laves med et par andre så funktioner beskrives som returtype(parametre) navn = 
+    offentlig kommatal() Værdi =
+        hvis Børn.Længde == 0
+            returner Tal;
+        ellers
+            kommatal(kommatal, kommatal) op = FindOperator(Operator);
+            kommatal sum = Børn[0].Værdi();
+
+            //for løkker går over en liste/række
+            //her bruges række operatoren til at skabe en række med indholdet 1,2...Børn.Længde - 1
+            
+            for tal i fra 1 til Børn.Længde
+                sum = op(sum, Børn[i].Værdi());
+            returner sum;
+
+
 
 
 Node(tekst[] underdele) Forstå =
@@ -52,9 +65,9 @@ Node(tekst[] underdele) Forstå =
         returner sandt;
     
     
-    int parentesTæller = 0;
+    tal parentesTæller = 0;
     Node[] noder; //Ikke semantisk korrent men vi har ingen syntax for at oprette arrays
-    tekst[] operatorer; //Det var tidligere planen bare at give en List<T> ala c# men vi har heller ikke generics
+    tekst[] operatore; //Det var tidligere planen bare at give en List<T> ala c# men vi har heller ikke generics
     tekst[] indkapslet; //Indtil vidre, lad som om det er lister. Specifik fremtid usikker.
     
     //Muligvis får vi en "Liste operator" [a, b, c]... eller [anden liste] i fremtiden, men den er langt tilbage i prioteterne
@@ -99,7 +112,7 @@ Node(tekst[] underdele) Forstå =
             ellers
                 i = i + 1;
     
-    //Hvis vi brugte alting op retuner det, ellers er der sket en fejl
+    //Hvis vi brugte alting op returner det, ellers er der sket en fejl
     hvis noder.Længde == 1 og operatore.Længde == 0
         returner noder[0];
     ellers

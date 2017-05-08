@@ -25,13 +25,7 @@ namespace libcompiler.Tests
         public static TranslationUnitNode ReadTestFile(string name)
         {
             string fullpath = Path.Combine(TestCaseFolderPath, name);
-
-            TextReader textReader = new StreamReader(File.OpenRead(fullpath));
-            //An ITokenSource lets us get the tokens one at a time.
-            ITokenSource tSource = new CrawlLexer(new AntlrInputStream(textReader));
-            //An ITokenStream lets us go forwards and backwards in the token-series.
-            ITokenStream tStream = new CommonTokenStream(tSource);
-            return (TranslationUnitNode) CrawlSyntaxTree.ParseTree(tStream, fullpath).RootNode;
+            return (TranslationUnitNode) CrawlSyntaxTree.ReadFile(fullpath).RootNode;
         }
     }
 }

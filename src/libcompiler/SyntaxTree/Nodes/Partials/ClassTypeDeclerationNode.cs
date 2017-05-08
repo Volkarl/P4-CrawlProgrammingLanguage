@@ -1,10 +1,13 @@
-﻿using libcompiler.TypeChecker;
+﻿using System.Collections.Generic;
+using libcompiler.Scope;
 
 namespace libcompiler.SyntaxTree
 {
-    public partial class ClassTypeDeclerationNode : IScope
+    public partial class ClassTypeDeclerationNode //: IScope
     {
 
+        //BUG: This looks in its Body(a child) which then looks in this. Infinite recursion -> StackOverflow
+        public IEnumerable<string> LocalSymbols() => default(IEnumerable<string>);
 
         public TypeInformation[] FindSymbol(string symbol)
         {

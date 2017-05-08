@@ -1,0 +1,7 @@
+tal (
+	tal a,
+	tab b
+	) test =
+	returner a + b;
+	
+skriv(test(4, 2));
