@@ -60,17 +60,17 @@ namespace libcompiler.TypeChecker
         protected override CrawlSyntaxNode VisitBinaryExpression(BinaryExpressionNode binaryExpression)
         {
 
-            BinaryExpressionNode expressionNodeThatWeAreChanging = (BinaryExpressionNode) (base.VisitBinaryExpression(binaryExpression) );
-            if (expressionNodeThatWeAreChanging.LeftHandSide.ResultType == CrawlSimpleType.Tekst || expressionNodeThatWeAreChanging.RightHandSide.ResultType == CrawlSimpleType.Tekst)
+            BinaryExpressionNode newExpressoinNode = (BinaryExpressionNode) (base.VisitBinaryExpression(binaryExpression) );
+            if (newExpressoinNode.LeftHandSide.ResultType == CrawlSimpleType.Tekst || newExpressoinNode.RightHandSide.ResultType == CrawlSimpleType.Tekst)
             {
                 throw new InvalidEnumArgumentException("Operator can not be applied to type 'string'");
             }
-            CrawlType leftOperand = expressionNodeThatWeAreChanging.LeftHandSide.ResultType;
-            CrawlType rightOperand = expressionNodeThatWeAreChanging.RightHandSide.ResultType;
-            ExpressionType oprator = expressionNodeThatWeAreChanging.ExpressionType;
+            CrawlType leftOperand = newExpressoinNode.LeftHandSide.ResultType;
+            CrawlType rightOperand = newExpressoinNode.RightHandSide.ResultType;
+            ExpressionType oprator = newExpressoinNode.ExpressionType;
             
-            CrawlType theResultTypeThatWeWantOurExpressionNodeToHave = ExpressionEvaluator.EvaluateBinaryType(leftOperand, oprator, rightOperand);
-            CrawlSyntaxNode result = expressionNodeThatWeAreChanging.WithResultType(theResultTypeThatWeWantOurExpressionNodeToHave);
+            CrawlType expressionTypeResult = ExpressionEvaluator.EvaluateBinaryType(leftOperand, oprator, rightOperand);
+            CrawlSyntaxNode result = newExpressoinNode.WithResultType(expressionTypeResult);
             return result; 
 
 

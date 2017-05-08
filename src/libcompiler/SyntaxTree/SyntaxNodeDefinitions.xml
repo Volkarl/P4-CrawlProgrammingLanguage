@@ -13,7 +13,7 @@
         <with_replaced_child>WithReplacedChild</with_replaced_child>
         <new_child>newChild</new_child>
         <self>self</self>
-        <visit>Visit</visit>
+        <visit>Visit</visit> 
         <node>Node</node>
         <combine>Combine</combine>
         <update>Update</update>

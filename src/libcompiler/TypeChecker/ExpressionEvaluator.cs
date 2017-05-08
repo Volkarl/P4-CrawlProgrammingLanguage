@@ -108,7 +108,7 @@ namespace libcompiler.TypeChecker
                   CrawlSimpleType.Bool
                  },
 #endregion
-/*#region NotEqual
+#region NotEqual
 
                  {
                      _talTal(ExpressionType.NotEqual),
@@ -123,12 +123,12 @@ namespace libcompiler.TypeChecker
                   CrawlSimpleType.Bool
                  },
 #endregion
-                 */
+                 
              };
 
 
         /// <summary>
-        /// The differient combinations with the specifik binary Expression Greater.
+        /// The differient combinations with the specifik binary Expression
         /// </summary>
         /// <param name="eType"></param>
         /// <returns></returns>
