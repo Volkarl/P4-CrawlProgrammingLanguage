@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using libcompiler.ExtensionMethods;
+using libcompiler.Namespaces;
 using libcompiler.Parser;
 using libcompiler.TypeSystem;
 
@@ -27,10 +27,13 @@ namespace libcompiler.SyntaxTree.Parser
 
 
             IEnumerable<ImportNode> importNodes = ParseImports(imports);
+            //Add the "No namespace" namespace
+            importNodes = importNodes.Concat(CrawlSyntaxNode.Import(Interval.Invalid, "").AsSingleIEnumerable());
             NamespaceNode namespaceNode = ParseNamespace(nameSpace);   //Forts�t herfra.
             BlockNode rootBlock = ParseBlockNode(statements);
 
-            return CrawlSyntaxNode.TranslationUnit(translationUnit.SourceInterval, importNodes, namespaceNode, rootBlock);
+
+            return CrawlSyntaxNode.TranslationUnit(translationUnit.SourceInterval, null, importNodes, namespaceNode, rootBlock);
         }
 
         private static NamespaceNode ParseNamespace(RuleContext nameSpace)
@@ -179,7 +182,7 @@ namespace libcompiler.SyntaxTree.Parser
             ExpressionNode iteratior = ExpressionParser.ParseExpression(expression);
             BlockNode block = ParseBlockNode(blockCtx);
 
-            return CrawlSyntaxNode.ForLoop(rule.SourceInterval, type, ParseIdentifier(identifierNode), iteratior, block);
+            return CrawlSyntaxNode.ForLoop(rule.SourceInterval, null, type, ParseIdentifier(identifierNode), iteratior, block);
         }
 
         public static DeclerationNode ParseDeclerationNode(RuleContext rule)
@@ -227,7 +230,7 @@ namespace libcompiler.SyntaxTree.Parser
 
             BlockNode body = ParseBlockNode((RuleContext)ConstructContex.GetChild(3).GetChild(1));
 
-            return CrawlSyntaxNode.Constructor(interval,protectionlevel, null /*TODO: */, body);
+            return CrawlSyntaxNode.Constructor(interval,protectionlevel, null /*TODO: */, null, null, body);
 
 
         }
@@ -241,11 +244,10 @@ namespace libcompiler.SyntaxTree.Parser
                 ParseType((CrawlParser.TypeContext) methodContext.GetChild(0));
 
             //Parameters TODO: Use parameter names.
-            Tuple<List<TypeNode>, List<IdentifierNode>> parameters =
+            List<ParameterNode> parameters =
                 ParseParameters((CrawlParser.ParametersContext)methodContext.GetChild(1));
-            List<IdentifierNode> parameterIdentifiers = parameters.Item2;
 
-            TypeNode methodSignature = GenerateMethodSignature(returnType, parameters.Item1);
+            TypeNode methodSignature = GenerateMethodSignature(returnType, parameters.Select(foo => foo.ParameterType).ToList());
 
             //Generic Parameters
             List<GenericParameterNode> genericParameters
@@ -269,13 +271,21 @@ namespace libcompiler.SyntaxTree.Parser
             IdentifierNode identifier = ParseIdentifier(identifierTerminal);
 
             //Combine it all.
-            return CrawlSyntaxNode.MethodDecleration(interval, protectionLevel, methodSignature, body, identifier, parameterIdentifiers, genericParameters);
+            return CrawlSyntaxNode.MethodDecleration(
+                interval, 
+                protectionLevel, 
+                null, /*scope has no stuff yet*/
+                methodSignature,
+                parameters,
+                body, 
+                identifier,
+                genericParameters
+            );
         }
 
-        private static Tuple<List<TypeNode>, List<IdentifierNode>> ParseParameters(CrawlParser.ParametersContext context)
+        private static List<ParameterNode> ParseParameters(CrawlParser.ParametersContext context)
         {
-            List<TypeNode> resultPart1 = new List<TypeNode>();
-            List<IdentifierNode> resultPart2 = new List<IdentifierNode>();
+            List<ParameterNode> resutls = new List<ParameterNode>();
             //parameters : LPARENTHESIS (parameter ( ITEM_SEPARATOR parameter )* )?  RPARENTHESIS;
             //parameter : REFERENCE? type IDENTIFIER;
             if (context.ChildCount > 2)
@@ -283,35 +293,43 @@ namespace libcompiler.SyntaxTree.Parser
                 for (int i = 1; i < context.ChildCount; i = i + 2)
                 {
                     IParseTree parameter = context.GetChild(i);
-                    if (parameter.ChildCount == 3) //This parameter is a Reference.
-                    {
-                        resultPart1.Add(ParseType((CrawlParser.TypeContext) parameter.GetChild(1), true)); //type, which is a reference.
-                        resultPart2.Add(ParseIdentifier((ITerminalNode) parameter.GetChild(2))); //IDENTIFIER
-                    }
-                    else //This parameter is not a reference.
-                    {
-                        resultPart1.Add(ParseType((CrawlParser.TypeContext) parameter.GetChild(0))); //type
-                        resultPart2.Add(ParseIdentifier((ITerminalNode) parameter.GetChild(1))); //IDENTIFIER
-                    }
+                    //If the parameter has 3 children it starts with a REFERENCE token
+                    //Otherwise it starts with the identifier
+
+                    bool isReference = parameter.ChildCount == 3;
+                    int startat = isReference ? 1 : 0;
+
+                    resutls.Add(
+                        CrawlSyntaxNode.Parameter(
+                            parameter.SourceInterval,
+                            isReference,
+                            ParseType(
+                                (CrawlParser.TypeContext) parameter.GetChild(startat + 0)
+                            ),
+                            ParseIdentifier(
+                                (ITerminalNode) parameter.GetChild(startat + 1)
+                            )
+                        )
+                    );
                 }
             }
-            return new Tuple<List<TypeNode>, List<IdentifierNode>>(resultPart1, resultPart2);
+            return resutls;
         }
 
         private static TypeNode GenerateMethodSignature(TypeNode returnType, List<TypeNode> parameterTypes)
         {
             StringBuilder textDef = new StringBuilder();
-            textDef.Append(returnType);
+            textDef.Append(returnType.TypeName);
 
             textDef.Append('(');
 
             if (parameterTypes.Count > 0)
             {
-                textDef.Append(parameterTypes[0]);
+                textDef.Append(parameterTypes[0].TypeName);
                 for (var i = 1; i < parameterTypes.Count; i++)
                 {
                     textDef.Append(", ");
-                    textDef.Append(parameterTypes[i]);
+                    textDef.Append(parameterTypes[i].TypeName);
                 }
             }
 
@@ -323,7 +341,7 @@ namespace libcompiler.SyntaxTree.Parser
             else
                 interval = new Interval(returnType.Interval.a, returnType.Interval.b);    //TODO: Only roughly correct.
 
-            TypeNode result = CrawlSyntaxNode.TypeNode(interval, textDef.ToString(), false, 0);
+            TypeNode result = CrawlSyntaxNode.TypeNode(interval, textDef.ToString(), 0, null);
             return result;
         }
 
@@ -420,11 +438,11 @@ namespace libcompiler.SyntaxTree.Parser
 
         #endregion
 
-        public static TypeNode ParseType(CrawlParser.TypeContext type, bool isReference = false)
+        public static TypeNode ParseType(CrawlParser.TypeContext type)
         {
             // No array specified -> the type is not an array
             var array = type.GetChild(1) as CrawlParser.Array_typeContext ?? type.GetChild(2) as CrawlParser.Array_typeContext;
-            if (array == null) return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(), isReference, 0);
+            if (array == null) return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(),  0, null);
 
             // Array is specified -> We count the dimensions. 
             //// Then we remove the trailing [] from the type definition, because we now keep track of it within the dimensions?? IS THIS NECESSARY?
@@ -432,7 +450,7 @@ namespace libcompiler.SyntaxTree.Parser
             // string dimensionsAsString = $"[{StringExtensions.AddStringForeach(",", arrayDimensions)}]";
             // string typeText = type.GetText();
             // string typeWithoutLastArray = typeText.Remove(typeText.LastIndexOf(dimensionsAsString, StringComparison.Ordinal));
-            return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(), isReference, arrayDimensions);
+            return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(),  arrayDimensions, null);
         }
 
         private static int CountTypeArrayDimensions(CrawlParser.Array_typeContext array)

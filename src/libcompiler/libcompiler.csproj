@@ -40,15 +40,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompilerStage\SemanticAnalysis\CheckDeclerationOrderVisitor.cs" />
+    <Compile Include="CompilerStage\SemanticAnalysis\NamespaceNotFoundException.cs" />
+    <Compile Include="CompilerStage\SemanticAnalysis\PutTypeVisitor.cs" />
+    <Compile Include="CompilerStage\SemanticAnalysis\AddScopeVisitor.cs" />
+    <Compile Include="CompilerStage\AstData.cs" />
     <Compile Include="CompilationMessage.cs" />
+    <Compile Include="Antlr\CompilationMessageErrorListner.cs" />
     <Compile Include="CompilationResult.cs" />
+    <Compile Include="CompilerStage\SemanticAnalysisPipeline.cs" />
     <Compile Include="CrawlCompiler.cs" />
     <Compile Include="CrawlCompilerConfiguration.cs" />
+    <Compile Include="Datatypes\ListDictionary.cs" />
     <Compile Include="ExtensionMethods\CrawlSyntaxNodeExtensions.cs" />
+    <Compile Include="ExtensionMethods\IEnumerableHelpers.cs" />
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
+    <Compile Include="CompilerStage\ParsePipeline.cs" />
+    <Compile Include="CompilerStage\ParseTreeData.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
+    <Compile Include="Namespaces\Namespace.cs" />
+    <Compile Include="Namespaces\NamespaceLoader.cs" />
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
+    <Compile Include="Scope\GenericScope.cs" />
+    <Compile Include="SideeffectHelper.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxNodeExtensions.cs" />
     <Compile Include="SyntaxTree\INodeThatTakesGenericParameters.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxTree.cs" />
@@ -64,8 +79,11 @@
     <Compile Include="SyntaxTree\Nodes\GreenCrawlSyntaxNode.cs" />
     <Compile Include="SyntaxTree\Nodes\GreenListNode.cs" />
     <Compile Include="SyntaxTree\Nodes\ListNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Partials\CallableDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Partials\ClassTypeDeclerationNode.cs" />
+    <Compile Include="SyntaxTree\Nodes\Partials\ForLoopNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Partials\TranslationUnitNode.cs" />
+    <Compile Include="TypeSystem\FutureType.cs" />
     <Compile Include="SyntaxTree\VisitorManualVisits.cs" />
     <Compile Include="TypeChecker\ExpressionEvaluator.cs" />
     <Compile Include="TypeChecker\TypeVisitor.cs" />
@@ -87,12 +105,14 @@
     <Compile Include="SyntaxTree\ProtectionLevel.cs" />
     <Compile Include="SyntaxTree\SuperPrettyPrintVisitor.cs" />
     <Compile Include="TraceListners.cs" />
-    <Compile Include="TypeChecker\BlockScope.cs" />
-    <Compile Include="TypeChecker\IScope.cs" />
-    <Compile Include="TypeChecker\MethodScope.cs" />
+    <Compile Include="Scope\BlockScope.cs" />
+    <Compile Include="Scope\IScope.cs" />
+    <Compile Include="Scope\MethodScope.cs" />
+    <Compile Include="TypeSystem\CrawlStatusType.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CompilerStage\readme.md" />
     <None Include="Crawl.g4" />
     <None Include="SyntaxTree\Nodes\redgreen.md" />
   </ItemGroup>

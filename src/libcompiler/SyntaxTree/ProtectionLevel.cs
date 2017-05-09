@@ -9,5 +9,7 @@
         Protected,
         ProtectedInternal,
         Private,
+        //Literally, it is not applicable. Method parameters ect
+        NotApplicable
     }
 }

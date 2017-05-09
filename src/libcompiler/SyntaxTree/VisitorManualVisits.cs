@@ -53,7 +53,7 @@ namespace libcompiler.SyntaxTree
         {
             var newchildren = block.Select(Visit);
 
-            return block.Update(block.Interval, newchildren);
+            return block.Update(block.Interval, newchildren, block.Scope);
         }
 
         protected override CrawlSyntaxNode VisitList<TNode>(IEnumerable<TNode> list)

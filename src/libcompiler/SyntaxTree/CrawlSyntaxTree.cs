@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using System.Text;
 using Antlr4.Runtime;
 using libcompiler.Parser;
 using libcompiler.SyntaxTree.Parser;
@@ -18,10 +18,14 @@ namespace libcompiler.SyntaxTree
             CompilationUnitName = name;
         }
 
-        public static CrawlSyntaxTree ParseTree(ITokenStream tStream, string compilationUnitName)
+        public static CrawlSyntaxTree ReadFile(string filename)
         {
-            CrawlParser parser = new CrawlParser(tStream);
-
+            ICharStream charStream = new AntlrFileStream(filename, Encoding.UTF8);
+            CrawlLexer tokenSource = new CrawlLexer(charStream);
+            ITokenStream tokenStream = new CommonTokenStream(tokenSource);
+            CrawlParser parser = new CrawlParser(tokenStream);
+            
+            
             //The translation_unit is the top rule in our grammar.
             //Asking the parser to match that from the token stream leaves us at the top of the parse tree.
             CrawlParser.Translation_unitContext rootContext = parser.translation_unit();
@@ -29,7 +33,16 @@ namespace libcompiler.SyntaxTree
 
             TranslationUnitNode node = ParseTreeParser.ParseTranslationUnit(rootContext);
 
-            node.OwningTree.CompilationUnitName = compilationUnitName;
+            node.OwningTree.CompilationUnitName = filename;
+
+            return node.OwningTree;
+        }
+
+        internal static CrawlSyntaxTree ParseTree(CrawlParser.Translation_unitContext context, string name)
+        {
+            TranslationUnitNode node = ParseTreeParser.ParseTranslationUnit(context);
+            node.OwningTree.CompilationUnitName = name;
+
             return node.OwningTree;
         }
     }

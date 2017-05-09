@@ -209,10 +209,21 @@
                     <type>Type</type>
                 </child>
                 <child>
+                    <name>Parameters</name>
+                    <type>List'Parameter</type>
+                </child>
+                <child>
                     <name>Body</name>
                     <type>Block</type>
                 </child>
             </children>
+            <properties>
+              <property>
+                <name>Scope</name>
+                <type>IScope</type>
+                <nulldefault>true</nulldefault> 
+              </property>
+            </properties>
         </node>
         <node>
             <name>ClassTypeDecleration</name>
@@ -294,6 +305,13 @@
                     <type>Block</type>
                 </child>
             </children>
+          <properties>
+            <property>
+              <name>Scope</name>
+              <type>IScope</type>
+            </property>
+          </properties>
+          <!-- Scope-->
         </node>
         <node>
             <name>GenericParameter</name>
@@ -346,10 +364,6 @@
                     <type>Identifier</type>
                 </child>
                 <child>
-                    <name>Parameters</name>
-                    <type>List'Identifier</type>
-                </child>
-                <child>
                     <name>GenericParameters</name>
                     <type>List'GenericParameter</type>
                 </child>
@@ -373,19 +387,18 @@
                     <name>Reference</name>
                     <type>bool</type>
                 </property>
-                <property>
-                    <name>Identifier</name>
-                    <type>string</type>
-                </property>
             </properties>
             <children>
                 <child>
                     <name>ParameterType</name>
                     <type>Type</type>
                 </child>
+                <child>
+                    <name>Identifier</name>
+                    <type>Identifier</type>
+                </child>
             </children>
         </node>
-        <!-- Reference -->
         <node>
             <name>ReturnStatement</name>
             <baseclass>CrawlSyntax</baseclass>
@@ -450,6 +463,14 @@
                     <type>Block</type>
                 </child>
             </children>
+            <properties>
+                <property>
+                    <name>ImportedNamespaces</name>
+                    <type>Namespace</type>
+                    <nulldefault>true</nulldefault>
+                </property>
+            </properties>
+          <!-- Imports scope-->
         </node>
         <node>
             <name>Type</name>
@@ -459,14 +480,18 @@
                     <name>TypeName</name>
                     <type>string</type>
                 </property>
-                <property>
+                <!--<property>
                     <name>IsReference</name>
                     <type>bool</type>
-                </property>
+                </property> -->
                 <property>
                     <name>ArrayDimensions</name>
                     <type>int</type>
                 </property>
+              <property>
+                <name>ActualType</name>
+                <type>CrawlType</type>
+              </property>
             </properties>
         </node>
         <node>

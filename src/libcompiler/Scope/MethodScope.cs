@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeSystem;
 
-namespace libcompiler.TypeChecker
+namespace libcompiler.Scope
 {
     class MethodScope : IScope
     {
@@ -13,7 +11,7 @@ namespace libcompiler.TypeChecker
         public MethodScope(MethodDeclerationNode m)
         {
             //TODO: Save real info in typeinformation....
-            _scopeInfo = m.Parameters.ToDictionary(x => x.Value, y => new TypeInformation[1]);
+            _scopeInfo = m.Parameters.ToDictionary(x => x.Identifier.Value, y => new TypeInformation[1]{new TypeInformation(new FutureType(m.Identifier.Value, "NONE"), m.ProtectionLevel, m.Interval.a)});
         }
 
         public TypeInformation[] FindSymbol(string symbol)
@@ -28,5 +26,7 @@ namespace libcompiler.TypeChecker
                 return null;
             }
         }
+
+        public IEnumerable<string> LocalSymbols() => _scopeInfo.Keys;
     }
 }

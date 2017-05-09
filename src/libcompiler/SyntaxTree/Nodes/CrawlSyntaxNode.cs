@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using Antlr4.Runtime.Misc;
-using libcompiler.TypeChecker;
 
 namespace libcompiler.SyntaxTree
 {

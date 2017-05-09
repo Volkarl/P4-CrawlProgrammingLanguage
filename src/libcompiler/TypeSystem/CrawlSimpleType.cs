@@ -4,6 +4,8 @@ namespace libcompiler.TypeSystem
 {
     public class CrawlSimpleType : CrawlType
     {
+        private readonly Type _clrType;
+
         public static CrawlSimpleType Tal { get; } = new CrawlSimpleType(typeof(int));
 
         public static CrawlSimpleType Kommatal { get; } = new CrawlSimpleType(typeof(double));
@@ -14,12 +16,10 @@ namespace libcompiler.TypeSystem
 
         public static CrawlSimpleType Tekst { get; } = new CrawlSimpleType(typeof(string));
 
-        public CrawlSimpleType(string identifier, string @namespace, string assembly = "CrawlCode") : base(identifier, @namespace, assembly)
+        public CrawlSimpleType(Type type) : base(type.FullName , type.Namespace, type.Assembly.FullName)
         {
-        }
-
-        private CrawlSimpleType(Type type) : base(type.FullName , type.Namespace, type.Assembly.FullName)
-        {
+            if(type == null) throw new NullReferenceException(nameof(type));
+            _clrType = type;
         }
 
         public override bool IsAssignableTo(CrawlType target)
@@ -35,6 +35,11 @@ namespace libcompiler.TypeSystem
         public override bool CastableTo(CrawlType target)
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return _clrType.FullName;
         }
     }
 }

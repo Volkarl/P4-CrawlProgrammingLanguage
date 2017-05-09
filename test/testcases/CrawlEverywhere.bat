@@ -1,0 +1,1 @@
+forfiles /s /m *.crawl /c "cmd /c ..\..\src\compilerconsolehost\bin\Debug\compilerconsolehost.exe --force-single-thread @path"
