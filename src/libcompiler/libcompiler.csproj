@@ -63,6 +63,7 @@
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
     <Compile Include="Scope\GenericScope.cs" />
+    <Compile Include="SideeffectHelper.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxNodeExtensions.cs" />
     <Compile Include="SyntaxTree\INodeThatTakesGenericParameters.cs" />
     <Compile Include="SyntaxTree\CrawlSyntaxTree.cs" />
