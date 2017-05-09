@@ -62,8 +62,10 @@ namespace libcompiler.TypeChecker
             return CrawlType.ErrorType;
         }
         /// <summary>
-        /// A dictionary containing a Tuplw With CrawlType, CrawlType and Expressiontype. 
-        /// The output shall be a new CrawlSimpleType or somekind of error
+        /// A dictionary that maps a triple(typeA, typeB, binary_operator) to the type of the result
+        /// of performing either typeA binary_operator typeB or typeB binary_operator typeA
+        /// If the two types are different, they are written in no particular order, so be sure
+        /// to check both combinations when looking them up.
         /// </summary>
         private static Dictionary<Tuple<CrawlType, CrawlType, ExpressionType>, CrawlType> BinaryExpressionDict
              = new Dictionary<Tuple<CrawlType, CrawlType, ExpressionType>, CrawlType>
