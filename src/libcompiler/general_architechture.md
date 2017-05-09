@@ -25,8 +25,8 @@ The actual stages is described below.
 
 # Stages
 
-If the name is in italics its a  _synchronization point_  
-If the name is in bold its a **transformation**
+If the name is in bold its a  **synchronization point**  
+If the name is in italics its a _transformation_
 
 ### **Start**
 This is the start of compilation. Other than a few options, only thing present is the filenames that make up the program and referenced .dll files (Assemblies).
@@ -37,34 +37,35 @@ A file is read into memory and fed to Antlr which produces a parse tree.
 ### _Create AST_
 The parse trees are transformed from concrete syntax trees into abstract syntax trees.
 
-### _Collect visible symbols_
-Scope checker does its first pass on the file and collects everything in the top level scope.
-At time of writing, this is actually done by ParseTreeParser.TranslationUnit but conceptually it is a different stage
-It's just that nobody have bothered to split it out in its own method.
+### _Collect types_
+Scope checker does its first pass and collects types.
 
-### **Merge visible symbols**
+### **Merge type tables (namespaces)**
 Here all files that share a namespace is joined together to create a Namespace scope. Said data is also merged with namespace's from referenced assemblies.
 
-### _Find all visible symbols_
-All imported modules are merged into one big scope that contains everything visible that isn't defined inside the file.
+### _Find visible namespace_
+All namespaces that is imported is merged into one homungus namespace that contains all visible types.
 
-### _Find scope information_
-The AST is traversed and all(not quite yet, but in theory) defined variables gets saved in scopes attached to relevant Syntax Nodes
+### _Decorate TypeNode_
+The Tree is traversed (again...) and all TypeNodes has the actual type they refer to inserted.
 
-### **Currently unused synchronization point**
-At time of writing, constructed types aren't handled. 
-When scope information is collected, if it encounters a class, it just notes its name and puts an entry in the type table that basically says "There will be a type of this name in the future, pinkie swear" 
-Maybe this will require actual single threaded handling. 
-Maybe later stages will depend on the _real_ types existing.
-This synchronization point exists for that.
+### _Collect remaining  scope information_
+The AST is traversed and all defined variables gets saved in scopes attached to relevant Syntax Nodes
 
-### _Order check_
+### _Finish Types_
+Before this point, constructed types only contain their name and the fact that they exist. In this step they get updated to contain all their members (and their types), parrent class is collected ect ect 
+
+### **Second scope merge**
+At time of writing, this point does nothing.
+To collect scopes on variables , all types needs to have been merged into one big table. 
+
+### _Scope check_
+Every usage of a variable is checked against its decleration. 
 Every symbol is checked against every other symbol. If a collision is detected, a warning is emitted.
 An enterprising soul could optimize this to keep running track of visible symbols instead of rebuilding the table of _ALL_ visible symbols in each scope, as current code is O(lots)
 
-### _Decorate TypeNode_
-The Tree is traversed (again...) and all TypeNodes has the actual type they refer to inserted. (Well, some of them just gets the pinkie swear type)
-This _could_ be done inside the typechecker, but it is probably going to complicate it, depending on how variables and pinkie swear types are handled. (I haven't given this much thought, I might need to look in a book and see how other compilers handle this)
+### _type check_
+Every expression is checked for type consistency
 
 # Implementation
 The implementation has some requirements and some other wishes.
