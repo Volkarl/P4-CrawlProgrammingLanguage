@@ -94,6 +94,10 @@ namespace libcompiler.Namespaces
                     .ToList();
         }
 
+        /// <summary>
+        /// Add contents to current namespace
+        /// </summary>
+        /// <param name="newNamespaces">Collection of further namespaces to add</param>
         public static void MergeInto(this ConcurrentDictionary<string, Namespace> namespaceDictionary,
             IEnumerable<Namespace> newNamespaces)
         {

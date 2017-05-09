@@ -14,14 +14,23 @@ namespace libcompiler
 {
     public static class CrawlCompiler
     {
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="configuration">Paths to source code, referenced assemblies and compiler directives</param>
+        /// <returns>Any resulting errors, logs and executables.</returns>
         public static CompilationResult Compile(CrawlCompilerConfiguration configuration)
         {
             TextWriter output = Utils.GetPrimaryOutputStream(configuration);
             //TraceListners.AssemblyResolverListner =
             //    new System.Diagnostics.TextWriterTraceListener(Utils.GetPrimaryOutputStream(configuration));
+
+            //From referenced files, build list of existing namespaces
             ConcurrentDictionary<string, Namespace> allNamespaces = NamespaceLoader.LoadAll(configuration.Assemblies);
             allNamespaces.MergeInto(Namespace.BuiltinNamespace.AsSingleIEnumerable());
 
+            //Set up logging and status
             SideeffectHelper sideeffectHelper = new SideeffectHelper();
             CompilationStatus status = CompilationStatus.Success;
 
@@ -36,16 +45,16 @@ namespace libcompiler
                     {
                         //Syntax is slightly wonky, but cannot assign variable to method group.
                         //_Could_ be hidden in ParsePipeline by making them properties instead....
-                        
+
                         //Get the starting transformaton
                         Func<string, SideeffectHelper, ParseTreeData> parsePT = ParsePipeline.ReadFileToPt;
 
                         //Jump out if we are intrested in earlier stage.
-                        if (configuration.TargetStage == TargetStage.ParseTree) return parsePT.EndWith(output.WriteLine, helper);
-                        
-                        //.Then adds another stage
-                        var parseASt = parsePT 
-                        .Then(ParsePipeline.CreateAst);
+                        if (configuration.TargetStage == TargetStage.ParseTree)
+                            return parsePT.EndWith(output.WriteLine, helper);
+
+                        var parseASt = parsePT
+                            .Then(ParsePipeline.CreateAst); //.Then adds another stage
 
                         if (configuration.TargetStage == TargetStage.AbstractSyntaxTree)
                             return parseASt.EndWith(output.WriteLine, helper);
@@ -54,6 +63,7 @@ namespace libcompiler
 
                         //.EndWith collects it
                         return firstscopepass.EndWith(destination.Add, helper);
+
                     }
                 );
 
@@ -120,9 +130,15 @@ namespace libcompiler
             return new CompilationResult(status, sideeffectHelper.CompilationMessages);
         }
 
+        /// <summary>
+        /// Throw exception if there are any errors
+        /// </summary>
         private static void MaybeDie(SideeffectHelper sideeffectHelper)
         {
-            if (sideeffectHelper.CompilationMessages.Count(message => message.Severity >= MessageSeverity.Error) > 0)
+            int errorcount =sideeffectHelper.CompilationMessages
+                    .Count(message => message.Severity >= MessageSeverity.Error);
+
+            if (errorcount > 0)
                 throw new ExitCompilationException();
         }
 
@@ -147,7 +163,10 @@ namespace libcompiler
 
             return destinationBag;
         }
-        
+
+        /// <summary>
+        /// Execute action on every piece of in-data, with choice of wheter to do so in parallel.
+        /// </summary>
         private static void Execute<TIn>(IEnumerable<TIn> indata, Action<TIn> action, bool parallel) where TIn : class
         {
             if (parallel)
@@ -170,17 +189,6 @@ namespace libcompiler
 
     internal class ExitCompilationException : Exception
     {
-    }
-
-    public class SideeffectHelper
-    {
-        public ConcurrentBag<CompilationMessage> CompilationMessages { get; } = new ConcurrentBag<CompilationMessage>();
-
-        public Exception FailWith(CompilationMessage message)
-        {
-            CompilationMessages.Add(message);
-            return new ExitStageException();
-        }
     }
 
     public class ExitStageException : Exception
