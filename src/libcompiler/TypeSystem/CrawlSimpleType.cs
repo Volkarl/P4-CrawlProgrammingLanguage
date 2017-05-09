@@ -6,15 +6,15 @@ namespace libcompiler.TypeSystem
     {
         private readonly Type _clrType;
 
-        public static CrawlSimpleType Tal { get; } = new CrawlSimpleType(typeof(int));
+        public static CrawlSimpleType Tal { get; } = new CrawlTypeTal();
 
-        public static CrawlSimpleType Kommatal { get; } = new CrawlSimpleType(typeof(double));
+        public static CrawlSimpleType Kommatal { get; } = new CrawlTypeKommatal();
 
-        public static CrawlSimpleType Bool { get; } = new CrawlSimpleType(typeof(bool));
+        public static CrawlSimpleType Bool { get; } = new CrawlTypeBool();
 
-        public static CrawlSimpleType Tegn { get; } = new CrawlSimpleType(typeof(char));
+        public static CrawlSimpleType Tegn { get; } = new CrawlTypeTegn();
 
-        public static CrawlSimpleType Tekst { get; } = new CrawlSimpleType(typeof(string));
+        public static CrawlSimpleType Tekst { get; } = new CrawlTypeTekst();
 
         public CrawlSimpleType(Type type) : base(type.FullName , type.Namespace, type.Assembly.FullName)
         {
@@ -24,17 +24,17 @@ namespace libcompiler.TypeSystem
 
         public override bool IsAssignableTo(CrawlType target)
         {
-            return Equals(target);
+            return Equals(target) || ImplicitlyCastableTo(target);
         }
 
         public override bool ImplicitlyCastableTo(CrawlType target)
         {
-            throw new NotImplementedException();
+            return Equals(target);
         }
 
         public override bool CastableTo(CrawlType target)
         {
-            throw new NotImplementedException();
+            return Equals(target);
         }
 
         public override string ToString()

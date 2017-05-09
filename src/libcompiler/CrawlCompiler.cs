@@ -101,7 +101,9 @@ namespace libcompiler
                     (destination, helper) =>
                     {
                         Func<AstData, SideeffectHelper, AstData> first = SemanticAnalysisPipeline.DeclerationOrderCheck;
-                        var final = first.EndWith(destination.Add, helper);  //Typechecker would be added here or line above
+                        var final = first
+                            .Then(SemanticAnalysisPipeline.TypeCheck)
+                            .EndWith(destination.Add, helper);  //Typechecker would be added here or line above
 
                         return final;
                     }

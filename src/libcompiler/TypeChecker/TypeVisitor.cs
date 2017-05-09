@@ -93,13 +93,12 @@ namespace libcompiler.TypeChecker
 
         protected override CrawlSyntaxNode VisitCastExpression(CastExpressionNode castExpression)
         {
-            var baseVisit = (CastExpressionNode) base.VisitCastExpression(castExpression);
+            var castExp = (CastExpressionNode) base.VisitCastExpression(castExpression);
 
-            throw new NotImplementedException();
-            //if(baseVisit.Target.ResultType.CastableTo(baseVisit.TypeToConvertTo.TODO))
-                //return baseVisit.WithResultType(baseVisit.TypeToConvertTo.TODO)
-
-            return baseVisit;
+            if (castExp.Target.ResultType.CastableTo(castExp.TypeToConvertTo.ActualType))
+                return castExp.WithResultType(castExp.TypeToConvertTo.ActualType);
+            else
+                return castExp.WithResultType(CrawlType.ErrorType);
         }
     }
 }

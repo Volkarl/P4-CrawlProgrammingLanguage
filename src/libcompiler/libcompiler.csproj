@@ -83,6 +83,7 @@
     <Compile Include="SyntaxTree\Nodes\Partials\ClassTypeDeclerationNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Partials\ForLoopNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Partials\TranslationUnitNode.cs" />
+    <Compile Include="TypeSystem\CrawlSimpleTypesBuiltIn.cs" />
     <Compile Include="TypeSystem\FutureType.cs" />
     <Compile Include="SyntaxTree\VisitorManualVisits.cs" />
     <Compile Include="TypeChecker\ExpressionEvaluator.cs" />

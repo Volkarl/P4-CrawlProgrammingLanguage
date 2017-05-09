@@ -13,17 +13,17 @@ namespace libcompiler.TypeSystem
 
         public override bool IsAssignableTo(CrawlType target)
         {
-            throw new InvalidOperationException("Tried to use unspecified type.");
+            return false;
         }
 
         public override bool ImplicitlyCastableTo(CrawlType target)
         {
-            throw new InvalidOperationException("Tried to use unspecified type.");
+            return false;
         }
 
         public override bool CastableTo(CrawlType target)
         {
-            throw new InvalidOperationException("Tried to use unspecified type.");
+            return false;
         }
     }
 }

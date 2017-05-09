@@ -122,7 +122,7 @@ namespace libcompiler.SyntaxTree.Parser
             //Parse every part of the chain of casts.
             for (int i = 1; i < castExpression.ChildCount -2; i+=3)
             {
-                targetTypes.Add(ParseTreeParser.ParseType((CrawlParser.TypeContext)castExpression.GetChild(i), false));
+                targetTypes.Add(ParseTreeParser.ParseType((CrawlParser.TypeContext)castExpression.GetChild(i)));
             }
 
             //Parse the rest of the expression.

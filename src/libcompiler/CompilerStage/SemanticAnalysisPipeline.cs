@@ -4,6 +4,7 @@ using libcompiler.CompilerStage.SemanticAnalysis;
 using libcompiler.Namespaces;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeChecker;
 
 namespace libcompiler.CompilerStage
 {
@@ -98,6 +99,14 @@ namespace libcompiler.CompilerStage
                 new AddScopeVisitor().Visit(withoutScope.Tree.RootNode).OwningTree);
         }
 
+        /// <summary>
+        /// Check that expressions are used on correct types.
+        /// </summary>
+        internal static AstData TypeCheck(AstData tree, SideeffectHelper notused)
+        {
+            var newTree = new TypeVisitor().Visit(tree.Tree.RootNode).OwningTree;
+            return new AstData(tree.TokenStream, tree.Filename, newTree);
+        }
 
         /// <summary>
         /// Finishes parsing types
