@@ -22,7 +22,6 @@ namespace libcompiler
             ConcurrentDictionary<string, Namespace> allNamespaces = NamespaceLoader.LoadAll(configuration.Assemblies);
             allNamespaces.MergeInto(Namespace.BuiltinNamespace.AsSingleIEnumerable());
 
-            ConcurrentBag<string> bagOfFiles = new ConcurrentBag<string>(configuration.Files);
             SideeffectHelper sideeffectHelper = new SideeffectHelper();
             CompilationStatus status = CompilationStatus.Success;
 
@@ -32,10 +31,29 @@ namespace libcompiler
                 bool parallel = !configuration.ForceSingleThreaded;
 
                 //The ConcurrentBag is an unordered, thread safe, collection
-                ConcurrentBag<AstData> parsedFiles = Transformation.From(bagOfFiles, sideeffectHelper)
-                        .With(ParsePipeline.ReadFileToPt, TargetStage.ParseTree)
-                        .With(ParsePipeline.CreateAst)
-                        .Execute(parallel);
+                ConcurrentBag<AstData> parsedFiles = Run<AstData, string>(configuration.Files, parallel, sideeffectHelper,
+                    (destination, helper) =>
+                    {
+                        //Syntax is slightly wonky, but cannot assign variable to method group.
+                        //_Could_ be hidden in ParsePipeline by making them properties instead....
+                        
+                        //Get the starting transformaton
+                        Func<string, SideeffectHelper, ParseTreeData> parsePT = ParsePipeline.ReadFileToPt;
+
+                        //Jump out if we are intrested in earlier stage.
+                        if (configuration.TargetStage == TargetStage.ParseTree) return parsePT.EndWith(output.WriteLine, helper);
+                        
+                        //.Then adds another stage
+                        var parseASt = parsePT 
+                        .Then(ParsePipeline.CreateAst);
+
+                        if (configuration.TargetStage == TargetStage.AbstractSyntaxTree)
+                            return parseASt.EndWith(output.WriteLine, helper);
+
+                        //.EndWith collects it
+                        return parseASt.EndWith(destination.Add, helper);
+                    }
+                );
 
                 MaybeDie(sideeffectHelper);
 
@@ -44,28 +62,40 @@ namespace libcompiler
                     TranslationUnitNode node = (TranslationUnitNode) file.Tree.RootNode;
                     allNamespaces.MergeInto(node.ContainedTypes.AsSingleIEnumerable());
                 }
-
-
-                ConcurrentBag<AstData> filesWithScope = Transformation.From(parsedFiles, sideeffectHelper)
-                        .With(new SemanticAnalysisPipeline.NamespaceDecorator(allNamespaces).AddExport)
-                        .With(SemanticAnalysisPipeline.CollectScopeInformation)
-                        .Execute(parallel);
+                
 
                 //TODO: finish Semantic analysis
+                ConcurrentBag<AstData> filesWithScope = Run<AstData, AstData>(parsedFiles, parallel, sideeffectHelper,
+                    (destination, helper) =>
+                    {
+                        //NamespaceDecorator is a hack to pass all namespaces in to the function that finds the relevant ones
+                        Func<AstData, SideeffectHelper, AstData> first = new SemanticAnalysisPipeline.NamespaceDecorator(allNamespaces).AddExport;
+                        var final =
+                            first.Then(SemanticAnalysisPipeline.CollectScopeInformation)
+                                .EndWith(destination.Add, helper);
 
-                ConcurrentBag<AstData> decoratedAsts = Transformation.From(filesWithScope, sideeffectHelper)
-                    .With(SemanticAnalysisPipeline.DeclerationOrderCheck)
-                    .With(SemanticAnalysisPipeline.PutTypes)
-                    .Execute(parallel);
+                        return final;
+                    }
+                );
+
+
+                ConcurrentBag<AstData> decoratedAsts = Run<AstData, AstData>(filesWithScope, parallel, sideeffectHelper,
+                    (destination, helper) =>
+                    {
+                        Func<AstData, SideeffectHelper, AstData> first = SemanticAnalysisPipeline.DeclerationOrderCheck;
+                        var final = first.Then(SemanticAnalysisPipeline.PutTypes)
+                            .EndWith(destination.Add, helper);
+
+                        return final;
+                    }
+                );
+
 
                 //TODO: Interpeter or code generation
 
                 //Until meaningfull end, print everything
 
-                foreach (AstData decoratedAst in decoratedAsts)
-                {
-                    Console.WriteLine(decoratedAst);
-                }
+                Execute(decoratedAsts, output.WriteLine, parallel);
 
                 if (sideeffectHelper.CompilationMessages.Count(message => message.Severity >= MessageSeverity.Error) > 0)
                     status = CompilationStatus.Failure;
