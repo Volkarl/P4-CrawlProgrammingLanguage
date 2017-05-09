@@ -50,8 +50,10 @@ namespace libcompiler
                         if (configuration.TargetStage == TargetStage.AbstractSyntaxTree)
                             return parseASt.EndWith(output.WriteLine, helper);
 
+                        var firstscopepass = parseASt.Then(SemanticAnalysisPipeline.CollectTypes);
+
                         //.EndWith collects it
-                        return parseASt.EndWith(destination.Add, helper);
+                        return firstscopepass.EndWith(destination.Add, helper);
                     }
                 );
 
@@ -60,9 +62,10 @@ namespace libcompiler
                 foreach (AstData file in parsedFiles)
                 {
                     TranslationUnitNode node = (TranslationUnitNode) file.Tree.RootNode;
-                    allNamespaces.MergeInto(node.ContainedTypes.AsSingleIEnumerable());
+                    Namespace exportedTypes = new Namespace(node.Namespace.Module, node.Code.Scope.Classes());
+
+                    allNamespaces.MergeInto(exportedTypes.AsSingleIEnumerable());
                 }
-                
 
                 //TODO: finish Semantic analysis
                 ConcurrentBag<AstData> filesWithScope = Run<AstData, AstData>(parsedFiles, parallel, sideeffectHelper,
@@ -70,21 +73,24 @@ namespace libcompiler
                     {
                         //NamespaceDecorator is a hack to pass all namespaces in to the function that finds the relevant ones
                         Func<AstData, SideeffectHelper, AstData> first = new SemanticAnalysisPipeline.NamespaceDecorator(allNamespaces).AddExport;
-                        var final =
-                            first.Then(SemanticAnalysisPipeline.CollectScopeInformation)
-                                .EndWith(destination.Add, helper);
 
-                        return final;
+                        return first
+                            .Then(SemanticAnalysisPipeline.PutTypes)
+                            .Then(SemanticAnalysisPipeline.SecondScopePass)
+                            .Then(SemanticAnalysisPipeline.FinishTypes)
+                            .EndWith(destination.Add, helper);
+
                     }
                 );
 
+                //TODO: Merge namespaces again with extra (Methods/Variables) from scope. Right now, only classes are visible
+                //in other files
 
                 ConcurrentBag<AstData> decoratedAsts = Run<AstData, AstData>(filesWithScope, parallel, sideeffectHelper,
                     (destination, helper) =>
                     {
                         Func<AstData, SideeffectHelper, AstData> first = SemanticAnalysisPipeline.DeclerationOrderCheck;
-                        var final = first.Then(SemanticAnalysisPipeline.PutTypes)
-                            .EndWith(destination.Add, helper);
+                        var final = first.EndWith(destination.Add, helper);  //Typechecker would be added here or line above
 
                         return final;
                     }

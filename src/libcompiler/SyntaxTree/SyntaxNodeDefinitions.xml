@@ -195,6 +195,10 @@
                     <type>Type</type>
                 </child>
                 <child>
+                    <name>Parameters</name>
+                    <type>List'Parameter</type>
+                </child>
+                <child>
                     <name>Body</name>
                     <type>Block</type>
                 </child>
@@ -342,10 +346,6 @@
                     <type>Identifier</type>
                 </child>
                 <child>
-                    <name>Parameters</name>
-                    <type>List'Identifier</type>
-                </child>
-                <child>
                     <name>GenericParameters</name>
                     <type>List'GenericParameter</type>
                 </child>
@@ -369,19 +369,18 @@
                     <name>Reference</name>
                     <type>bool</type>
                 </property>
-                <property>
-                    <name>Identifier</name>
-                    <type>string</type>
-                </property>
             </properties>
             <children>
                 <child>
                     <name>ParameterType</name>
                     <type>Type</type>
                 </child>
+                <child>
+                    <name>Identifier</name>
+                    <type>Identifier</type>
+                </child>
             </children>
         </node>
-        <!-- Reference -->
         <node>
             <name>ReturnStatement</name>
             <baseclass>CrawlSyntax</baseclass>
@@ -448,11 +447,6 @@
             </children>
             <properties>
                 <property>
-                    <name>ContainedTypes</name>
-                    <type>Namespace</type>
-                    <nulldefault>true</nulldefault>
-                </property>
-                <property>
                     <name>ImportedNamespaces</name>
                     <type>Namespace</type>
                     <nulldefault>true</nulldefault>
@@ -468,10 +462,10 @@
                     <name>TypeName</name>
                     <type>string</type>
                 </property>
-                <property>
+                <!--<property>
                     <name>IsReference</name>
                     <type>bool</type>
-                </property>
+                </property> -->
                 <property>
                     <name>ArrayDimensions</name>
                     <type>int</type>

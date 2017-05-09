@@ -33,11 +33,9 @@ namespace libcompiler.Namespaces
         {
             foreach (CrawlType type in contents)
             {
-                _scope.TryAdd(type.Identifier, new[] {new TypeInformation(type, ProtectionLevel.Public, -1, DeclaringScope.ClassLike)});
+                _scope.TryAdd(type.Identifier, new[] {new TypeInformation(type, ProtectionLevel.Public, -1, DeclaringScope.ClassLike, NeedsABetterNameType.Class)});
             }
         }
-
-        
 
         public Namespace(string name)
         {

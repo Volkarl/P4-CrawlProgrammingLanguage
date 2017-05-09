@@ -2,12 +2,28 @@
 using System.Linq;
 using libcompiler.CompilerStage.SemanticAnalysis;
 using libcompiler.Namespaces;
+using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 
 namespace libcompiler.CompilerStage
 {
     internal class SemanticAnalysisPipeline
     {
+
+        /// <summary>
+        /// On all blocknodes, all types are added. No other scope information exists once this finishes
+        /// </summary>
+        public static AstData CollectTypes(AstData data, SideeffectHelper helper)
+        {
+            return new AstData(
+                data.TokenStream,
+                data.Filename,
+                new FirstScopePassVisitor().Visit(data.Tree.RootNode).OwningTree);
+        }
+
+        /// <summary>
+        /// Adds the global namespace with all types.
+        /// </summary>
         internal class NamespaceDecorator
         {
             private readonly ConcurrentDictionary<string, Namespace> _allNamespaces;
@@ -49,6 +65,10 @@ namespace libcompiler.CompilerStage
             }
         }
 
+
+        /// <summary>
+        /// Adds type to all typenodes. Outputs error messages if types are not found. No regard for private types atm
+        /// </summary>
         internal static AstData PutTypes(AstData arg, SideeffectHelper helper)
         {
             return new AstData(
@@ -58,18 +78,45 @@ namespace libcompiler.CompilerStage
                     .OwningTree);
         }
 
+        /// <summary>
+        /// Checks that variables are only used after they are declared
+        /// </summary>
         internal static AstData DeclerationOrderCheck(AstData arg, SideeffectHelper helper)
         {
             new CheckDeclerationOrderVisitor(helper.CompilationMessages, arg).Visit(arg.Tree.RootNode);
             return arg;
         }
 
-        internal static AstData CollectScopeInformation(AstData withoutScope, SideeffectHelper notused)
+        /// <summary>
+        /// Adds everything else to scope (Variables, methods)
+        /// </summary>
+        internal static AstData SecondScopePass(AstData withoutScope, SideeffectHelper notused)
         {
             return new AstData(
                 withoutScope.TokenStream,
                 withoutScope.Filename,
                 new AddScopeVisitor().Visit(withoutScope.Tree.RootNode).OwningTree);
+        }
+
+
+        /// <summary>
+        /// Finishes parsing types
+        /// </summary>
+        public static AstData FinishTypes(AstData arg1, SideeffectHelper arg2)
+        {
+            return arg1; //TODO: FIX
+        }
+    }
+
+    internal class FirstScopePassVisitor : SyntaxRewriter
+    {
+        protected override CrawlSyntaxNode VisitBlock(BlockNode block)
+        {
+            BlockNode newblock = (BlockNode) base.VisitBlock(block);
+
+
+            return newblock.WithScope(new BlockScope(newblock));
+
         }
     }
 }

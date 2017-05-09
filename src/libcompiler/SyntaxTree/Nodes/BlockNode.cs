@@ -32,7 +32,7 @@ namespace libcompiler.SyntaxTree
             return typeInformation;
         }
 
-        public new BlockNode Update(Interval interval, IEnumerable<CrawlSyntaxNode> children, BlockScope scope = null)
+        public new BlockNode Update(Interval interval, IEnumerable<CrawlSyntaxNode> children, BlockScope scope)
         {
             List<CrawlSyntaxNode> newchildren = children.ToList();
 

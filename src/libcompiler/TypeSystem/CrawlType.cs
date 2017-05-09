@@ -68,11 +68,6 @@ namespace libcompiler.TypeSystem
         public static CrawlType ErrorType { get; } =
             new CrawlStatusType("$TYPE_ERROR", "$TYPE_ERROR", "$TYPE_ERROR");
 
-        public static CrawlType ParseDecleration(string text)
-        {
-            throw new NotImplementedException();
-        }
-
         protected CrawlType(string identifier, string @namespace, string assembly="CrawlCode")
         {
             Identifier = identifier;

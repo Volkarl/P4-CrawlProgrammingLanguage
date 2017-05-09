@@ -1,31 +1,29 @@
-﻿using System.Collections.Generic;
-using libcompiler.ExtensionMethods;
+﻿using System;
+using System.Collections.Generic;
 using libcompiler.Scope;
-using libcompiler.SyntaxTree;
 
 namespace libcompiler.TypeSystem
 {
     public class CrawlConstructedType : CrawlType, IScope
     {
-        private readonly ClassTypeDeclerationNode _declaration;
-
-        protected CrawlConstructedType(ClassTypeDeclerationNode declaration)
-            : base(declaration.Identifier.Value, declaration.FindNameSpace().Module)
+        public CrawlConstructedType(string name, string ns)
+            : base(name, ns)
         {
-            _declaration = declaration;
+            //_declaration = declaration;
 
             //TODO Will nullref for classes inheriting from $OBJECT
-            Ancestor = (CrawlConstructedType) declaration.FindFirstScope().FindSymbol(declaration.Ancestor.Identifier)[0].Type;
+            //Ancestor = (CrawlConstructedType) declaration.FindFirstScope().FindSymbol(declaration.Ancestor.Identifier)[0].Type;
         }
 
 
         public CrawlConstructedType Ancestor { get; }
-        //public IReadOnlyList<CrawlType> Interfaces { get; }
+        public IReadOnlyList<CrawlType> Interfaces { get; }
 
 
         public TypeInformation[] FindSymbol(string symbol)
         {
-            return _declaration.FindSymbolOnlyInThisScope(symbol);
+            throw new NotImplementedException();
+            //return _declaration.FindSymbolOnlyInThisScope(symbol);
         }
 
         public IEnumerable<string> LocalSymbols() => default(IEnumerable<string>);
@@ -35,6 +33,9 @@ namespace libcompiler.TypeSystem
         /// </summary>
         public override bool IsAssignableTo(CrawlType target)
         {
+            throw new NotImplementedException();
+
+
             //Are they equal?
             if (Equals(target))
                 return true;
@@ -55,6 +56,11 @@ namespace libcompiler.TypeSystem
             return false;
         }
 
+        public override string ToString()
+        {
+            return $"[{Assembly}] {Identifier} {"Not initialized"}";
+        }
+
         /// <summary>
         /// Checks if an implicit cast from this to target is legal(according to the Cräwl specification).
         /// </summary>
@@ -69,6 +75,7 @@ namespace libcompiler.TypeSystem
         /// </summary>
         public override bool CastableTo(CrawlType target)
         {
+            throw new NotImplementedException();
             //TODO Check additional rules for simple types
 
             //Are they equal?

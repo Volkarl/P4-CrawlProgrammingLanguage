@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.CompilerStage.SemanticAnalysis
 {
@@ -9,7 +10,7 @@ namespace libcompiler.CompilerStage.SemanticAnalysis
     {
         protected override CrawlSyntaxNode VisitBlock(BlockNode block)
         {
-            BlockScope scope = new BlockScope(block);
+            BlockScope scope = block.Scope.CollectIdentifiers(block);
             var tmp = ((BlockNode) base.VisitBlock(block));
             var after = tmp.WithScope(scope);
             return after;
@@ -17,14 +18,16 @@ namespace libcompiler.CompilerStage.SemanticAnalysis
 
         protected override CrawlSyntaxNode VisitMethodDecleration(MethodDeclerationNode methodDecleration)
         {
+            IScope containingScope = methodDecleration.FindFirstScope();
+
             GenericScope scope = new GenericScope(
                 methodDecleration
                     .Parameters
                     .Select(
-                        parameter =>
-                            new KeyValuePair<string, TypeInformation>(parameter.Value,
+                        (parameter, index) =>
+                            new KeyValuePair<string, TypeInformation>(parameter.Identifier.Value,
                                 new TypeInformation(
-                                    null,
+                                    parameter.ParameterType.ActualType,
                                     ProtectionLevel.NotApplicable,
                                     parameter.Interval.b
                                 )
@@ -55,7 +58,7 @@ namespace libcompiler.CompilerStage.SemanticAnalysis
                 new KeyValuePair<string, TypeInformation>(
                     forLoop.LoopVariable.Value,
                     new TypeInformation(
-                        null,
+                        forLoop.Loopvariable.ActualType,
                         ProtectionLevel.NotApplicable,
                         forLoop.LoopVariable.Interval.a,
                         DeclaringScope.MethodLike)
