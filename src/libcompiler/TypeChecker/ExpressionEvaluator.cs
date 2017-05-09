@@ -66,10 +66,10 @@ namespace libcompiler.TypeChecker
         /// A dictionary containing a Tuplw With CrawlType, CrawlType and Expressiontype. 
         /// The output shall be a new CrawlSimpleType or somekind of error
         /// </summary>
-        private static Dictionary<Tuple<CrawlType, CrawlType, ExpressionType>, CrawlType> BinaryExpressinDict
+        private static Dictionary<Tuple<CrawlType, CrawlType, ExpressionType>, CrawlType> BinaryExpressionDict
              = new Dictionary<Tuple<CrawlType, CrawlType, ExpressionType>, CrawlType>
-#region Greater 
              {
+#region Greater
                 {
                     _talTal(ExpressionType.Greater),
                     CrawlSimpleType.Bool
@@ -136,8 +136,16 @@ namespace libcompiler.TypeChecker
                     CrawlSimpleType.Bool
                  },
                  {
-                  _talKomma(ExpressionType.Equal),
-                  CrawlSimpleType.Bool
+                      _talKomma(ExpressionType.Equal),
+                      CrawlSimpleType.Bool
+                 },
+                 {
+                     _tekstTekst(ExpressionType.Equal),
+                     CrawlSimpleType.Bool
+                 },
+                 {
+                     _tegnTegn(ExpressionType.Equal),
+                     CrawlSimpleType.Bool
                  },
 #endregion
 #region NotEqual
@@ -155,15 +163,10 @@ namespace libcompiler.TypeChecker
                   CrawlSimpleType.Bool
                  },
 #endregion
-                 
              };
 
 
-        /// <summary>
-        /// The differient combinations with the specifik binary Expression
-        /// </summary>
-        /// <param name="eType"></param>
-        /// <returns></returns>
+        // The different combinations with the specific binary Expression
         private static Tuple<CrawlType, CrawlType, ExpressionType> _talTal(ExpressionType eType)
         {
             return new Tuple<CrawlType, CrawlType, ExpressionType>(CrawlSimpleType.Tal, CrawlSimpleType.Tal, eType);
@@ -173,34 +176,52 @@ namespace libcompiler.TypeChecker
         {
             return new Tuple<CrawlType, CrawlType, ExpressionType>(CrawlSimpleType.Kommatal, CrawlSimpleType.Kommatal, eType);
         }
+
         private static Tuple<CrawlType, CrawlType, ExpressionType> _talKomma(ExpressionType eType)
         {
             return new Tuple<CrawlType, CrawlType, ExpressionType>(CrawlSimpleType.Tal, CrawlSimpleType.Kommatal, eType);
         }
-        
+
+        private static Tuple<CrawlType, CrawlType, ExpressionType> _tekstTekst(ExpressionType eType)
+        {
+            return new Tuple<CrawlType, CrawlType, ExpressionType>(CrawlSimpleType.Tekst, CrawlSimpleType.Tekst, eType);
+        }
+
+        private static Tuple<CrawlType, CrawlType, ExpressionType> _tegnTegn(ExpressionType eType)
+        {
+            return new Tuple<CrawlType, CrawlType, ExpressionType>(CrawlSimpleType.Tegn, CrawlSimpleType.Tegn, eType);
+        }
+
+
 
         /// <summary>
-        /// This methods purpose is to Look at the right and left side and the swith the left and right operand to to try the other 
-        /// combination as well. And then return the type 
+        /// Returns result type of binary expression. This may be the error type.
         /// </summary>
-        /// <param name="leftOperand"></param>
-        /// <param name="oprator"></param>
-        /// <param name="rightOperand"></param>
-        /// <returns></returns>
-        public static CrawlType EvaluateBinaryType(CrawlType leftOperand, ExpressionType oprator, CrawlType rightOperand)
+        public static CrawlType EvaluateBinaryType(CrawlType operand1, ExpressionType oprator, CrawlType operand2)
         {
-            
-            if (BinaryExpressinDict.ContainsKey(new Tuple<CrawlType,CrawlType,ExpressionType>(leftOperand, rightOperand, oprator)))
+            //Valid binary expressions are stored in BinaryExpressionDict.
+            //To avoid redundancy, {tal > kommatal => bool} is saved,
+            //but {kommatal > tal => bool} is not.
+            //Instead we check if either of the two possible combinations
+            //of two operators are stored in the dictionary. 
+
+            var firstPossibleMatch =
+                new Tuple<CrawlType, CrawlType, ExpressionType>(operand1, operand2, oprator);
+
+            if (BinaryExpressionDict.ContainsKey(firstPossibleMatch))
             {
-                return BinaryExpressinDict[new Tuple<CrawlType, CrawlType, ExpressionType>(leftOperand, rightOperand, oprator)];
+                return BinaryExpressionDict[firstPossibleMatch];
             }
-            if (BinaryExpressinDict.ContainsKey(new Tuple<CrawlType, CrawlType, ExpressionType>(rightOperand, leftOperand, oprator)))
+
+            var secondPossibleMatch =
+                new Tuple<CrawlType, CrawlType, ExpressionType>(operand2, operand1, oprator);
+
+            if (BinaryExpressionDict.ContainsKey(secondPossibleMatch))
             {
-                return BinaryExpressinDict[new Tuple<CrawlType, CrawlType, ExpressionType>(rightOperand, leftOperand, oprator)];
+                return BinaryExpressionDict[secondPossibleMatch];
             }
             else
                 return CrawlType.ErrorType;
-            
         }
 
         
