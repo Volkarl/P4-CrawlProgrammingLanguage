@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using libcompiler.ExtensionMethods;
 using libcompiler.Parser;
 using libcompiler.TypeSystem;
 
@@ -54,6 +55,8 @@ namespace libcompiler.SyntaxTree.Parser
                 case CrawlParser.RULE_or_expression:
                 case CrawlParser.RULE_exponential_expression:
                     return ParseMultu(rule);
+                case CrawlParser.RULE_cast_expression:
+                    return ParseCast(rule);
                 case CrawlParser.RULE_unary_expression:
                     return ParseUnary(rule);
                 default:
@@ -110,6 +113,34 @@ namespace libcompiler.SyntaxTree.Parser
             }
 
             return CrawlSyntaxNode.MultiChildExpression(rule.SourceInterval, type, CrawlType.UnspecifiedType, sources);
+        }
+
+        private static ExpressionNode ParseCast(RuleContext expression)
+        {
+            //( LPARENTHESIS type RPARENTHESIS ) * unary_expression
+            var castExpression = (CrawlParser.Cast_expressionContext) expression;
+            List<TypeNode> targetTypes = new List<TypeNode>();
+
+            //Parse every part of the chain of casts.
+            for (int i = 1; i < castExpression.ChildCount -2; i+=3)
+            {
+                targetTypes.Add(ParseTreeParser.ParseType((CrawlParser.TypeContext)castExpression.GetChild(i), false));
+            }
+
+            //Parse the rest of the expression.
+            ExpressionNode result = ParseExpression((RuleContext) castExpression.LastChild());
+
+            //Wrap the casts around the rest of the expression one at a time.
+            foreach (TypeNode type in targetTypes)
+            {
+                result = CrawlSyntaxNode.CastExpression(
+                    Interval.Invalid, ExpressionType.Cast, CrawlType.UnspecifiedType,
+                    type,
+                    result
+                );
+            }
+
+            return result;
         }
 
         private static ExpressionNode ParseBinary(RuleContext rule)

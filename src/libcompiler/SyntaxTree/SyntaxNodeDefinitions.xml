@@ -124,6 +124,20 @@
             </children>
         </node>
         <node>
+            <name>CastExpression</name>
+            <baseclass>Expression</baseclass>
+            <children>
+                <child>
+                    <name>TypeToConvertTo</name>
+                    <type>Type</type>
+                </child>
+                <child>
+                    <name>Target</name>
+                    <type>Expression</type>
+                </child>
+            </children>
+        </node>
+        <node>
             <name>Namespace</name>
             <baseclass>Import</baseclass>
         </node>

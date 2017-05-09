@@ -90,5 +90,16 @@ namespace libcompiler.TypeChecker
             result = (CallNode)result.WithResultType(resultType);
             return result;
         }
+
+        protected override CrawlSyntaxNode VisitCastExpression(CastExpressionNode castExpression)
+        {
+            var baseVisit = (CastExpressionNode) base.VisitCastExpression(castExpression);
+
+            throw new NotImplementedException();
+            //if(baseVisit.Target.ResultType.CastableTo(baseVisit.TypeToConvertTo.TODO))
+                //return baseVisit.WithResultType(baseVisit.TypeToConvertTo.TODO)
+
+            return baseVisit;
+        }
     }
 }

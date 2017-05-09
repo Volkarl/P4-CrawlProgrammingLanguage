@@ -35,7 +35,6 @@ namespace libcompiler.TypeChecker
 
         public static CrawlType Call(CrawlMethodType methodSignature, params CrawlType[] givenParameters)
         {
-            CrawlType result = null;
                 if (!ParameterMatch(methodSignature, givenParameters))
                     return CrawlType.ErrorType;
                 else

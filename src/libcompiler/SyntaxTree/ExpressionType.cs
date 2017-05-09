@@ -29,6 +29,7 @@
         Divide,
         Modulous,
         GenericsUnpack,
-        ArrayConstructor
+        ArrayConstructor,
+        Cast
     }
 }
