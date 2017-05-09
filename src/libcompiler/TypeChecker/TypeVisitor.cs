@@ -61,17 +61,15 @@ namespace libcompiler.TypeChecker
 
         protected override CrawlSyntaxNode VisitBinaryExpression(BinaryExpressionNode binaryExpression)
         {
-
-            BinaryExpressionNode expressionNodeThatWeAreChanging = (BinaryExpressionNode) (base.VisitBinaryExpression(binaryExpression) );
-            CrawlType leftOperand = expressionNodeThatWeAreChanging.LeftHandSide.ResultType;
-            CrawlType rightOperand = expressionNodeThatWeAreChanging.RightHandSide.ResultType;
-            ExpressionType oprator = expressionNodeThatWeAreChanging.ExpressionType;
+            BinaryExpressionNode newExpressoinNode = (BinaryExpressionNode) (base.VisitBinaryExpression(binaryExpression) );
+            CrawlType leftOperand = newExpressoinNode.LeftHandSide.ResultType;
+            CrawlType rightOperand = newExpressoinNode.RightHandSide.ResultType;
+            ExpressionType oprator = newExpressoinNode.ExpressionType;
             
             CrawlType expressionTypeResult = ExpressionEvaluator.EvaluateBinaryType(leftOperand, oprator, rightOperand);
             CrawlSyntaxNode result = newExpressoinNode.WithResultType(expressionTypeResult);
-            return result; 
-
-
+            
+            return result;
         }
 
         #endregion
