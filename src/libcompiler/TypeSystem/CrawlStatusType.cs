@@ -32,5 +32,10 @@ namespace libcompiler.TypeSystem
         {
             throw new InvalidOperationException("An error type has no members");
         }
+
+        public override TypeInformation[] FindSymbol(string symbol)
+        {
+            throw new InvalidOperationException("An error type has no members");
+        }
     }
 }

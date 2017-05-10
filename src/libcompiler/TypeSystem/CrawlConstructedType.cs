@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO.Pipes;
 using System.Linq;
+using System.Reflection;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 
 namespace libcompiler.TypeSystem
 {
-    public class CrawlConstructedType : CrawlType, IScope
+    public class CrawlConstructedType : CrawlType
     {
         public CrawlConstructedType(string name, string ns)
             : base(name, ns)
@@ -20,18 +22,33 @@ namespace libcompiler.TypeSystem
 
 
         private ConcurrentDictionary<string, TypeInformation[]> _scope;
-        public CrawlType Ancestor { get; private set; }
-        public IReadOnlyList<CrawlType> Interfaces { get; }
 
-
-        public TypeInformation[] FindSymbol(string symbol)
+        public override TypeInformation[] FindSymbol(string symbol)
         {
             if (_scope == null) return null;
-            throw new NotImplementedException();
-            //return _declaration.FindSymbolOnlyInThisScope(symbol);
-        }
 
-        public IEnumerable<string> LocalSymbols() => default(IEnumerable<string>);
+            //SLOW! Lots of copying from array to array. Why did we not just return IEnumerable<TypeInformation>?
+            TypeInformation[] self;
+            _scope.TryGetValue(symbol, out self);
+
+            TypeInformation[] ancestots = Ancestor?.FindSymbol(symbol);
+
+            //If not null, add lenght
+            int lenght = self?.Length ?? 0 + ancestots?.Length ?? 0;
+
+            //Seems most others return null in case of no match, keeping consistent
+            if (lenght == 0) return null;
+
+            TypeInformation[] all = new TypeInformation[lenght];
+
+            if(self != null)
+                Array.Copy(self, all, self.Length);
+
+            if(ancestots != null)
+                Array.Copy(ancestots, 0, all, self?.Length ?? 0, ancestots.Length);
+
+            return all;
+        }
 
         /// <summary>
         /// Checks if assigning this to target is legal(according to Cräwl specification).
@@ -120,7 +137,7 @@ namespace libcompiler.TypeSystem
                 { Ancestor = baseInformation.Type;}
                 else
                 {
-                   throw new Exception("Derives from something not a type"); //TODO: Err msg 
+                   throw new Exception("Derives from something not a type"); //TODO: Err msg
                 }
             }
             else
@@ -129,15 +146,37 @@ namespace libcompiler.TypeSystem
             }
 
 
-            List<KeyValuePair<string, TypeInformation[]>> members = Ancestor.Members().ToList();
-            members.AddRange(self.Body.Scope.LocalSymbols().Select(name => new KeyValuePair<string, TypeInformation[]>(name, self.Body.Scope.FindSymbol(name))));
-                
+            List<KeyValuePair<string, TypeInformation[]>> members =
+                self
+                    .Body
+                    .Scope
+                    .LocalSymbols()
+                    .Select(name =>
+                        new KeyValuePair<string, TypeInformation[]>(
+                            name,
+                            self.Body.Scope.FindSymbol(name)
+                        )
+                    )
+                    .ToList();
+
             _scope = new ConcurrentDictionary<string, TypeInformation[]>(members);
         }
 
         public override IEnumerable<KeyValuePair<string, TypeInformation[]>> Members()
         {
-            return _scope;
+            foreach (KeyValuePair<string,TypeInformation[]> member in _scope)
+            {
+                yield return member;
+            }
+
+            if (Ancestor != null)
+            {
+                foreach (KeyValuePair<string,TypeInformation[]> member in Ancestor.Members())
+                {
+                    yield return member;
+                }
+            }
+
         }
     }
 }

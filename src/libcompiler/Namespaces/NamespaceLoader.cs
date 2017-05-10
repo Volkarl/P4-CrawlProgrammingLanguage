@@ -85,10 +85,7 @@ namespace libcompiler.Namespaces
                     .Select(ns =>
                         new Namespace(
                             ns.Key,
-                            ns
-                                .Select(type =>
-                                    new CrawlSimpleType(type)
-                                )
+                            ns.Select(CrawlSimpleType.Get)
                         )
                     )
                     .ToList();

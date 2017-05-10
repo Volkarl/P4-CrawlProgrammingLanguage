@@ -10,8 +10,6 @@ namespace libcompiler.TypeSystem
 {
     public class CrawlSimpleType : CrawlType
     {
-        public static void Touch() {} //Static noop to force static constructor to run
-
         //TODO: make all instances of crawlType that is based on Type use this.
         //Examine type and if prudent, return CrawlArrayType or CrawlMethodType instead
         public static CrawlType Get(Type type)
@@ -30,7 +28,7 @@ namespace libcompiler.TypeSystem
 
         
         private readonly Type _clrType;
-        private readonly ConcurrentDictionary<string, TypeInformation[]> _members;
+        private ConcurrentDictionary<string, TypeInformation[]> _members;
 
         public static CrawlSimpleType Tal { get; } = new CrawlTypeTal();
 
@@ -44,14 +42,19 @@ namespace libcompiler.TypeSystem
 
         public static CrawlSimpleType Ting { get; } = new CrawlSimpleType(typeof(object));
 
-        
-        public CrawlSimpleType(Type type) : base(type.FullName , type.Namespace, type.Assembly.FullName)
+        public static CrawlType Intet { get; } = new CrawlSimpleType(typeof(void));
+
+
+        protected CrawlSimpleType(Type type) : base(type.Name , type.Namespace, type.Assembly.FullName)
         {
             if(type == null) throw new NullReferenceException(nameof(type));
 
             _clrType = type;
 
-            
+        }
+
+        private void Initialize()
+        {
             //Uhh, black magic linq.
             //For all members, convert them into a typeInformation.
             //Group members that share names
@@ -63,14 +66,13 @@ namespace libcompiler.TypeSystem
 
             //Finally, convert groups of KeyValuePair<string, TypeInformation> into KeyValuePair<string, TypeInformation[]>
             _members = new ConcurrentDictionary<string, TypeInformation[]>(
-                    members.Select(x => 
-                        new KeyValuePair<string, TypeInformation[]>(
-                            x.Key, 
-                            x.Select(y => y.Value).ToArray()
-                        )
+                members.Select(x =>
+                    new KeyValuePair<string, TypeInformation[]>(
+                        x.Key,
+                        x.Select(y => y.Value).ToArray()
                     )
+                )
             );
-
         }
 
         private KeyValuePair<string, TypeInformation> MakeCrawlMember(MemberInfo member)
@@ -143,7 +145,20 @@ namespace libcompiler.TypeSystem
 
         public override IEnumerable<KeyValuePair<string, TypeInformation[]>> Members()
         {
-            throw new NotImplementedException();
+            if(_members == null) Initialize();
+
+            return _members;
+        }
+
+        public override TypeInformation[] FindSymbol(string symbol)
+        {
+            if(_members == null) Initialize();
+
+            TypeInformation[] result;
+            if (_members.TryGetValue(symbol, out result))
+                return result;
+
+            return null;
         }
     }
 }

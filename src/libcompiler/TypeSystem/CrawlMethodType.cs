@@ -41,5 +41,10 @@ namespace libcompiler.TypeSystem
         {
             yield break;
         }
+
+        public override TypeInformation[] FindSymbol(string symbol)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

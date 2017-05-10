@@ -1,5 +1,12 @@
+importer System;
+
 klasse foo er bar = 
 	tal b;
+	tal() baz=
+		returner z;
 	
 klasse bar = 
 	tal z;
+	Type() FindType =
+		returner GetType();
+

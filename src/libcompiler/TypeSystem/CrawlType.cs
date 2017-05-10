@@ -6,10 +6,8 @@ using libcompiler.SyntaxTree;
 
 namespace libcompiler.TypeSystem
 {
-    public abstract class CrawlType 
+    public abstract class CrawlType : IScope
     {
-        public static CrawlType Intet { get; } = new CrawlSimpleType(typeof(void));
-
         public static CrawlType ParseDecleration(IScope declerationScope, string text)
         {
             if (text.Last() == ']')
@@ -32,7 +30,7 @@ namespace libcompiler.TypeSystem
                 CrawlType returnType;
                 if (remainingType.Trim() == "intet")
                 {
-                    returnType = Intet;
+                    returnType = CrawlSimpleType.Intet;
                 }
                 else
                 {
@@ -82,8 +80,8 @@ namespace libcompiler.TypeSystem
 
         public string CanonicalName => $"[{Assembly}]{Namespace}.{Identifier}";
 
-        //public IReadOnlyList<CrawlType> Interfaces { get; }
-
+        public CrawlType Ancestor { get; protected set; }
+        public IReadOnlyList<CrawlType> Interfaces { get; protected set; }
 
         public override bool Equals(object obj)
         {
@@ -114,15 +112,7 @@ namespace libcompiler.TypeSystem
         public abstract bool CastableTo(CrawlType target);
 
         public abstract IEnumerable<KeyValuePair<string, TypeInformation[]>> Members();
-    }
-
-    public class TypeNotFoundException : Exception
-    {
-        public string Type { get; }
-
-        public TypeNotFoundException(string type)
-        {
-            Type = type;
-        }
+        public abstract TypeInformation[] FindSymbol(string symbol);
+        public IEnumerable<string> LocalSymbols() => Members().Select(x => x.Key);
     }
 }

@@ -64,5 +64,10 @@ namespace libcompiler.TypeSystem
         {
             throw new NotImplementedException();
         }
+
+        public override TypeInformation[] FindSymbol(string symbol)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
