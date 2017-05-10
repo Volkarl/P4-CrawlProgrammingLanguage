@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 
 namespace libcompiler.TypeSystem
 {
-    public abstract class CrawlType
+    public abstract class CrawlType 
     {
-        public static CrawlType Intet { get; }= new CrawlSimpleType(typeof(void));
+        public static CrawlType Intet { get; } = new CrawlSimpleType(typeof(void));
 
         public static CrawlType ParseDecleration(IScope declerationScope, string text)
         {
@@ -112,7 +113,7 @@ namespace libcompiler.TypeSystem
         /// </summary>
         public abstract bool CastableTo(CrawlType target);
 
-
+        public abstract IEnumerable<KeyValuePair<string, TypeInformation[]>> Members();
     }
 
     public class TypeNotFoundException : Exception

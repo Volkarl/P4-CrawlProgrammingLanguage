@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using libcompiler.Scope;
+using libcompiler.SyntaxTree;
 
 namespace libcompiler.TypeSystem
 {
@@ -16,12 +19,14 @@ namespace libcompiler.TypeSystem
         }
 
 
-        public CrawlConstructedType Ancestor { get; }
+        private ConcurrentDictionary<string, TypeInformation[]> _scope;
+        public CrawlType Ancestor { get; private set; }
         public IReadOnlyList<CrawlType> Interfaces { get; }
 
 
         public TypeInformation[] FindSymbol(string symbol)
         {
+            if (_scope == null) return null;
             throw new NotImplementedException();
             //return _declaration.FindSymbolOnlyInThisScope(symbol);
         }
@@ -41,24 +46,27 @@ namespace libcompiler.TypeSystem
                 return true;
 
             //Is this a descendant of target?
-            CrawlConstructedType ancestor = Ancestor;
-            while (ancestor.Identifier != "$OBJECT")
-            {
-                if(ancestor.Equals(target))
-                    return true;
-                ancestor = ancestor.Ancestor;
-            }
+            //CrawlConstructedType ancestor = Ancestor;
+            //while (ancestor.Identifier != f$OBJECT")
+            //{
+            //    if(ancestor.Equals(target))
+            //        return true;
+            //    ancestor = ancestor.Ancestor;
+            //}
 
-            //Is this implicitly castable to target?
-            if(ImplicitlyCastableTo(target))
-                return true;
+            ////Is this implicitly castable to target?
+            //if(ImplicitlyCastableTo(target))
+            //    return true;
 
-            return false;
+            //return false;
         }
 
         public override string ToString()
         {
-            return $"[{Assembly}] {Identifier} {"Not initialized"}";
+            if (_scope == null)
+                return $"Not initialized type with name {Identifier}";
+
+            else return $"[{Assembly}] {Identifier}:{Ancestor} {{{string.Join(",", _scope)}}}";
         }
 
         /// <summary>
@@ -78,20 +86,58 @@ namespace libcompiler.TypeSystem
             throw new NotImplementedException();
             //TODO Check additional rules for simple types
 
-            //Are they equal?
-            if (Equals(target))
-                return true;
+            ////Are they equal?
+            //if (Equals(target))
+            //    return true;
 
-            //Is this a descendant of target?
-            CrawlConstructedType ancestor = Ancestor;
-            while (ancestor.Identifier != "$OBJECT")
+            ////Is this a descendant of target?
+            //CrawlConstructedType ancestor = Ancestor;
+            //while (ancestor.Identifier != "$OBJECT")
+            //{
+            //    if(ancestor.Equals(target))
+            //        return true;
+            //    ancestor = ancestor.Ancestor;
+            //}
+
+            //return false;
+        }
+
+        public void Initialize(ClassTypeDeclerationNode self)
+        {
+            if(Ancestor != null) throw new InvalidOperationException("This class has already been initialized once");
+
+            IScope scope = self.FindFirstScope();
+
+            if (self.BaseTypes.Count() > 1)
             {
-                if(ancestor.Equals(target))
-                    return true;
-                ancestor = ancestor.Ancestor;
+                throw new NotImplementedException("Not supporting multiple inheritance in any form, yet!");
+            }
+            else if (self.BaseTypes.Count() == 1)
+            {
+                //Bug? parrent class declared later in method?
+                TypeInformation baseInformation = scope.FindSymbol(self.BaseTypes[0].Value).Single();
+                if (baseInformation.NeedsABetterNameType == NeedsABetterNameType.Class)
+                { Ancestor = baseInformation.Type;}
+                else
+                {
+                   throw new Exception("Derives from something not a type"); //TODO: Err msg 
+                }
+            }
+            else
+            {
+                Ancestor = CrawlSimpleType.Ting;
             }
 
-            return false;
+
+            List<KeyValuePair<string, TypeInformation[]>> members = Ancestor.Members().ToList();
+            members.AddRange(self.Body.Scope.LocalSymbols().Select(name => new KeyValuePair<string, TypeInformation[]>(name, self.Body.Scope.FindSymbol(name))));
+                
+            _scope = new ConcurrentDictionary<string, TypeInformation[]>(members);
+        }
+
+        public override IEnumerable<KeyValuePair<string, TypeInformation[]>> Members()
+        {
+            return _scope;
         }
     }
 }

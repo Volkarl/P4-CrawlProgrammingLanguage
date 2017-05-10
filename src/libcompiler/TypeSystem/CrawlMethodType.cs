@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using libcompiler.Scope;
 
 namespace libcompiler.TypeSystem
 {
@@ -33,6 +35,11 @@ namespace libcompiler.TypeSystem
         public override string ToString()
         {
             return $"{ReturnType}({string.Join(",", Parameters)})";
+        }
+
+        public override IEnumerable<KeyValuePair<string, TypeInformation[]>> Members()
+        {
+            yield break;
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using libcompiler.Scope;
 
 namespace libcompiler.TypeSystem
 {
@@ -56,6 +58,11 @@ namespace libcompiler.TypeSystem
         public override string ToString()
         {
             return $"{ElementType}[{new String(',', Rank -1 )}]";
+        }
+
+        public override IEnumerable<KeyValuePair<string, TypeInformation[]>> Members()
+        {
+            throw new NotImplementedException();
         }
     }
 }
