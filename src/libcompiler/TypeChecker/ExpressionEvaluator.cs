@@ -81,7 +81,7 @@ namespace libcompiler.TypeChecker
                 },
                  {
                   _talKomma(ExpressionType.Greater),
-                  CrawlSimpleType.Bool   
+                  CrawlSimpleType.Bool
                  },
 #endregion
 #region GreatEqual
@@ -163,9 +163,61 @@ namespace libcompiler.TypeChecker
                   _talKomma(ExpressionType.NotEqual),
                   CrawlSimpleType.Bool
                  },
+                 #endregion
+#region Add
+                 {
+                     _talTal(ExpressionType.Add),
+                       CrawlSimpleType.Tal
+                 },
+                 {
+                     _talKomma(ExpressionType.Add),
+                        CrawlSimpleType.Kommatal
+                 },
+                 {
+                     _tekstTekst(ExpressionType.Add),
+                        CrawlSimpleType.Tekst
+                 },
+                 {
+                     _kommaKomma(ExpressionType.Add),
+                        CrawlSimpleType.Kommatal
+                 },
+                 {
+                     _tegnTegn(ExpressionType.Add),
+                        CrawlSimpleType.ErrorType
+                 },
 #endregion
+#region Subtract
+                 {
+                     _talTal(ExpressionType.Subtract),
+                        CrawlSimpleType.Tal
+                 },
+
+                 {
+                    _kommaKomma(ExpressionType.Subtract),
+                        CrawlSimpleType.Kommatal
+                 },
+
+                 {
+                     _talKomma(ExpressionType.Subtract),
+                        CrawlSimpleType.Kommatal
+                 },
+                 {
+                    _tekstTekst(ExpressionType.Subtract),
+                    CrawlSimpleType.ErrorType 
+                 }
+#endregion Subtract
+
              };
 
+      /*  private static Tuple<CrawlType, CrawlType, ExpressionType> _MultipleOperator(ExpressionType eType)
+        {
+            if (true)
+            {
+
+            }
+            
+            //return new Tuple<CrawlType, CrawlType, ExpressionType>(CrawlSimpleType.Tal, CrawlSimpleType.Tal, eType);
+        }*/
 
         // The different combinations with the specific binary Expression
         private static Tuple<CrawlType, CrawlType, ExpressionType> _talTal(ExpressionType eType)

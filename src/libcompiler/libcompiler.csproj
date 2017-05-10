@@ -109,7 +109,6 @@
     <Compile Include="Scope\BlockScope.cs" />
     <Compile Include="Scope\IScope.cs" />
     <Compile Include="Scope\MethodScope.cs" />
-    <Compile Include="TypeSystem\CrawlStatusType.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
