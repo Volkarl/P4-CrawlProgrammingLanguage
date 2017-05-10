@@ -1,0 +1,3 @@
+tal a = 1;
+tal b, c=a;
+bool d, e, f=falsk;

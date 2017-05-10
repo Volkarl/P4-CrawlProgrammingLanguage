@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 
 namespace libcompiler.TypeSystem
 {
-    public abstract class CrawlType
+    public abstract class CrawlType : IScope
     {
         public static CrawlType Intet { get; }= new CrawlSimpleType(typeof(void));
 
@@ -113,6 +114,15 @@ namespace libcompiler.TypeSystem
         public abstract bool CastableTo(CrawlType target);
 
 
+        public TypeInformation[] FindSymbol(string symbol)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> LocalSymbols()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class TypeNotFoundException : Exception
