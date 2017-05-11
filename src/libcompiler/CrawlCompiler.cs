@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using libcompiler.CodeGen.IL;
 using libcompiler.CompilerStage;
 using libcompiler.ExtensionMethods;
 using libcompiler.Namespaces;
@@ -114,7 +115,10 @@ namespace libcompiler
 
                 //Until meaningfull end, print everything
 
-                Execute(decoratedAsts, output.WriteLine, parallel);
+                //Execute(decoratedAsts, output.WriteLine, parallel);
+
+                //Code gen is maybe probably not thread safe. Single threaded work...
+                CrawlIlGenerator.Generate(decoratedAsts.OrderBy(x => x.Filename)).Save("CRAWL_ASSEMBLY.dll");
 
                 if (sideeffectHelper.CompilationMessages.Count(message => message.Severity >= MessageSeverity.Error) > 0)
                     status = CompilationStatus.Failure;
