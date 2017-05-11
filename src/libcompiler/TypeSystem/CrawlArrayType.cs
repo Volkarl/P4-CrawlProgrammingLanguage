@@ -64,5 +64,7 @@ namespace libcompiler.TypeSystem
         public override IEnumerable<KeyValuePair<string, TypeInformation[]>> Members() => Ancestor.Members();
 
         public override TypeInformation[] FindSymbol(string symbol) => Ancestor.FindSymbol(symbol);
+
+        public override Type ClrType => ElementType.ClrType.MakeArrayType(Rank);
     }
 }

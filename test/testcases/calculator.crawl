@@ -1,0 +1,133 @@
+//Comments laves med //
+//den eneste form for comments er //
+//vi har bevist fravalgt /* */ style comments for ikke at have 2 versioner af (næsten) samme ting
+
+intet(tekst detalje) fejl = 
+	bool a = falsk;
+	returner;
+	
+intet(tekst t) skriv = 
+	bool b = sandt;
+	returner;
+	
+tekst() LæsLinje= 
+	returner "5+2";
+
+//funktioner kan også erklæres uden for klasser
+kommatal(kommatal op1, kommatal op2) Plus = 
+    returner op1 + op2;
+    
+kommatal(kommatal op1, kommatal op2) Gange =
+    returner op1 * op2;
+
+
+kommatal(kommatal, kommatal)(tekst operatorNavn) FindOperator =
+    hvis operatorNavn == "*"
+        returner Gange;
+    ellers hvis operatorNavn == "+"
+        returner Plus;
+    ellers
+        fejl("Ukendt operator");
+
+//Node klasse som enten indeholder et enkelt tal eller en liste af tal
+//Vi har teknisk set syntax for nedarvning, men ingen for abstrakte funktioner eller overskrivning
+//Så den har begge...
+klasse Node =
+    offentlig tekst Operator;
+    offentlig Node[] Børn;
+    offentlig kommatal Tal;
+    
+    //Erklæring af funktion. 
+    //En funktioner er (næsten) også bare en variable som laves med et par andre så funktioner beskrives som returtype(parametre) navn = 
+    offentlig kommatal() Værdi =
+        hvis Børn.Length == 0
+            returner Tal;
+        ellers
+            kommatal(kommatal, kommatal) op = FindOperator(Operator);
+            kommatal sum = Børn[0].Værdi();
+
+            //for løkker går over en liste/række
+            //her bruges række operatoren til at skabe en række med indholdet 1,2...Børn.Length - 1
+            
+            for tal i fra 1 til Børn.Length
+                sum = op(sum, Børn[i].Værdi());
+            returner sum;
+
+
+
+
+Node(tekst[] underdele) Forstå =
+    //De kan endda erklæres inden for andre funktioner. (Vi tror vi kan nå det)
+    bool (tekst muligTal) Tal=
+        for tegn t fra muligTal
+            hvis tegn.IsDigit(t) == falsk
+                returner falsk;
+        returner sandt;
+    
+    
+    tal parentesTæller = 0;
+    Node[] noder; //Ikke semantisk korrent men vi har ingen syntax for at oprette arrays
+    tekst[] operatore; //Det var tidligere planen bare at give en List<T> ala c# men vi har heller ikke generics
+    tekst[] indkapslet; //Indtil vidre, lad som om det er lister. Specifik fremtid usikker.
+    
+    //Muligvis får vi en "Liste operator" [a, b, c]... eller [anden liste] i fremtiden, men den er langt tilbage i prioteterne
+    tekst[] understøttedeOperatore;
+    understøttedeOperatore.Tilføj("*");
+    understøttedeOperatore.Tilføj("+");
+    
+    //Gå over alle dele og lav dem om til noder og operatore.
+    for tekst del fra underdele
+        hvis del == "("
+            parentesTæller = parentesTæller + 1;
+        ellers hvis del == ")"
+            parentesTæller = parentesTæller - 1;
+            hvis parentesTæller == 0
+                noder.Tilføj(Forstå(indkapslet));
+                indkapslet.Ryd();
+        ellers hvis parentesTæller > 0
+            indkapslet.Tilføj(del);
+        ellers hvis Tal(del)
+            Node node = Node(); //Instantier ny node. "Kald" af klassen er lig kald til constructor. Af en eller anden grund fik vi aldrig synax til .ctor
+            node.Tal = kommatal.FraTekst(del);
+        ellers hvis understøttedeOperatore.Indeholder(del)
+            operatore.Tilføj(del);
+        ellers
+            fejl("Ukendt operator");
+            
+        hvis operatore.Length > noder.Length eller noder.Length > operatore.Length + 1
+            fejl("Noget gik galt under forståelse");
+            
+    //Gå nu gennem alle noder/operatore og saml de mest betydningsfulle i et node med værdien af begge underdele
+    for tekst op fra understøttedeOperatore
+        tal i = 0;
+        mens operatore.Length > i
+            hvis op == operatore[i]
+                Node ny = Node();
+                ny.Operator = op;
+                ny.Børn.Tilføj(noder[i]);
+                ny.Børn.Tilføj(noder[i+1]);
+                noder.Fjern(i+1);
+                operatore.Fjern(i);
+                noder[i] = ny;
+            ellers
+                i = i + 1;
+    
+    //Hvis vi brugte alting op returner det, ellers er der sket en fejl
+    hvis noder.Length == 1 og operatore.Length == 0
+        returner noder[0];
+    ellers
+        fejl("Alle operatore blev ikke reduceret");
+    
+//Main metode. Den hedder Main, men der er ikke noget specielt ved det
+intet() Main = 
+    //While loop der køre for evigt
+    mens sandt
+        tekst linje = LæsLinje();
+        tekst[] dele = linje.Split(" "); //string.Split
+        Node resultat = Forstå(dele);
+        skriv(resultat.Værdi());
+    
+
+//Start main metoden. Statements direkte i filen køres som om de var i en funktion, der er intet specielt ved navnet Main
+//(Ud over vaner)
+Main();

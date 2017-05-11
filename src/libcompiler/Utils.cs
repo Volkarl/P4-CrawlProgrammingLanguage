@@ -10,12 +10,12 @@ namespace libcompiler
     {
         public static TextWriter GetPrimaryOutputStream(CrawlCompilerConfiguration configuration)
         {
-            if(string.IsNullOrWhiteSpace(configuration.OutputFile))
+            if(string.IsNullOrWhiteSpace(configuration.LogFile))
                 return Console.Out;
 
 
 
-            return new StreamWriter(File.OpenWrite(configuration.OutputFile));
+            return new StreamWriter(File.OpenWrite(configuration.LogFile));
         }
 
         public static string MakeIndents(string lispyString)

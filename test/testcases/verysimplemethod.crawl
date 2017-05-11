@@ -1,2 +1,4 @@
-tal() foo =
-	returner 3;
+importer System;
+Console.WriteLine("foo");
+
+Console.ReadLine();

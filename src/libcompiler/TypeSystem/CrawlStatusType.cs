@@ -37,5 +37,9 @@ namespace libcompiler.TypeSystem
         {
             throw new InvalidOperationException("An error type has no members");
         }
+
+        public override Type ClrType {
+            get { throw new InvalidOperationException("An error type has no members"); }
+        }
     }
 }

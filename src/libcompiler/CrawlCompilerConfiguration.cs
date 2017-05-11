@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 
 namespace libcompiler
 {
@@ -16,7 +17,11 @@ namespace libcompiler
 
         public bool PrintHelp { get; set; }
 
-        public string OutputFile { get; set; }
+        public string LogFile { get; set; }
+
+        public string DestinationFile { get; set; }
+
+        public PEFileKinds OutputType { get; set; } = PEFileKinds.ConsoleApplication;
 
         public bool ForceSingleThreaded { get; set; }
         
@@ -127,7 +132,7 @@ namespace libcompiler
                         break;
 
                     case "output":
-                        crawlCompilerConfiguration.OutputFile = parts[1];
+                        crawlCompilerConfiguration.LogFile = parts[1];
                         break;
 
                     case "force-single-thread":
@@ -177,6 +182,12 @@ namespace libcompiler
             {
             }
         }
+    }
+
+    public enum OutputType
+    {
+        ConsoleApplication,
+        Library
     }
 
     public enum TargetStage

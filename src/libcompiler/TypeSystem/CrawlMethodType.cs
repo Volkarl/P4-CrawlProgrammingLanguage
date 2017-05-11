@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using libcompiler.Scope;
 
 namespace libcompiler.TypeSystem
@@ -10,11 +11,20 @@ namespace libcompiler.TypeSystem
         public CrawlType ReturnType { get; }
         public List<CrawlType> Parameters { get; }
 
+        public MethodInfo MethodInfo { get; private set; }
+
         public CrawlMethodType(CrawlType returnType, IEnumerable<CrawlType> parameters)
             : base("", "")
         {
             ReturnType = returnType;
             Parameters = parameters.ToList();
+        }
+
+        public CrawlMethodType(MethodInfo info) : base("", "")
+        {
+            MethodInfo = info;
+            ReturnType = CrawlSimpleType.Get(info.ReturnType);
+            Parameters = info.GetParameters().Select(x => CrawlSimpleType.Get(x.ParameterType)).ToList();
         }
 
         public override bool IsAssignableTo(CrawlType target)
@@ -46,5 +56,7 @@ namespace libcompiler.TypeSystem
         {
             throw new NotImplementedException();
         }
+
+        public override Type ClrType => null;
     }
 }

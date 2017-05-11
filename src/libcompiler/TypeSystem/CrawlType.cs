@@ -78,7 +78,12 @@ namespace libcompiler.TypeSystem
         public string Namespace { get; }
         public string Assembly { get; }
 
+        public abstract Type ClrType { get; }
+
+
         public string CanonicalName => $"[{Assembly}]{Namespace}.{Identifier}";
+
+        public string FullName => $"{Namespace}{(string.IsNullOrWhiteSpace(Namespace) ? "" : ".")}{Identifier}";
 
         public CrawlType Ancestor { get; protected set; }
         public IReadOnlyList<CrawlType> Interfaces { get; protected set; }

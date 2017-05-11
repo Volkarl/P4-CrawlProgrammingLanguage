@@ -177,6 +177,7 @@ namespace libcompiler.TypeChecker
                     .Target.ResultType
                     .FindSymbol(asMem.Member.Value)
                     .SelectMany(GetMethodTypesFromTypeInformation)
+                    .Where(candidate => candidate.Parameters.Count == actualParameters.Count)
                     .ToList();
 
                 resultType = BestParameterMatch(candidates, actualParameters);

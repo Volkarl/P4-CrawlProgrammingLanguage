@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO.Pipes;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 
@@ -20,8 +21,8 @@ namespace libcompiler.TypeSystem
             //Ancestor = (CrawlConstructedType) declaration.FindFirstScope().FindSymbol(declaration.Ancestor.Identifier)[0].Type;
         }
 
-
         private ConcurrentDictionary<string, TypeInformation[]> _scope;
+        private Type _clrType;
 
         public override TypeInformation[] FindSymbol(string symbol)
         {
@@ -177,6 +178,16 @@ namespace libcompiler.TypeSystem
                 }
             }
 
+        }
+
+        public void SetClrType(TypeBuilder type)
+        {
+            _clrType = type;
+        }
+
+        public override Type ClrType
+        {
+            get { return _clrType; }
         }
     }
 }

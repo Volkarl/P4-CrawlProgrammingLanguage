@@ -101,9 +101,7 @@ namespace libcompiler.TypeSystem
             }
             else if(method != null)
             {
-                result = new CrawlMethodType(
-                    CrawlSimpleType.Get(method.ReturnType),
-                    method.GetParameters().Select(x => Get(x.ParameterType)));
+                result = new CrawlMethodType(method);
             }
             else if (info != null)
             {
@@ -162,5 +160,7 @@ namespace libcompiler.TypeSystem
 
             return null;
         }
+
+        public override Type ClrType => _clrType;
     }
 }

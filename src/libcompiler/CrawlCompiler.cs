@@ -103,6 +103,7 @@ namespace libcompiler
                     {
                         Func<AstData, SideeffectHelper, AstData> first = SemanticAnalysisPipeline.DeclerationOrderCheck;
                         var final = first
+                            .Then(Rewriters.ReduceConstructs)
                             .Then(SemanticAnalysisPipeline.TypeCheck)
                             .EndWith(destination.Add, helper);  //Typechecker would be added here or line above
 
@@ -118,7 +119,8 @@ namespace libcompiler
                 //Execute(decoratedAsts, output.WriteLine, parallel);
 
                 //Code gen is maybe probably not thread safe. Single threaded work...
-                CrawlIlGenerator.Generate(decoratedAsts.OrderBy(x => x.Filename)).Save("CRAWL_ASSEMBLY.dll");
+                string fileName;
+                CrawlIlGenerator.Generate(decoratedAsts.OrderBy(x => x.Filename), configuration, out fileName).Save(fileName);
 
                 if (sideeffectHelper.CompilationMessages.Count(message => message.Severity >= MessageSeverity.Error) > 0)
                     status = CompilationStatus.Failure;

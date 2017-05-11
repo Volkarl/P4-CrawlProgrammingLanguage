@@ -40,8 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeGen\IL\AssemblyGenerator.cs" />
     <Compile Include="CodeGen\IL\ILGeneratorVisitor.cs" />
+    <Compile Include="CodeGen\ReservedNames.cs" />
     <Compile Include="CompilerStage\FirstScopePassVisitor.cs" />
+    <Compile Include="CompilerStage\Rewriters.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\CheckDeclerationOrderVisitor.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\NamespaceNotFoundException.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\PutTypeVisitor.cs" />
@@ -51,10 +54,12 @@
     <Compile Include="Antlr\CompilationMessageErrorListner.cs" />
     <Compile Include="CompilationResult.cs" />
     <Compile Include="CompilerStage\SemanticAnalysisPipeline.cs" />
+    <Compile Include="CompilerStage\SyntaxModificationsRewriter.cs" />
     <Compile Include="CrawlCompiler.cs" />
     <Compile Include="CrawlCompilerConfiguration.cs" />
     <Compile Include="CodeGen\IL\CrawlIlGenerator.cs" />
     <Compile Include="Datatypes\ListDictionary.cs" />
+    <Compile Include="ExtensionMethods\CodeGenHelpers.cs" />
     <Compile Include="ExtensionMethods\CrawlSyntaxNodeExtensions.cs" />
     <Compile Include="ExtensionMethods\IEnumerableHelpers.cs" />
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />

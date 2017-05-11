@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Antlr4.Runtime.Misc;
 using libcompiler.CompilerStage;
 using libcompiler.ExtensionMethods;
 using libcompiler.SyntaxTree;
@@ -10,61 +13,95 @@ namespace libcompiler.CodeGen.IL
 {
     class CrawlIlGenerator
     {
-        private const string ASSEMBLY_NAME = "CRAWL_ASSEMBLY";
-        public static AssemblyBuilder Generate(IEnumerable<AstData> files)
+        public static AssemblyBuilder Generate(IEnumerable<AstData> files, CrawlCompilerConfiguration configuration, out string saveAs)
         {
-            //Needs not be RunAndSave, but for testing, Run is probably nice
-            AssemblyName name = new AssemblyName(ASSEMBLY_NAME);
-            AssemblyBuilder builder = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.RunAndSave);
-
-            string asmExeName = ASSEMBLY_NAME + ".dll";
+            //Find a filename to save it to, also generate an assembly name. TODO: AssemblyName config
+            saveAs = GetFileNameFor(configuration.DestinationFile, configuration.OutputType);
+            AssemblyName name = new AssemblyName(Path.GetFileNameWithoutExtension(saveAs));
 
 
-            ModuleBuilder mainModule = builder.DefineDynamicModule(asmExeName, asmExeName, true);
-            TypeBuilder bigtype = mainModule.DefineType("global", TypeAttributes.BeforeFieldInit | TypeAttributes.Public);
-            bigtype.DefineField("baz", typeof(int), FieldAttributes.Public);
+            AssemblyBuilder builder = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Save);
+            ModuleBuilder mainModule = builder.DefineDynamicModule(name.Name, saveAs, true);
             
+            AssemblyGenerator generator = new AssemblyGenerator(mainModule);
+            
+            List<VariableDeclerationNode> freeVariables = new List<VariableDeclerationNode>();
+            List<MethodDeclerationNode> freeMethods = new List<MethodDeclerationNode>();
+            List<ClassTypeDeclerationNode> types = new List<ClassTypeDeclerationNode>();
+
             foreach (AstData file in files)
             {
                 TranslationUnitNode tu = (TranslationUnitNode) file.Tree.RootNode;
+                generator.SetWorkingNamespace(tu.Namespace.Module);
+
                 foreach (var tree in tu.Code)
                 {
                     switch (tree.Type)
                     {
                         case NodeType.MethodDecleration:
-                        {
-                            GenerateMethod((MethodDeclerationNode) tree, bigtype);
-                        }
+                            freeMethods.Add((MethodDeclerationNode) tree);
                             break;
-                        default:
-                            throw new NotImplementedException();
+
+                        case NodeType.ClassTypeDecleration:
+                            types.Add((ClassTypeDeclerationNode) tree);
+                            break;
+
+                        case NodeType.VariableDecleration:
+                            freeVariables.Add((VariableDeclerationNode) tree);
+                            break;
+
+                        default: throw new NotImplementedException();
                     }
                 }
             }
 
-            bigtype.CreateType();
-            mainModule.CreateGlobalFunctions();
+            for (int index = 0; index < types.Count; index++)
+            {
+                //Emit types one after another. If dependency is now emitted yet, move to back
+                //TODO: detect circular dependency
+                ClassTypeDeclerationNode type = types[index];
+                bool success = generator.EmitClassFirstPass(type);
+                if (!success)
+                {
+                    types[index] = null;
+                    types.Add(type);
+                }
+            }
+
+            foreach (MethodDeclerationNode node in freeMethods)
+            {
+                generator.EmitFreeMethod(node);
+            }
+
+            foreach (VariableDeclerationNode node in freeVariables)
+            {
+                generator.EmitFreeVariable(node);
+            }
+
+            foreach (ClassTypeDeclerationNode type in types.Where(type => type != null))
+            {
+                generator.EmitClassSecondPass(type);
+            }
+
+            generator.Finish(builder, configuration.OutputType);
             return builder;
         }
 
-        private static void GenerateMethod(MethodDeclerationNode method, TypeBuilder owningType)
+        
+        private static string GetFileNameFor(string name, PEFileKinds type)
         {
-            MethodBuilder mb = owningType.DefineMethod(method.Identifier.Value, MethodAttributes.Public | MethodAttributes.Static,
-                CallingConventions.Standard, typeof(int), new Type[0]);
+            string recomendedExtension = type == PEFileKinds.Dll ? "dll" : "exe";
 
-            ILGenerator ilGenerator = mb.GetILGenerator();
-            new ILGeneratorVisitor(ilGenerator).Visit(method.Body);
-            
-        }
+            if (name == null)
+            {
+                name = "out";
+            }
 
-        private static void GenerateMethod(MethodDeclerationNode method, ModuleBuilder owningModule)
-        {
-            MethodBuilder mb = owningModule.DefineGlobalMethod(method.Identifier.Value, MethodAttributes.Public | MethodAttributes.Static,
-                CallingConventions.Standard, typeof(int), new Type[0]);
 
-            ILGenerator ilGenerator = mb.GetILGenerator();
-            new ILGeneratorVisitor(ilGenerator).Visit(method.Body);
+            if (!Path.HasExtension(name))
+                name = name + "." + recomendedExtension;
 
+            return name;
         }
     }
 }
