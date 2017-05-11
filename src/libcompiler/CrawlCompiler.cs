@@ -109,12 +109,23 @@ namespace libcompiler
                     }
                 );
 
+                ConcurrentBag<string> generatedCode = Run<string, AstData>(decoratedAsts, parallel, sideeffectHelper,
+                    (destination, helper) =>
+                    {
+                        Func<AstData, SideeffectHelper, AstData> first = SemanticAnalysisPipeline.DeclerationOrderCheck;
+                        var final = first
+                            .Then(CodeGenPipeline.GenerateCode)
+                            .EndWith(destination.Add, helper);  //Typechecker would be added here or line above
 
-                //TODO: Interpeter or code generation
+                        return final;
+                    }
+                );
 
                 //Until meaningfull end, print everything
 
                 Execute(decoratedAsts, output.WriteLine, parallel);
+                output.WriteLine("┅┅┅┅┅┅┅┅┅┅┅┅┅┅");
+                Execute(generatedCode, output.WriteLine, parallel);
 
                 if (sideeffectHelper.CompilationMessages.Count(message => message.Severity >= MessageSeverity.Error) > 0)
                     status = CompilationStatus.Failure;

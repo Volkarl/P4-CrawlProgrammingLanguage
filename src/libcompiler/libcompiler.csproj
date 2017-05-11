@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompilerStage\CodeGenPipeline.cs" />
+    <Compile Include="CompilerStage\CodeGen\WriteCsPlaintextVisitor.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\CheckDeclerationOrderVisitor.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\NamespaceNotFoundException.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\PutTypeVisitor.cs" />
