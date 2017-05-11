@@ -9,6 +9,17 @@ namespace libcompiler.CompilerStage.CodeGen
 {
     public class WriteCsPlaintextVisitor : SimpleSyntaxVisitor<string>
     {
+        string VisitAndAddDelimiters<T>(ListNode<T> arguments, string delimiter) where T : CrawlSyntaxNode
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < arguments.Count(); i++)
+            {
+                if (i != 0) sb.Append(delimiter);
+                sb.Append(Visit(arguments[i]));
+            }
+            return sb.ToString();
+        }
+
         protected override string Combine(params string[] parts)
         {
             StringBuilder sb = new StringBuilder();
@@ -127,10 +138,7 @@ namespace libcompiler.CompilerStage.CodeGen
                 // If there are only two left, then the recursion is done
                 return $"System.Math.Pow({Visit(arguments[recursion])}, {Visit(arguments[recursion + 1])})";
             }
-            else
-            {
-                return $"System.Math.Pow({Visit(arguments[recursion])}, {WritePowerExpression(arguments, recursion + 1)})";
-            }
+            return $"System.Math.Pow({Visit(arguments[recursion])}, {WritePowerExpression(arguments, recursion + 1)})";
         }
 
         protected override string VisitCall(CallNode node)
@@ -140,15 +148,9 @@ namespace libcompiler.CompilerStage.CodeGen
             return $"{target}({arg})";
         }
 
-        string VisitAndAddDelimiters<T>(ListNode<T> arguments, string delimiter) where T : CrawlSyntaxNode
+        protected override string VisitCastExpression(CastExpressionNode node)
         {
-            var sb = new StringBuilder();
-            for (int i = 0; i < arguments.Count(); i++)
-            {
-                if (i != 0) sb.Append(delimiter);
-                sb.Append(Visit(arguments[i]));
-            }
-            return sb.ToString();
+            return $"({Visit(node.TypeToConvertTo)}) {Visit(node.Target)}";
         }
     }
 }

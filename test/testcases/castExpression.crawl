@@ -1,0 +1,3 @@
+tal a = 2;
+kommatal b = (kommatal) a;
+kommatal c = (kommatal) 3;
