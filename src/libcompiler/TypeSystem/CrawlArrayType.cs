@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using libcompiler.Scope;
 
 namespace libcompiler.TypeSystem
 {
@@ -12,6 +14,7 @@ namespace libcompiler.TypeSystem
         {
             Rank = rank;
             ElementType = elementType;
+            Ancestor = CrawlSimpleType.Array;
         }
 
         public override bool IsAssignableTo(CrawlType target)
@@ -57,5 +60,9 @@ namespace libcompiler.TypeSystem
         {
             return $"{ElementType}[{new String(',', Rank -1 )}]";
         }
+
+        public override IEnumerable<KeyValuePair<string, TypeInformation[]>> Members() => Ancestor.Members();
+
+        public override TypeInformation[] FindSymbol(string symbol) => Ancestor.FindSymbol(symbol);
     }
 }

@@ -238,6 +238,10 @@
                     <type>Identifier</type>
                 </child>
                 <child>
+                    <name>BaseTypes</name>
+                    <type>List'Identifier</type>
+                </child>
+                <child>
                     <name>GenericParameters</name>
                     <type>List'GenericParameter</type>
                 </child>
@@ -248,8 +252,8 @@
             </children>
             <properties>
                 <property>
-                    <name>Ancestor</name>
-                    <type>CrawlType</type>
+                    <name>ClassType</name>
+                    <type>CrawlConstructedType</type>
                 </property>
             </properties>
         </node>
