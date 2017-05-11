@@ -76,6 +76,14 @@ namespace libcompiler.TypeChecker
         protected override CrawlSyntaxNode VisitMemberAccess(MemberAccessNode memberAccess)
         {
             var expr = (MemberAccessNode) base.VisitMemberAccess(memberAccess);
+            if (expr.Target.ResultType is CrawlStatusType)
+            {
+                return expr.WithResultType(expr.Target.ResultType);
+            }
+            var results = expr.Target.ResultType.FindSymbol(expr.Member.Value);
+            if (results == null || results.Length == 0)
+                return expr.WithResultType(CrawlType.ErrorType);
+
             CrawlType resultType = expr.Target.ResultType.FindSymbol(expr.Member.Value)[0].Type;
             return expr.WithResultType(resultType);
         }
@@ -141,29 +149,34 @@ namespace libcompiler.TypeChecker
 
             //Three posibilities exist:
 
+
+            //Method type is provided as method name in specific scope.
+            MemberAccessNode asMem = expr.Target as MemberAccessNode;
             //Method type is provided as a method name. Find candidates and choose best fit.
             VariableNode asVar = expr.Target as VariableNode;
-            if (asVar != null)
+
+            if (expr.Target.ResultType is CrawlStatusType)
+            {
+                return expr.WithResultType(expr.Target.ResultType);
+            }
+            else if (asVar != null)
             {
                 var foo = asVar
                     .FindFirstScope();
                 var bar = foo
                     .FindSymbol(asVar.Name);
                 List<CrawlMethodType> candidates = bar
-                    .Select(x=>(CrawlMethodType)x.Type)
+                    .SelectMany(GetMethodTypesFromTypeInformation)
                     .ToList();
 
                 resultType = BestParameterMatch(candidates, actualParameters);
             }
-
-            //Method type is provided as method name in specific scope.
-            MemberAccessNode asMem = expr.Target as MemberAccessNode;
-            if (asMem != null)
+            else if (asMem != null)
             {
                 List<CrawlMethodType> candidates = asMem
                     .Target.ResultType
                     .FindSymbol(asMem.Member.Value)
-                    .Select(x=>(CrawlMethodType)x.Type)
+                    .SelectMany(GetMethodTypesFromTypeInformation)
                     .ToList();
 
                 resultType = BestParameterMatch(candidates, actualParameters);
@@ -179,6 +192,23 @@ namespace libcompiler.TypeChecker
             }
 
             return expr.WithResultType(resultType);
+        }
+
+        IEnumerable<CrawlMethodType> GetMethodTypesFromTypeInformation(TypeInformation tif)
+        {
+            if (tif.NeedsABetterNameType == NeedsABetterNameType.Class)
+            {
+                CrawlConstructedType ctype = (CrawlConstructedType) tif.Type;
+                TypeInformation[] constructors = ctype.FindSymbol(".ctor");
+                foreach (TypeInformation constructor in constructors)
+                {
+                    yield return (CrawlMethodType) constructor.Type;
+                }
+            }
+            else
+            {
+                yield return (CrawlMethodType) tif.Type;
+            }
         }
 
         #endregion

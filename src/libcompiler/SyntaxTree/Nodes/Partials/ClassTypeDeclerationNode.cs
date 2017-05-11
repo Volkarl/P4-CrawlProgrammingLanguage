@@ -3,31 +3,24 @@ using libcompiler.Scope;
 
 namespace libcompiler.SyntaxTree
 {
-    public partial class ClassTypeDeclerationNode //: IScope
+    public partial class ClassTypeDeclerationNode : IScope
     {
 
         //BUG: This looks in its Body(a child) which then looks in this. Infinite recursion -> StackOverflow
-        public IEnumerable<string> LocalSymbols() => default(IEnumerable<string>);
+        public IEnumerable<string> LocalSymbols() => ClassType.Ancestor.LocalSymbols();
 
         public TypeInformation[] FindSymbol(string symbol)
         {
-            //Kig i eget scope
-            TypeInformation[] result = FindSymbolOnlyInThisScope(symbol);
+            //Only look in ancestor. BlockNode child contains scope for this
+            TypeInformation[] typeInformation = ClassType?.Ancestor?.FindSymbol(symbol);
 
-            //TODO Kig i forfader-klasse
-
-            //Spørg parent-scope
-            if (result == null)
+            if (typeInformation == null)
             {
                 IScope scope = Parent.FindFirstScope();
-                return scope?.FindSymbol(symbol);
+                return  scope?.FindSymbol(symbol);
             }
-            return result;
-        }
 
-        public TypeInformation[] FindSymbolOnlyInThisScope(string symbol)
-        {
-            return Body.FindSymbol(symbol);
+            return typeInformation;
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Linq;
 using libcompiler.CompilerStage.SemanticAnalysis;
 using libcompiler.Namespaces;
-using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeChecker;
 
@@ -113,19 +112,18 @@ namespace libcompiler.CompilerStage
         /// </summary>
         public static AstData FinishTypes(AstData arg1, SideeffectHelper arg2)
         {
-            return arg1; //TODO: FIX
+            new FinishTypesVisitor().Visit(arg1.Tree.RootNode);
+            return arg1;
         }
     }
 
-    internal class FirstScopePassVisitor : SyntaxRewriter
+    internal class FinishTypesVisitor : SyntaxVisitor
     {
-        protected override CrawlSyntaxNode VisitBlock(BlockNode block)
+        protected override void VisitClassTypeDecleration(ClassTypeDeclerationNode node)
         {
-            BlockNode newblock = (BlockNode) base.VisitBlock(block);
+            node.ClassType.Initialize(node);
 
-
-            return newblock.WithScope(new BlockScope(newblock));
-
+            base.VisitClassTypeDecleration(node);
         }
     }
 }
