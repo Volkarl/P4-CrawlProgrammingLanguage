@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using libcompiler.SyntaxTree;
@@ -47,6 +48,26 @@ namespace libcompiler.CompilerStage.CodeGen
         protected override string VisitType(TypeNode node)
         {
             return node.ActualType.Identifier;
+        }
+
+        protected override string VisitIdentifier(IdentifierNode node)
+        {
+            return node.Value;
+        }
+
+        protected override string VisitBooleanLiteral(BooleanLiteralNode node)
+        {
+            return node.Value.ToString();
+        }
+
+        protected override string VisitStringLiteral(StringLiteralNode node)
+        {
+            return node.Value;
+        }
+
+        protected override string VisitRealLiteral(RealLiteralNode node)
+        {
+            return node.Value.ToString(CultureInfo.GetCultureInfo("en-GB"));
         }
 
         protected override string VisitSingleVariableDecleration(SingleVariableDeclerationNode node)
