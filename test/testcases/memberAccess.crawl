@@ -1,0 +1,10 @@
+klasse mainClass =
+  CoOrds p1 = ny CoOrds();
+  CoOrds p2 = ny CoOrds(5,3);
+  tal p3 = p1.x
+
+klasse CoOrds =
+  offentlig tal x, y;
+  offentlig CoOrds =
+    x = 0;
+    y = 0;
