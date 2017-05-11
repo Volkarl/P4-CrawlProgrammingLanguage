@@ -1,4 +1,4 @@
-tal a = 1 + 2;
+tal a = 1 + 2 + 3 - 4;
 bool b = sandt;
 b = falsk;
 kommatal c = 1.2;

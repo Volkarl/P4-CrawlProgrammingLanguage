@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -97,24 +98,56 @@ namespace libcompiler.CompilerStage.CodeGen
 
         protected override string VisitMultiChildExpression(MultiChildExpressionNode node)
         {
-            if(node.ExpressionType != ExpressionType.Add)
-                return "OPERATOR_ERR ";
-
-            StringBuilder sb = new StringBuilder();
-            //foreach (ExpressionNode expressionNode in node.Arguments)
-            //{
-            //    string expr = Visit(expressionNode);
-            //    sb.Append($"{expr}+");
-            //}
-            //sb.Append("0");
-
-            for (int i = 0; i < node.Arguments.Count(); i++)
+            string delimiter;
+            switch (node.ExpressionType)
             {
-                if (i != 0) sb.Append("+");
-                string expr = Visit(node.Arguments[i]);
-                sb.Append(expr);
+                case ExpressionType.Add:
+                    delimiter = " + ";
+                    break;
+                case ExpressionType.Subtract:
+                    delimiter = " - ";
+                    break;
+                case ExpressionType.Divide:
+                    delimiter = " / ";
+                    break;
+                case ExpressionType.Multiply:
+                    delimiter = " * ";
+                    break;
+                case ExpressionType.Power:
+                    return WritePowerExpression(node.Arguments.ToList());
+                default: return "OPERATOR_ERR ";
             }
+            return VisitAndAddDelimiters(node.Arguments, delimiter);
+        }
 
+        private string WritePowerExpression(List<ExpressionNode> arguments, int recursion = 0)
+        {
+            if (arguments.Count - recursion == 2)
+            {
+                // If there are only two left, then the recursion is done
+                return $"System.Math.Pow({Visit(arguments[recursion])}, {Visit(arguments[recursion + 1])})";
+            }
+            else
+            {
+                return $"System.Math.Pow({Visit(arguments[recursion])}, {WritePowerExpression(arguments, recursion + 1)})";
+            }
+        }
+
+        protected override string VisitCall(CallNode node)
+        {
+            string target = Visit(node.Target);
+            string arg = VisitAndAddDelimiters(node.Arguments, ", ");
+            return $"{target}({arg})";
+        }
+
+        string VisitAndAddDelimiters<T>(ListNode<T> arguments, string delimiter) where T : CrawlSyntaxNode
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < arguments.Count(); i++)
+            {
+                if (i != 0) sb.Append(delimiter);
+                sb.Append(Visit(arguments[i]));
+            }
             return sb.ToString();
         }
     }
