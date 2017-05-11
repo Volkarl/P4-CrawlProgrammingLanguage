@@ -114,6 +114,7 @@
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="CompilerStage\readme.md" />
     <None Include="Crawl.g4" />
     <None Include="SyntaxTree\Nodes\redgreen.md" />

@@ -71,10 +71,7 @@ namespace libcompiler.CompilerStage.CodeGen
 
         protected override string VisitIntegerLiteral(IntegerLiteralNode node)
         {
-            if (node.Value == 1)
-                return "1";
-            else
-                return "EXPRESSION_ERR ";
+            return node.Value.ToString();
         }
 
         protected override string VisitMultiChildExpression(MultiChildExpressionNode node)
@@ -83,12 +80,19 @@ namespace libcompiler.CompilerStage.CodeGen
                 return "OPERATOR_ERR ";
 
             StringBuilder sb = new StringBuilder();
-            foreach (ExpressionNode expressionNode in node.Arguments)
+            //foreach (ExpressionNode expressionNode in node.Arguments)
+            //{
+            //    string expr = Visit(expressionNode);
+            //    sb.Append($"{expr}+");
+            //}
+            //sb.Append("0");
+
+            for (int i = 0; i < node.Arguments.Count(); i++)
             {
-                string expr = Visit(expressionNode);
-                sb.Append($"{expr}+");
+                if (i != 0) sb.Append("+");
+                string expr = Visit(node.Arguments[i]);
+                sb.Append(expr);
             }
-            sb.Append("0");
 
             return sb.ToString();
         }
