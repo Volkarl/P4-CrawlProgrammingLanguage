@@ -16,6 +16,8 @@ namespace libcompiler.TypeSystem
 
         public static CrawlSimpleType Tekst { get; } = new CrawlTypeTekst();
 
+        public static CrawlSimpleType Tom { get; } = new CrawlTypeNull();
+
         public CrawlSimpleType(Type type) : base(type.FullName , type.Namespace, type.Assembly.FullName)
         {
             if(type == null) throw new NullReferenceException(nameof(type));

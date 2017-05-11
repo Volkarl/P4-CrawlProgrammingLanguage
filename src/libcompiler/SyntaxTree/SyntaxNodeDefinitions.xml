@@ -187,6 +187,10 @@
             </properties>
         </node>
         <node>
+            <name>NullLiteral</name>
+            <baseclass>Literal</baseclass>
+        </node>
+        <node>
             <name>Index</name>
             <baseclass>Expression</baseclass>
             <children>
