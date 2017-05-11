@@ -1,0 +1,6 @@
+tal a = 1 + 2;
+bool b = sandt;
+b = falsk;
+kommatal c = 1.2;
+c = 13e+5;
+tekst d = "Hej";
