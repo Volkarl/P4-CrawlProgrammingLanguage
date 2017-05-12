@@ -95,7 +95,7 @@ namespace libcompiler.SyntaxTree.Parser
             // TypeConstructorNode is an ExpressionNode that corresponds to a TypeNode
 
             IEnumerable<ArgumentNode> arguments = ParseCallTail((RuleContext)rule.GetChild(1)).Select(x => CrawlSyntaxNode.Argument(x.Interval, false, x));
-            return CrawlSyntaxNode.Call(rule.SourceInterval, CrawlType.UnspecifiedType, typeConstructor, arguments);
+            return CrawlSyntaxNode.Call(rule.SourceInterval, CrawlType.UnspecifiedType, null, typeConstructor, arguments);
         }
 
         private static ExpressionNode ParseMultu(RuleContext rule)
@@ -243,7 +243,7 @@ namespace libcompiler.SyntaxTree.Parser
                 RuleContext post = (RuleContext)rule.GetChild(i);
                 if (post.RuleIndex == CrawlParser.RULE_call_expression)
                 {
-                    node = CrawlSyntaxNode.Call(post.SourceInterval, CrawlType.UnspecifiedType, node, ParseArgumentList(post));
+                    node = CrawlSyntaxNode.Call(post.SourceInterval, CrawlType.UnspecifiedType, null, node, ParseArgumentList(post));
                 }
                 else if (post.RuleIndex == CrawlParser.RULE_index_expression)
                 {
@@ -303,7 +303,7 @@ namespace libcompiler.SyntaxTree.Parser
             List<ArgumentNode> args = ParseArgumentList(invocation).ToList();
             ExpressionNode target = ParseExpression(toCall);
 
-            return CrawlSyntaxNode.Call(rule.SourceInterval, CrawlType.UnspecifiedType, target, args);
+            return CrawlSyntaxNode.Call(rule.SourceInterval, CrawlType.UnspecifiedType, null, target, args);
         }
 
         public static List<ExpressionNode> ParseCallTail(RuleContext rule)
