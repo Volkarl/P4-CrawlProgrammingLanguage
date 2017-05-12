@@ -40,12 +40,13 @@ namespace libcompiler.TypeSystem
 
         public static CrawlSimpleType Tekst { get; } = new CrawlTypeTekst();
 
+        public static CrawlSimpleType Tom { get; } = new CrawlTypeNull();
+
         public static CrawlSimpleType Ting { get; } = new CrawlSimpleType(typeof(object));
 
         public static CrawlType Intet { get; } = new CrawlSimpleType(typeof(void));
 
         public static CrawlType Array { get; } = new CrawlSimpleType(typeof(Array));
-
 
         protected CrawlSimpleType(Type type) : base(type.Name , type.Namespace, type.Assembly.FullName)
         {

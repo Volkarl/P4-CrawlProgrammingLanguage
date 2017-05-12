@@ -42,15 +42,14 @@ namespace libcompiler.CodeGen.IL
             CrawlMethodType callee;
             if (member != null)
             {
-                callee = node.ResultType as CrawlMethodType;
-                if(callee == null) throw new NotImplementedException();
+                if(node.CalleeType  == null) throw new NotImplementedException();
 
-                _ilGenerator.EmitCall(OpCodes.Call, callee.MethodInfo, Type.EmptyTypes);
+                _ilGenerator.EmitCall(OpCodes.Call, node.CalleeType .MethodInfo, Type.EmptyTypes);
 
             }
             else throw new NotImplementedException();
 
-            if (node.Parent.Type == NodeType.Block && !callee.ReturnType.Equals(CrawlSimpleType.Intet)) //AFAIK, best way to see if value is thrown away.
+            if (node.Parent.Type == NodeType.Block && !node.ResultType.Equals(CrawlSimpleType.Intet)) //AFAIK, best way to see if value is thrown away.
             {
                 _ilGenerator.Emit(OpCodes.Pop);
             }

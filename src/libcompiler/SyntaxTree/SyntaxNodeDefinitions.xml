@@ -122,6 +122,12 @@
                     <type>List'Argument</type>
                 </child>
             </children>
+            <properties>
+                <property>
+                    <name>CalleeType</name>
+                    <type>CrawlMethodType</type>
+                </property>
+            </properties>
         </node>
         <node>
             <name>CastExpression</name>
@@ -185,6 +191,10 @@
                     <name>Value</name>
                 </property>
             </properties>
+        </node>
+        <node>
+            <name>NullLiteral</name>
+            <baseclass>Literal</baseclass>
         </node>
         <node>
             <name>Index</name>

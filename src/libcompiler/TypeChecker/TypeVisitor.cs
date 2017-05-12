@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Antlr4.Runtime;
+using libcompiler.CompilerStage;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
@@ -10,8 +12,18 @@ using static libcompiler.TypeChecker.ExpressionEvaluator;
 
 namespace libcompiler.TypeChecker
 {
-    public class TypeVisitor : SyntaxRewriter
+    class TypeVisitor : SyntaxRewriter
     {
+        private ConcurrentBag<CompilationMessage> _messages;
+        private AstData _data;
+
+
+        public TypeVisitor(ConcurrentBag<CompilationMessage> messages, AstData data)
+        {
+            _messages = messages;
+            _data = data;
+        }
+
         #region Literals
         protected override CrawlSyntaxNode VisitIntegerLiteral(IntegerLiteralNode integerLiteral)
         {
@@ -141,58 +153,55 @@ namespace libcompiler.TypeChecker
                 return castExp.WithResultType(CrawlType.ErrorType);
         }
 
-        protected override CrawlSyntaxNode VisitCall(CallNode call)
-        {
-            CallNode expr = (CallNode)base.VisitCall(call);
-            CrawlType resultType = CrawlType.ErrorType;
-            List<CrawlType> actualParameters = expr.Arguments.Select(x => x.Value.ResultType).ToList();
 
+        #region Call helpers
+        private IEnumerable<CrawlMethodType> FindCallCandidates(ExpressionNode target)
+        {
             //Three posibilities exist:
 
 
             //Method type is provided as method name in specific scope.
-            MemberAccessNode asMem = expr.Target as MemberAccessNode;
+            MemberAccessNode asMem = target as MemberAccessNode;
             //Method type is provided as a method name. Find candidates and choose best fit.
-            VariableNode asVar = expr.Target as VariableNode;
+            VariableNode asVar = target as VariableNode;
 
-            if (expr.Target.ResultType is CrawlStatusType)
+            TypeInformation[] tif;
+
+            //If a signal, we cant do anything
+            if (target.ResultType is CrawlStatusType)
             {
-                return expr.WithResultType(expr.Target.ResultType);
+                yield break; //Nothing to do...
             }
+            //If member or variable, find everything.
             else if (asVar != null)
             {
-                var foo = asVar
+                IScope variableScope = asVar
                     .FindFirstScope();
-                var bar = foo
-                    .FindSymbol(asVar.Name);
-                List<CrawlMethodType> candidates = bar
-                    .SelectMany(GetMethodTypesFromTypeInformation)
-                    .ToList();
-
-                resultType = BestParameterMatch(candidates, actualParameters);
+                tif = variableScope.FindSymbol(asVar.Name);
             }
             else if (asMem != null)
             {
-                List<CrawlMethodType> candidates = asMem
-                    .Target.ResultType
-                    .FindSymbol(asMem.Member.Value)
-                    .SelectMany(GetMethodTypesFromTypeInformation)
-                    .Where(candidate => candidate.Parameters.Count == actualParameters.Count)
-                    .ToList();
+                tif = asMem.Target.ResultType.FindSymbol(asMem.Member.Value);
 
-                resultType = BestParameterMatch(candidates, actualParameters);
             }
-
-            //Method type is provided by some other expression. In this case it either matches or does not.
+            //Method type is provided by some other expression. Pass it on and exit
             else
             {
-                CrawlMethodType methodSignature = expr.Target.ResultType as CrawlMethodType;
+                CrawlMethodType methodSignature = target.ResultType as CrawlMethodType;
 
                 if (methodSignature != null)
-                    resultType = Call(methodSignature, actualParameters);
+                {
+                    yield return methodSignature;
+                }
+
+                yield break;
             }
 
-            return expr.WithResultType(resultType);
+            //Return everything that member or variable provided
+            foreach (CrawlMethodType methodType in tif.SelectMany(GetMethodTypesFromTypeInformation))
+            {
+                yield return methodType;
+            }
         }
 
         IEnumerable<CrawlMethodType> GetMethodTypesFromTypeInformation(TypeInformation tif)
@@ -211,6 +220,54 @@ namespace libcompiler.TypeChecker
                 yield return (CrawlMethodType) tif.Type;
             }
         }
+
+
+        #endregion
+
+
+
+        protected override CrawlSyntaxNode VisitCall(CallNode call)
+        {
+            //Counter for how far we got before we got errors
+            int stage = 0;
+            CrawlType resultType;
+            CallNode expr = (CallNode)base.VisitCall(call);
+
+            List<CrawlType> actualParameters = expr.Arguments.Select(x => x.Value.ResultType).ToList();
+
+            //Find every method that could fit in here.
+            List<CrawlMethodType> candidates =
+                FindCallCandidates(expr.Target).ToList();
+
+            if (candidates.Count <= 0)
+            {
+                _messages.Add(CompilationMessage.Create(_data.TokenStream, expr.Target.Interval, MessageCode.NotMethod,
+                    _data.Filename, "Could not finding anything looking like a method or constuctor"));
+                return expr.WithResultType(CrawlType.ErrorType);
+            }
+
+            //Narrow down to fitting parameter counts
+            candidates = candidates.Where(x => x.Parameters.Count == actualParameters.Count).ToList();
+            if (candidates.Count <= 0)
+            {
+                _messages.Add(CompilationMessage.Create(_data.TokenStream, expr.Target.Interval, MessageCode.InvalidParameterCount,
+                    _data.Filename, "There was no method signature matching the number of parameters"));
+                return expr.WithResultType(CrawlType.ErrorType);
+            }
+
+
+            CrawlType result = BestParameterMatch(candidates, actualParameters);
+            if (result is CrawlStatusType)
+            {
+                _messages.Add(CompilationMessage.Create(_data.TokenStream, expr.Target.Interval, MessageCode.InvalidParameterCount,
+                    _data.Filename, "No version matches calling parameters"));
+                return expr.WithResultType(result);
+            }
+
+            CrawlMethodType resultMethod = (CrawlMethodType) result;
+            return expr.Update(expr.Interval, resultMethod.ReturnType, resultMethod, expr.Target, expr.Arguments);
+        }
+
 
         #endregion
 

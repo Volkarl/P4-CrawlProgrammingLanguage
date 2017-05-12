@@ -103,7 +103,7 @@ namespace libcompiler.CompilerStage
         /// </summary>
         internal static AstData TypeCheck(AstData tree, SideeffectHelper notused)
         {
-            var newTree = new TypeVisitor().Visit(tree.Tree.RootNode).OwningTree;
+            var newTree = new TypeVisitor(notused.CompilationMessages, tree).Visit(tree.Tree.RootNode).OwningTree;
             return new AstData(tree.TokenStream, tree.Filename, newTree);
         }
 

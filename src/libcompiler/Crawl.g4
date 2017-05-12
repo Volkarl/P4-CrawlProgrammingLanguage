@@ -279,7 +279,8 @@ PLUS					: '+' ;
 literal					: boolean_literal
 						| integer_literal
 						| real_literal
-						| string_literal;
+						| string_literal
+						| null_literal;
 
 //Boolean is true or false.
 boolean_literal			: TRUE | FALSE ;
@@ -289,6 +290,7 @@ integer_literal			: NUMBER;
 real_literal			: POINT_REAL | EXPONENT_REAL;
 //And finally, a string is a string...
 string_literal			: STRING_LITERAL ;
+null_literal            : NULL;
 
 
 POINT_REAL				: NUMBER? DOT NUMBER;
@@ -296,6 +298,7 @@ EXPONENT_REAL			: ( NUMBER | POINT_REAL ) EXPONENT_END ;
 STRING_LITERAL			: '"' ( STRING_ESCAPE_SEQ | ~[\\\r\n"] )* '"' ;
 TRUE					: 'sandt' ;
 FALSE					: 'falsk' ;
+NULL                    : 'tom' ;
 
 ///////////////////////////////////////////////////////////////////////////////
 //Protection levels
