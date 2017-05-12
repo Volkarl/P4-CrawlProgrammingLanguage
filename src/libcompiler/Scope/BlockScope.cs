@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using libcompiler.Datatypes;
 using libcompiler.ExtensionMethods;
 using libcompiler.SyntaxTree;
@@ -65,27 +66,29 @@ namespace libcompiler.Scope
                     VariableDeclerationNode variableNode = (VariableDeclerationNode)child;
                     foreach (var decleration in variableNode.Declerations)
                     {
+
+                        decleration.Identifier.UniqueItemTracker.Item = new UniqueItem();
                         string name = decleration.Identifier.Name;
                         scope.Add(name,
                             new TypeInformation(
                                 variableNode.DeclerationType.ActualType,
                                 variableNode.ProtectionLevel,
-                                decleration.Interval.a,new UniqueItem(),
+                                decleration.Interval.a, decleration.Identifier.UniqueItemTracker.Item,
                                 declaringScope));
 
-                        decleration.Identifier.UniqueItemTracker.Item = new UniqueItem();
                     }
                 }
                 else if(child.Type == NodeType.MethodDecleration)
                 {
                     MethodDeclerationNode methodNode = (MethodDeclerationNode) child;
+                    methodNode.UniqueItemTracker.Item = new UniqueItem();
                     string name = methodNode.Identifier.Value;
                     scope.Add(name,
                         new TypeInformation(
                             methodNode.MethodSignature.ActualType,
                             methodNode.ProtectionLevel,
                             methodNode.Interval.a,
-                            new UniqueItem(),
+                            methodNode.UniqueItemTracker.Item,
                             declaringScope));
                 }
             }

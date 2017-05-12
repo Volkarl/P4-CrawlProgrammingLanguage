@@ -60,7 +60,7 @@ namespace CodeGeneratorDriver
             return generator.ConstructorDeclaration(
                 null,
                 node.AllMembers.Select(m => generator.ParameterDeclaration(m.ParameterName(),
-                    m.GetRepresentation(TypeClassContext.GreenIEnumerableParameter))),
+                    m.GetRepresentation(/*TypeClassContext.GreenIEnumerableParameter*/))),
                 Accessibility.Internal,
                 baseConstructorArguments: baseArgs,
                 statements: block

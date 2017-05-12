@@ -22,26 +22,9 @@ namespace libcompiler.CodeGen.IL
             _module = assemblySingleModule;
         }
 
-        public void EmitFreeMethod(MethodDeclerationNode method)
-        {
-            MethodBuilder finishedMethod = EmitMethodInternal(
-                GetFreeStandingType(), 
-                method, 
-                MethodAttributes.Static | MethodAttributes.HideBySig
-            );
+        #region skeletons
 
-            if (method.Identifier.Value == ReservedNames.Entrypoint)
-            {
-                entryprt = finishedMethod;   
-            }
-        }
-
-        public void EmitFreeVariable(SingleVariableDeclerationNode variable)
-        {
-            EmitFieldInternal(GetFreeStandingType(), variable, FieldAttributes.Static);
-        }
-
-        public bool EmitClassFirstPass(ClassTypeDeclerationNode type)
+        public bool MakeTypeSkeleton(ClassTypeDeclerationNode type)
         {
             if (type.ClassType.Ancestor.ClrType == null) return false;
 
@@ -50,53 +33,124 @@ namespace libcompiler.CodeGen.IL
             return true;
         }
 
-        public void EmitClassSecondPass(ClassTypeDeclerationNode type)
+        public void MakeFreeMethodSkeleton(MethodDeclerationNode method)
         {
-            TypeBuilder builder = (TypeBuilder)type.ClassType.ClrType;
+            var builder = MakeMethodSkeletonInternal(GetFreeStandingType(), method, MethodAttributes.Static);
 
-            foreach (MethodDeclerationNode node in type.Body.OfType<MethodDeclerationNode>())
-            {
-                EmitMethodInternal(builder, node);
-            }
-
-            builder.CreateType();
+            if (method.Identifier.Value == ReservedNames.Entrypoint)
+                entryprt = builder;
         }
 
-        private MethodBuilder EmitMethodInternal(TypeBuilder containingType, MethodDeclerationNode method, MethodAttributes extraAttributes = 0)
+        public void MakeMemberSkeletons(ClassTypeDeclerationNode type, List<MethodDeclerationNode> listOfMethods)
+        {
+            TypeBuilder builder = (TypeBuilder)type.ClassType.ClrType;
+            foreach (CrawlSyntaxNode node in type.Body)
+            {
+                VariableDeclerationNode asVar = node as VariableDeclerationNode;
+                MethodDeclerationNode asMethod = node as MethodDeclerationNode;
+
+                if (asVar != null)
+                {
+                    foreach (SingleVariableDeclerationNode decleration in asVar.Declerations)
+                    {
+                        EmitFieldInternal(builder, decleration, 0);
+                    }
+                }
+                else if (asMethod != null)
+                {
+                    MakeMethodSkeletonInternal(builder, asMethod, 0);
+                    listOfMethods.Add(asMethod);
+                }
+                else { throw new NotImplementedException(); }
+            }
+        }
+
+        private MethodBuilder MakeMethodSkeletonInternal(TypeBuilder typeBuilder, MethodDeclerationNode method,
+            MethodAttributes extraAttributes)
         {
             CrawlMethodType type = (CrawlMethodType) method.MethodSignature.ActualType;
-            MethodBuilder builder = containingType.DefineMethod(
-                method.Identifier.Value, 
-                method.GetTypeAttributes() | extraAttributes, 
-                CallingConventions.Standard,
-                type.ReturnType.ClrType, 
-                type.Parameters.Select(x => x.ClrType).ToArray());
+            MethodBuilder builder = typeBuilder
+                .DefineMethod(
+                    method.Identifier.Value,
+                    method.GetTypeAttributes() | extraAttributes,
+                    CallingConventions.Standard,
+                    type.ReturnType.ClrType,
+                    type.Parameters.Select(t => t.ClrType).ToArray()
+                );
 
-
-            new ILGeneratorVisitor(builder).EmitFor(method.Body);
-
+            method.UniqueItemTracker.Item.MethodInfo = builder;
             return builder;
+        }
+
+        #endregion
+
+
+        #region Emit
+        public void EmitFreeMethod(MethodDeclerationNode method)
+        {
+            EmitMethodInternal(method);
+        }
+
+        public void EmitFreeVariable(SingleVariableDeclerationNode variable)
+        {
+            EmitFieldInternal(GetFreeStandingType(), variable, FieldAttributes.Static);
         }
 
         private void EmitFieldInternal(TypeBuilder containingType, SingleVariableDeclerationNode decl,
             FieldAttributes extraAttributes)
         {
-
             VariableDeclerationNode declList = (VariableDeclerationNode) decl.Parent.Parent;
 
-
             extraAttributes |= declList.GetFieldAttributes();
-            FieldBuilder builder = containingType.DefineField(decl.Identifier.Name, declList.DeclerationType.ActualType.ClrType,
+            FieldBuilder builder = containingType.DefineField(
+                decl.Identifier.Name,
+                declList.DeclerationType.ActualType.ClrType,
                 extraAttributes);
 
             decl.Identifier.UniqueItemTracker.Item.FieldInfo = builder;
-
-            //Probably most certainly needs to save this somewhere
         }
+
+        private void EmitMethodInternal( MethodDeclerationNode method)
+        {
+            new ILGeneratorVisitor(method.UniqueItemTracker.Item.MethodInfo).EmitFor(method.Body);
+        }
+
+        #endregion
 
         public void SetWorkingNamespace(string ns)
         {
             workingNamespace = ns ?? "";
+        }
+
+
+
+
+        #region Implementation
+
+
+
+        #endregion
+
+
+
+
+
+        public void MakeMethodSkeleton(TypeBuilder containingType, MethodDeclerationNode method,  MethodAttributes extraAttributes = 0)
+        {
+            CrawlMethodType type = (CrawlMethodType) method.MethodSignature.ActualType;
+            MethodBuilder builder = containingType.DefineMethod(
+                method.Identifier.Value,
+                method.GetTypeAttributes() | extraAttributes,
+                CallingConventions.Standard,
+                type.ReturnType.ClrType,
+                type.Parameters.Select(x => x.ClrType).ToArray());
+            method.UniqueItemTracker.Item.MethodInfo = builder;
+        }
+
+        public void FinishClass(ClassTypeDeclerationNode type)
+        {
+            TypeBuilder builder = (TypeBuilder)type.ClassType.ClrType;
+            builder.CreateType();
         }
 
         public void Finish(AssemblyBuilder builder, PEFileKinds kind)
@@ -110,6 +164,10 @@ namespace libcompiler.CodeGen.IL
                 builder.SetEntryPoint(entryprt, kind);
             }
         }
+
+
+
+        #region  Should really have its own type
 
         private readonly Dictionary<string, TypeBuilder> _freeStandingTypes = new Dictionary<string, TypeBuilder>();
         TypeBuilder GetFreeStandingType()
@@ -132,6 +190,7 @@ namespace libcompiler.CodeGen.IL
 
             return builder;
         }
-        
+
+        #endregion
     }
 }

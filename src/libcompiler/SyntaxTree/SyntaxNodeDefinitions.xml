@@ -233,6 +233,10 @@
                 <type>IScope</type>
                 <nulldefault>true</nulldefault> 
               </property>
+              <property>
+                  <name>UniqueItemTracker</name>
+                  <type>Reference'UniqueItem</type>
+              </property>
             </properties>
         </node>
         <node>

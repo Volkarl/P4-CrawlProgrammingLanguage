@@ -54,10 +54,10 @@ namespace CodeGeneratorDriver
             );
 
             //Public get-only properties for the non-child properties.
-            members.AddRange(node.Properties.Select(
+            members.AddRange(node.Members.Where(member => !member.IsNode).Select(
                 x => SharedGeneratorion.GetOnlyAccessor(
                     x.Name,
-                    SyntaxFactory.ParseTypeName(x.Type)
+                    x.GetRepresentation()
                     )
                 )
             );

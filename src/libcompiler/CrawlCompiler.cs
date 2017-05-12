@@ -124,9 +124,8 @@ namespace libcompiler
 
                 //TODO: Interpeter or code generation
 
-                //Until meaningfull end, print everything
-
-                //Execute(decoratedAsts, output.WriteLine, parallel);
+                //print everything, for debug
+                Execute(decoratedAsts, output.WriteLine, parallel);
 
                 //Code gen is maybe probably not thread safe. Single threaded work...
                 string fileName;

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Reflection.Emit;
 
 namespace libcompiler.Datatypes
 {
@@ -13,7 +14,10 @@ namespace libcompiler.Datatypes
             return Id.ToString();
         }
 
-        public FieldInfo FieldInfo { get; set; }
+        public FieldBuilder FieldInfo { get; set; }
+        public MethodBuilder MethodInfo { get; set; }
+        public LocalBuilder VariableInfo { get; set; }
+
         //TODO: Add other things it can be
     }
 

@@ -82,12 +82,12 @@ namespace CodeGeneratorDriver
         {
             if (IsNode)
             {
-
+                if ((context & TypeClassContext.GreenIEnumerableParameter) != 0)
+                    return $"Green{genericPart}Node";
 
                 return $"{genericPart}Node";
             }
-            else if ((context & TypeClassContext.GreenIEnumerableParameter) != 0)
-                return $"Green{genericPart}Node";
+
             return genericPart;
         }
 

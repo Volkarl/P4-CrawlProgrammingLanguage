@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Antlr4.Runtime.Misc;
 using libcompiler.CodeGen;
+using libcompiler.Datatypes;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
 
@@ -54,6 +55,7 @@ namespace libcompiler.CompilerStage
                     Interval.Invalid, 
                     ProtectionLevel.Private, 
                     null,
+                    new Reference<UniqueItem>(){Item = new UniqueItem()},
                     CrawlSyntaxNode.TypeNode(Interval.Invalid, "intet()", 0, new CrawlMethodType(CrawlSimpleType.Intet, new CrawlType[0])), 
                     new List<ParameterNode>(),
                     CrawlSyntaxNode.Block(Interval.Invalid, implicitMain),

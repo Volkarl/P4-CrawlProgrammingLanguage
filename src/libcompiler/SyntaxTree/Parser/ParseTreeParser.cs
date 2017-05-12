@@ -227,16 +227,10 @@ namespace libcompiler.SyntaxTree.Parser
 
         private static ConstructorNode ParseConstruct(RuleContext ConstructContex, Interval interval, ProtectionLevel protectionlevel)
         {
-
-
             BlockNode body = ParseBlockNode((RuleContext)ConstructContex.GetChild(3).GetChild(1));
 
-            return CrawlSyntaxNode.Constructor(interval,protectionlevel, null /*TODO: */, null, null, body);
-
-
+            return CrawlSyntaxNode.Constructor(interval,protectionlevel, null /*TODO: */, new Reference<UniqueItem>(),  null, null, body);
         }
-
-
 
         private static DeclerationNode ParseMethodDecleration(RuleContext methodContext, ProtectionLevel protectionLevel, Interval interval)
         {
@@ -276,6 +270,7 @@ namespace libcompiler.SyntaxTree.Parser
                 interval, 
                 protectionLevel, 
                 null, /*scope has no stuff yet*/
+                new Reference<UniqueItem>(),
                 methodSignature,
                 parameters,
                 body, 

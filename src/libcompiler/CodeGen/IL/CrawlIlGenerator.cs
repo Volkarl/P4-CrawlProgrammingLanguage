@@ -19,16 +19,19 @@ namespace libcompiler.CodeGen.IL
             saveAs = GetFileNameFor(configuration.DestinationFile, configuration.OutputType);
             AssemblyName name = new AssemblyName(Path.GetFileNameWithoutExtension(saveAs));
 
-
+            //Builder classes that we just need
             AssemblyBuilder builder = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Save);
             ModuleBuilder mainModule = builder.DefineDynamicModule(name.Name, saveAs, true);
             
             AssemblyGenerator generator = new AssemblyGenerator(mainModule);
-            
+
+
+            //Lists of everything we plan to emit
             List<SingleVariableDeclerationNode> freeVariables = new List<SingleVariableDeclerationNode>();
             List<MethodDeclerationNode> freeMethods = new List<MethodDeclerationNode>();
             List<ClassTypeDeclerationNode> types = new List<ClassTypeDeclerationNode>();
 
+            //Sort everything in all the files
             foreach (AstData file in files)
             {
                 TranslationUnitNode tu = (TranslationUnitNode) file.Tree.RootNode;
@@ -55,36 +58,51 @@ namespace libcompiler.CodeGen.IL
                 }
             }
 
+            //Generate skeleton for all classes. This needs to be done before anything referencing those classes can be emitted
             for (int index = 0; index < types.Count; index++)
             {
                 //Emit types one after another. If dependency is now emitted yet, move to back
                 //TODO: detect circular dependency
                 ClassTypeDeclerationNode type = types[index];
-                bool success = generator.EmitClassFirstPass(type);
+                bool success = generator.MakeTypeSkeleton(type);
                 if (!success)
                 {
                     types[index] = null;
                     types.Add(type);
                 }
             }
+            types = types.Where(x => x != null).ToList();
 
 
+
+
+
+            //Now generate skeletons for all methods
+            foreach (MethodDeclerationNode method in freeMethods)
+            {
+                generator.MakeFreeMethodSkeleton(method);
+            }
+            foreach (ClassTypeDeclerationNode type in types)
+            {
+                generator.MakeMemberSkeletons(type, freeMethods);
+            }
+
+            //Free variables needs to be done before methods, thats all
             foreach (SingleVariableDeclerationNode node in freeVariables)
             {
                 generator.EmitFreeVariable(node);
             }
 
-
-            foreach (MethodDeclerationNode node in freeMethods)
+            //Emit methods
+            foreach (MethodDeclerationNode method in freeMethods)
             {
-                generator.EmitFreeMethod(node);
+                generator.EmitFreeMethod(method);
             }
-
 
 
             foreach (ClassTypeDeclerationNode type in types.Where(type => type != null))
             {
-                generator.EmitClassSecondPass(type);
+                generator.FinishClass(type);
             }
 
             generator.Finish(builder, configuration.OutputType);

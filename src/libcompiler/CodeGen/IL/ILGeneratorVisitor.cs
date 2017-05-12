@@ -43,13 +43,20 @@ namespace libcompiler.CodeGen.IL
             }
 
             MemberAccessNode member = node.Target as MemberAccessNode;
+            VariableNode variable = node.Target as VariableNode;
             CrawlMethodType callee;
-            if (member != null)
+            if (member != null )
             {
                 if(node.CalleeType  == null) throw new NotImplementedException();
 
-                _ilGenerator.EmitCall(OpCodes.Call, node.CalleeType .MethodInfo, Type.EmptyTypes);
+                _ilGenerator.EmitCall(OpCodes.Call, node.CalleeType.MethodInfo, Type.EmptyTypes);
 
+            }
+            else if (variable != null)
+            {
+                if(variable.UniqueItemTracker.Item.MethodInfo == null) throw new NotImplementedException();
+
+                _ilGenerator.EmitCall(OpCodes.Call, variable.UniqueItemTracker.Item.MethodInfo, Type.EmptyTypes);
             }
             else throw new NotImplementedException();
 
@@ -80,6 +87,20 @@ namespace libcompiler.CodeGen.IL
             }
 
             //throw new NotImplementedException();
+        }
+
+        protected override void VisitSingleVariableDecleration(SingleVariableDeclerationNode node)
+        {
+            VariableDeclerationNode parrent = (VariableDeclerationNode) node.Parent.Parent;
+            LocalBuilder variable = _ilGenerator.DeclareLocal(parrent.DeclerationType.ActualType.ClrType);
+            node.Identifier.UniqueItemTracker.Item.VariableInfo = variable;
+
+            if (node.DefaultValue != null)
+            {
+                Visit(node.DefaultValue);
+
+                _ilGenerator.Emit(OpCodes.Stloc, variable);
+            }
         }
 
         protected override void VisitAssignment(AssignmentNode node)
@@ -131,8 +152,6 @@ namespace libcompiler.CodeGen.IL
                 _ilGenerator.Emit(OpCodes.Ldc_I4_1);
             else 
                 _ilGenerator.Emit(OpCodes.Ldc_I4_0);
-
-
         }
 
         public void EmitFor(BlockNode methodBody)

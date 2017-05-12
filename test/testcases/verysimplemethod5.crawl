@@ -1,0 +1,6 @@
+importer System;
+
+intet() Main = 
+	Console.WriteLine("Hello method");
+
+Main();
