@@ -131,14 +131,37 @@ namespace libcompiler.CompilerStage.CodeGen
             return VisitAndAddDelimiters(node.Arguments, delimiter);
         }
 
-        private string WritePowerExpression(List<ExpressionNode> arguments, int recursion = 0)
+        private string WritePowerExpression(List<ExpressionNode> arguments /*, int recursion = 0*/)
         {
-            if (arguments.Count - recursion == 2)
+            return InsertVisitsRecursivelyUntilTwoRemain(arguments, "System.Math.Pow(", ", ", ")");
+
+            #region DeprecatedCode
+            //if (arguments.Count - recursion == 2)
+            //{
+            //    // If there are only two left, then the recursion is done
+            //    return $"System.Math.Pow({Visit(arguments[recursion])}, {Visit(arguments[recursion + 1])})";
+            //}
+            //return $"System.Math.Pow({Visit(arguments[recursion])}, {WritePowerExpression(arguments, recursion + 1)})";
+            #endregion
+        }
+
+        private string InsertVisitsRecursivelyUntilTwoRemain(List<ExpressionNode> arguments,
+            string front = "", string middle = "", string end = "", bool rightRecursion = true, int currentRecursion = 0)
+        {
+            // A bit tought to understand, so take a look at the deprecated code in the WritePowerExpression method in stead:
+            // This is simply a more widely applicable version of the same concept.
+
+            if (arguments.Count - currentRecursion == 2)
             {
-                // If there are only two left, then the recursion is done
-                return $"System.Math.Pow({Visit(arguments[recursion])}, {Visit(arguments[recursion + 1])})";
+                // If there are only two arguments left, then the recursion is done
+                return front + Visit(arguments[currentRecursion]) + middle + Visit(arguments[currentRecursion + 1]) + end;
             }
-            return $"System.Math.Pow({Visit(arguments[recursion])}, {WritePowerExpression(arguments, recursion + 1)})";
+            if(rightRecursion)
+                return front + Visit(arguments[currentRecursion]) + middle + 
+                    InsertVisitsRecursivelyUntilTwoRemain(arguments, front, middle, end, rightRecursion, currentRecursion + 1) + end;
+            // Otherwise its a left recursion, so we reverse the order
+            return front + InsertVisitsRecursivelyUntilTwoRemain(arguments, front, middle, end, rightRecursion, currentRecursion + 1)
+                + middle + Visit(arguments[currentRecursion]) + end;
         }
 
         protected override string VisitCall(CallNode node)
@@ -151,6 +174,13 @@ namespace libcompiler.CompilerStage.CodeGen
         protected override string VisitCastExpression(CastExpressionNode node)
         {
             return $"({Visit(node.TypeToConvertTo)}) {Visit(node.Target)}";
+        }
+
+        protected override string VisitArrayConstructor(ArrayConstructorNode node)
+        {
+            //string type = node.Target.ActualType.
+            
+            return "new {type} " + "{ ARGUMENTS }";
         }
 
         protected override string VisitAssignment(AssignmentNode node)
