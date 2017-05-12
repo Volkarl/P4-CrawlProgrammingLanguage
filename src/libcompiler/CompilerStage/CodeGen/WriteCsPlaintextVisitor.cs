@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Antlr4.Runtime;
+using libcompiler.Parser;
 using libcompiler.SyntaxTree;
 
 namespace libcompiler.CompilerStage.CodeGen
@@ -178,9 +180,48 @@ namespace libcompiler.CompilerStage.CodeGen
 
         protected override string VisitArrayConstructor(ArrayConstructorNode node)
         {
-            //string type = node.Target.ActualType.
+            // Gets the type and writes all arguments into the array, for example:
+            // Array tal[,,][][,] and arguments (1,2,3,4,5,6) becomes new tal[1,2,3][4][5,6];
+            char lBracket = '[';
+            char rBracket = ']';
+            char comma = ',';
+
+            string type = Visit(node.Target);
+            string identifier = type.TrimEnd(lBracket, rBracket, comma);
+            int arrayIndex = identifier.Length;
+
+            for (int argumentNr = 0; argumentNr < node.Arguments.Count();)
+            {
+                if (type[arrayIndex] != lBracket)
+                    throw new ArgumentException("Expected: " + lBracket);
+                string argLBracket = Visit(node.Arguments[argumentNr++]);
+                type = type.Insert(++arrayIndex, argLBracket);
+                arrayIndex += argLBracket.Length;
+
+                while (type[arrayIndex] == comma)
+                {
+                    string argComma = Visit(node.Arguments[argumentNr++]);
+                    type = type.Insert(++arrayIndex, argComma);
+                    arrayIndex += argComma.Length;
+                }
+
+                if (type[arrayIndex++] != rBracket)
+                    throw new ArgumentException($"Expected {rBracket}, found {type[arrayIndex]}");
+            }
+
+            if (arrayIndex != type.Length)
+                throw new ArgumentException($"Argument count {node.Arguments.Count()} does not match array definition {type.Substring(arrayIndex)}");
             
-            return "new {type} " + "{ ARGUMENTS }";
+            // This method may be quite brittle, because it appears possible to get indexOutOfRangeExceptions everywhere. I'm leaving it 
+            // as it is though, because it gets so much harder to read otherwise, and I'm not sure its even possible to invoke those errors.
+
+            return type;
+        }
+
+        protected override string VisitArgument(ArgumentNode node)
+        {
+            string sref = node.Refence ? "ref" : String.Empty;
+            return $"{sref} {Visit(node.Value)}";
         }
 
         protected override string VisitAssignment(AssignmentNode node)

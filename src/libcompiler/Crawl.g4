@@ -251,7 +251,7 @@ unary_expression		: ( INVERT | MINUS )* postfix_expression | array_initializatio
 
 postfix_expression		: atom ( call_expression | subfield_expression | index_expression | generic_unpack_expression)* ;
 
-array_initialization_expression: type call_expression ;
+array_initialization_expression: type call_expression+ ;
 
 call_expression			: LPARENTHESIS ref_expression_list? RPARENTHESIS ;
 

@@ -480,14 +480,6 @@
                     <name>TypeName</name>
                     <type>string</type>
                 </property>
-                <!--<property>
-                    <name>IsReference</name>
-                    <type>bool</type>
-                </property> -->
-                <property>
-                    <name>ArrayDimensions</name>
-                    <type>int</type>
-                </property>
               <property>
                 <name>ActualType</name>
                 <type>CrawlType</type>
@@ -501,6 +493,10 @@
                 <child>
                     <name>Target</name>
                     <type>Type</type>
+                </child>
+                <child>
+                    <name>Arguments</name>
+                    <type>List'Argument</type>
                 </child>
             </children>
         </node>

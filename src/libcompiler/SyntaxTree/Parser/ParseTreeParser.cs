@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -341,7 +342,7 @@ namespace libcompiler.SyntaxTree.Parser
             else
                 interval = new Interval(returnType.Interval.a, returnType.Interval.b);    //TODO: Only roughly correct.
 
-            TypeNode result = CrawlSyntaxNode.TypeNode(interval, textDef.ToString(), 0, null);
+            TypeNode result = CrawlSyntaxNode.TypeNode(interval, textDef.ToString(), null);
             return result;
         }
 
@@ -442,86 +443,127 @@ namespace libcompiler.SyntaxTree.Parser
         {
             // No array specified -> the type is not an array
             var array = type.GetChild(1) as CrawlParser.Array_typeContext ?? type.GetChild(2) as CrawlParser.Array_typeContext;
-            if (array == null) return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(),  0, null);
+            if (array == null) return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(), CrawlType.UnspecifiedType); 
+            //TODO: CrawlType correct? Dont we wish to put in the identifier? I see no way of doing that though. 
 
+            #region deprecated
             // Array is specified -> We count the dimensions. 
             //// Then we remove the trailing [] from the type definition, because we now keep track of it within the dimensions?? IS THIS NECESSARY?
-            int arrayDimensions = CountTypeArrayDimensions(array);
+            //int arrayDimensions = CountTypeArrayDimensions(array);
             // string dimensionsAsString = $"[{StringExtensions.AddStringForeach(",", arrayDimensions)}]";
             // string typeText = type.GetText();
             // string typeWithoutLastArray = typeText.Remove(typeText.LastIndexOf(dimensionsAsString, StringComparison.Ordinal));
-            return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(),  arrayDimensions, null);
-        }
-
-        private static int CountTypeArrayDimensions(CrawlParser.Array_typeContext array)
-        {
-            // The type is an array of something, so we count the dimensions
-            // Arrays within arrays are handled like any other type, ie. tal[][][,,] is a three-dimensional array of tal[][]
-            // The dimensions of the inner array types do not matter, and cannot be specified here
-            int arrayDimensions = 0;
-
-            // Loops through the arrays and counts the commas in the outmost array, ie. tal[][][,,]
-            for (int i = 0; i < array.ChildCount; i++)
-            {
-                // Checks for [
-                if (((ITerminalNode)array.GetChild(i++)).Symbol.Type != CrawlLexer.LSQUAREBRACKET)
-                {
-                    throw new ArgumentException("Wrong input in array declaration, expected: " + array.LSQUAREBRACKET());
-                }
-                // Checks for commas. If there are any, then there must be only one ] left 
-                if (((ITerminalNode)array.GetChild(i)).Symbol.Type == CrawlLexer.ITEM_SEPARATOR)
-                {
-                    // Count commas
-                    while (((ITerminalNode)array.GetChild(i)).Symbol.Type == CrawlLexer.ITEM_SEPARATOR)
-                    {
-                        i++;
-                        arrayDimensions++;
-                    }
-                    // The next character must be a ] and must be the last one
-                    if (i + 1 != array.ChildCount) throw new ArgumentException("Can only specify the dimensions of the outmost array");
-                }
-                // Checks for ]
-                if (((ITerminalNode)array.GetChild(i)).Symbol.Type != CrawlLexer.RSQUAREBRACKET)
-                {
-                    throw new ArgumentException("Wrong input in array declaration, expected: " + array.RSQUAREBRACKET() + "or " + array.ITEM_SEPARATOR());
-                }
-            }
-            return arrayDimensions;
-            #region deprecatedCode
-
-            //// Array specified -> count dimensions
-            //List<uint> arrayDimensions = new ArrayList<uint>();
-
-            //// Loops through the arrays, ie. heltal[,,,,,][,,,][]
-            //for (int i = 0; i < array.ChildCount; i++)
-            //{
-            //    // Checks one array "pair" [] at a time
-            //    if (((ITerminalNode)array.GetChild(i++)).Symbol.Type != CrawlLexer.LSQUAREBRACKET)
-            //    {
-            //        // Checks for [
-            //        throw new ArgumentException("Wrong input in array declaration, expected: " + array.LSQUAREBRACKET());
-            //    }
-
-            //    uint dimension = 1;
-            //    // If [] is empty, then the dimensions of the array is 1
-            //    while (((ITerminalNode)array.GetChild(i)).Symbol.Type == CrawlLexer.ITEM_SEPARATOR)
-            //    {
-            //        // Checks for commas (,)
-            //        i++;
-            //        dimension++;
-            //    }
-
-            //    if (((ITerminalNode)array.GetChild(i)).Symbol.Type != CrawlLexer.RSQUAREBRACKET)
-            //    {
-            //        // Checks for ]
-            //        throw new ArgumentException("Wrong input in array declaration, expected: " + array.RSQUAREBRACKET() + "or " + array.ITEM_SEPARATOR());
-            //    }
-            //    arrayDimensions.Add(dimension);
-            //}
-            //return NodeFactory.Type(type.SourceInterval, new CrawlType(type.GetText()), isReference, arrayDimensions);
-
             #endregion
+
+            return CrawlSyntaxNode.TypeNode(type.SourceInterval, type.GetText(), CrawlType.UnspecifiedType);
         }
+
+        // TODO: Great code below for wrapping the type of an array into other arrays, to take into account jagged arrays
+        private static CrawlType GetArrayType(CrawlParser.Array_typeContext array, int currentCharacter = 0)
+        {
+            int rank = 1;
+
+            // Checks for [
+            if (((ITerminalNode)array.GetChild(currentCharacter++)).Symbol.Type != CrawlLexer.LSQUAREBRACKET)
+            {
+                throw new ArgumentException("Wrong input in array declaration, expected: " + array.LSQUAREBRACKET());
+            }
+
+            // Count commas
+            while (((ITerminalNode)array.GetChild(currentCharacter)).Symbol.Type == CrawlLexer.ITEM_SEPARATOR)
+            {
+                currentCharacter++;
+                rank++;
+            }
+
+            // Checks for ]
+            if (((ITerminalNode)array.GetChild(currentCharacter++)).Symbol.Type != CrawlLexer.RSQUAREBRACKET)
+            {
+                throw new ArgumentException("Wrong input in array declaration, expected: " + array.RSQUAREBRACKET() + "or " + array.ITEM_SEPARATOR());
+            }
+
+            // No next characters => we return
+            if(currentCharacter == array.ChildCount)
+                return new CrawlArrayType(rank, CrawlType.UnspecifiedType); //TODO: Unspecified type.
+            // Incorrect next character
+            if (((ITerminalNode)array.GetChild(currentCharacter)).Symbol.Type != CrawlLexer.LSQUAREBRACKET)
+            {
+                throw new ArgumentException("Wrong input in array declaration, expected: empty or " + array.LSQUAREBRACKET());
+            }
+            // If next character is a [, we wrap the current type into a new array type
+            return new CrawlArrayType(rank, GetArrayType(array, currentCharacter));
+        }
+
+        //private static int CountTypeArrayDimensions(CrawlParser.Array_typeContext array)
+        //{
+        //    // The type is an array of something, so we count the dimensions
+        //    // Arrays within arrays are handled like any other type, ie. tal[][][,,] is a three-dimensional array of tal[][]
+        //    // The dimensions of the inner array types do not matter, and cannot be specified here
+        //    int arrayDimensions = 0;
+
+        //    // Loops through the arrays and counts the commas in the outmost array, ie. tal[][][,,]
+        //    for (int i = 0; i < array.ChildCount; i++)
+        //    {
+        //        // Checks for [
+        //        if (((ITerminalNode)array.GetChild(i++)).Symbol.Type != CrawlLexer.LSQUAREBRACKET)
+        //        {
+        //            throw new ArgumentException("Wrong input in array declaration, expected: " + array.LSQUAREBRACKET());
+        //        }
+        //        // Checks for commas. If there are any, then there must be only one ] left 
+        //        if (((ITerminalNode)array.GetChild(i)).Symbol.Type == CrawlLexer.ITEM_SEPARATOR)
+        //        {
+        //            // Count commas
+        //            while (((ITerminalNode)array.GetChild(i)).Symbol.Type == CrawlLexer.ITEM_SEPARATOR)
+        //            {
+        //                i++;
+        //                arrayDimensions++;
+        //            }
+        //            // The next character must be a ] and must be the last one
+        //            if (i + 1 != array.ChildCount) throw new ArgumentException("Can only specify the dimensions of the outmost array");
+        //        }
+        //        // Checks for ]
+        //        if (((ITerminalNode)array.GetChild(i)).Symbol.Type != CrawlLexer.RSQUAREBRACKET)
+        //        {
+        //            throw new ArgumentException("Wrong input in array declaration, expected: " + array.RSQUAREBRACKET() + "or " + array.ITEM_SEPARATOR());
+        //        }
+        //    }
+        //    return arrayDimensions;
+        //    #region deprecatedCode
+
+        //    //// Array specified -> count dimensions
+        //    //List<uint> arrayDimensions = new ArrayList<uint>();
+
+        //    //// Loops through the arrays, ie. heltal[,,,,,][,,,][]
+        //    //for (int i = 0; i < array.ChildCount; i++)
+        //    //{
+        //    //    // Checks one array "pair" [] at a time
+        //    //    if (((ITerminalNode)array.GetChild(i++)).Symbol.Type != CrawlLexer.LSQUAREBRACKET)
+        //    //    {
+        //    //        // Checks for [
+        //    //        throw new ArgumentException("Wrong input in array declaration, expected: " + array.LSQUAREBRACKET());
+        //    //    }
+
+        //    //    uint dimension = 1;
+        //    //    // If [] is empty, then the dimensions of the array is 1
+        //    //    while (((ITerminalNode)array.GetChild(i)).Symbol.Type == CrawlLexer.ITEM_SEPARATOR)
+        //    //    {
+        //    //        // Checks for commas (,)
+        //    //        i++;
+        //    //        dimension++;
+        //    //    }
+
+        //    //    if (((ITerminalNode)array.GetChild(i)).Symbol.Type != CrawlLexer.RSQUAREBRACKET)
+        //    //    {
+        //    //        // Checks for ]
+        //    //        throw new ArgumentException("Wrong input in array declaration, expected: " + array.RSQUAREBRACKET() + "or " + array.ITEM_SEPARATOR());
+        //    //    }
+        //    //    arrayDimensions.Add(dimension);
+        //    //}
+        //    //return NodeFactory.Type(type.SourceInterval, new CrawlType(type.GetText()), isReference, arrayDimensions);
+
+        //    #endregion
+        //}
+
         private static ProtectionLevel ParseProtectionLevel(CrawlParser.Protection_levelContext protectionLevel)
         {
             TerminalNodeImpl tnode = (TerminalNodeImpl) protectionLevel.GetChild(0);
