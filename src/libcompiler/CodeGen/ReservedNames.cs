@@ -8,6 +8,6 @@ namespace libcompiler.CodeGen
 {
     static class ReservedNames
     {
-        public const string Entrypoint = "__ENTRYPOINT";
+        public const string Entrypoint = "<__ENTRYPOINT>";
     }
 }
