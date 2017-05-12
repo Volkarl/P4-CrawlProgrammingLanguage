@@ -109,12 +109,22 @@ namespace libcompiler
                     }
                 );
 
+                ConcurrentBag<AstData> optimizedAsts = Run<AstData, AstData>(decoratedAsts, parallel, sideeffectHelper,
+                    (destination, helper) =>
+                    {
+                        Func<AstData, SideeffectHelper, AstData> first = OptimizationPipeline.FoldConstants;
+                        var final = first.EndWith(destination.Add, helper);
 
+                        return final;
+                    }
+                );
                 //TODO: Interpeter or code generation
 
                 //Until meaningfull end, print everything
 
                 Execute(decoratedAsts, output.WriteLine, parallel);
+                output.WriteLine("\n=>\n");
+                Execute(optimizedAsts, output.WriteLine, parallel);
 
                 if (sideeffectHelper.CompilationMessages.Count(message => message.Severity >= MessageSeverity.Error) > 0)
                     status = CompilationStatus.Failure;

@@ -46,6 +46,8 @@ namespace libcompiler.TypeSystem
 
         public static CrawlType Intet { get; } = new CrawlSimpleType(typeof(void));
 
+        public static CrawlType Array { get; } = new CrawlSimpleType(typeof(Array));
+
         protected CrawlSimpleType(Type type) : base(type.Name , type.Namespace, type.Assembly.FullName)
         {
             if(type == null) throw new NullReferenceException(nameof(type));

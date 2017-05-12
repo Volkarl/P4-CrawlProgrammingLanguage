@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompilerStage\FirstScopePassVisitor.cs" />
+    <Compile Include="CompilerStage\OptimizationPipeline.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\CheckDeclerationOrderVisitor.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\NamespaceNotFoundException.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\PutTypeVisitor.cs" />
@@ -53,6 +54,8 @@
     <Compile Include="CrawlCompiler.cs" />
     <Compile Include="CrawlCompilerConfiguration.cs" />
     <Compile Include="Datatypes\ListDictionary.cs" />
+    <Compile Include="Exceptions\CrawlImpossibleStateException.cs" />
+    <Compile Include="Exceptions\CrawlSyntaxException.cs" />
     <Compile Include="ExtensionMethods\CrawlSyntaxNodeExtensions.cs" />
     <Compile Include="ExtensionMethods\IEnumerableHelpers.cs" />
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />
@@ -61,6 +64,8 @@
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="Namespaces\Namespace.cs" />
     <Compile Include="Namespaces\NamespaceLoader.cs" />
+    <Compile Include="Optimizations\ConstantFoldingHelpPart.cs" />
+    <Compile Include="Optimizations\ConstantFoldingVisitor.cs" />
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
     <Compile Include="Scope\GenericScope.cs" />
@@ -98,8 +103,6 @@
     <Compile Include="$(GeneratedNodeFactory)" />
     <Compile Include="$(GeneratedVisitorClasses)" />
     <Compile Include="SyntaxTree\ExpressionType.cs" />
-    <Compile Include="CrawlImpossibleStateException.cs" />
-    <Compile Include="CrawlSyntaxException.cs" />
     <Compile Include="SyntaxTree\Parser\ExpressionParser.cs" />
     <Compile Include="SyntaxTree\Parser\ParseTreeParser.cs" />
     <Compile Include="SyntaxTree\ProtectionLevel.cs" />
