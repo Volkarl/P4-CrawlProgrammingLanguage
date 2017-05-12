@@ -1,0 +1,9 @@
+klasse TestPerson =
+  Person person = ny Person();
+
+  foo(person) =
+  person.age = 50;
+
+offentlig klasse Person =
+  offentlig tal age;
+  offentlig tal name;
