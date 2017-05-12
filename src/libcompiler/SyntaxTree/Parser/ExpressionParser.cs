@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -225,6 +226,37 @@ namespace libcompiler.SyntaxTree.Parser
             return node;
         }
 
+        private static Dictionary<char, char> escapes = new Dictionary<char, char>()
+        {
+            {'b', '\b'},
+            {'f', '\f'},
+            {'n', '\n'},
+            {'r', '\r'},
+            {'t', '\t'},
+            {'v', '\v'},
+            {'\\', '\\'},
+            {'\'', '\''},
+            {'"', '"'}
+        };
+        private static string Unescape(string instring)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 1; i < instring.Length -1; i++)
+            {
+                if (instring[i] == '\\')
+                {
+                    i++;
+                    sb.Append(escapes[instring[i]]);
+                }
+                else
+                {
+                    sb.Append(instring[i]);
+                }
+            }
+
+            return sb.ToString();
+        }
+
         private static ExpressionNode ParseLiteral(RuleContext rule)
         {
             RuleContext realLiteral = (RuleContext) rule.GetChild(0);
@@ -232,7 +264,7 @@ namespace libcompiler.SyntaxTree.Parser
             switch (realLiteral.RuleIndex)
             {
                 case CrawlParser.RULE_string_literal:
-                    return CrawlSyntaxNode.StringLiteral(realLiteral.SourceInterval, realLiteral.GetText());
+                    return CrawlSyntaxNode.StringLiteral(realLiteral.SourceInterval, Unescape(rule.GetText()));
                 case CrawlParser.RULE_integer_literal:
                     return CrawlSyntaxNode.IntegerLiteral(realLiteral.SourceInterval, int.Parse(realLiteral.GetText()));
                 case CrawlParser.RULE_boolean_literal:
