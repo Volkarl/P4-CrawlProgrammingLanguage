@@ -17,9 +17,8 @@ namespace libcompiler.ExtensionMethods
             MethodAttributes attributes = MethodAttributes.PrivateScope; 
             switch (self.ProtectionLevel)
             {
-                case ProtectionLevel.None:
-                    break;
                 case ProtectionLevel.Public:
+                case ProtectionLevel.None:
                     attributes = MethodAttributes.Public;
                     break;
                 case ProtectionLevel.Internal:
@@ -33,6 +32,34 @@ namespace libcompiler.ExtensionMethods
                     break;
                 case ProtectionLevel.Private:
                     attributes = MethodAttributes.Private;
+                    break;
+                case ProtectionLevel.NotApplicable:
+                    break;
+            }
+
+            return attributes;
+        }
+
+        public static FieldAttributes GetFieldAttributes(this VariableDeclerationNode self)
+        {
+            FieldAttributes attributes = FieldAttributes.PrivateScope;
+            switch (self.ProtectionLevel)
+            {
+                case ProtectionLevel.None:
+                case ProtectionLevel.Public:
+                    attributes = FieldAttributes.Public;
+                    break;
+                case ProtectionLevel.Internal:
+                    attributes = FieldAttributes.Assembly;
+                    break;
+                case ProtectionLevel.Protected:
+                    attributes = FieldAttributes.Family;
+                    break;
+                case ProtectionLevel.ProtectedInternal:
+                    attributes = FieldAttributes.FamANDAssem;
+                    break;
+                case ProtectionLevel.Private:
+                    attributes = FieldAttributes.Private;
                     break;
                 case ProtectionLevel.NotApplicable:
                     break;

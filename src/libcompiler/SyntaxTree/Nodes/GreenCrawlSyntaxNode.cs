@@ -2,7 +2,7 @@
 
 namespace libcompiler.SyntaxTree
 {
-    public abstract partial class CrawlSyntaxNode
+    abstract partial class CrawlSyntaxNode
     {
         public abstract class GreenCrawlSyntaxNode
         {

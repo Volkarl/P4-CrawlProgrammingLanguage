@@ -5,6 +5,7 @@ using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using libcompiler.Datatypes;
 using libcompiler.ExtensionMethods;
 using libcompiler.Namespaces;
 using libcompiler.Parser;
@@ -362,7 +363,7 @@ namespace libcompiler.SyntaxTree.Parser
 
         private static VariableNode ParseVariable(ITerminalNode node)
         {
-            return CrawlSyntaxNode.Variable(node.SourceInterval, CrawlType.UnspecifiedType, node.GetText());
+            return CrawlSyntaxNode.Variable(node.SourceInterval, CrawlType.UnspecifiedType, node.GetText(), new Reference<UniqueItem>());
         }
 
         private static IdentifierNode ParseIdentifier(ITerminalNode node)

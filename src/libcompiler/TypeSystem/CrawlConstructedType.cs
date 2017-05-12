@@ -134,7 +134,7 @@ namespace libcompiler.TypeSystem
             {
                 //Bug? parrent class declared later in method?
                 TypeInformation baseInformation = scope.FindSymbol(self.BaseTypes[0].Value).Single();
-                if (baseInformation.NeedsABetterNameType == NeedsABetterNameType.Class)
+                if (baseInformation.DeclaredAs == DeclaredAs.Class)
                 { Ancestor = baseInformation.Type;}
                 else
                 {

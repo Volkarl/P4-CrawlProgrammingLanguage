@@ -7,7 +7,7 @@ using libcompiler.Scope;
 
 namespace libcompiler.SyntaxTree
 {
-    public partial class CrawlSyntaxNode
+    partial class CrawlSyntaxNode
     {
         public static BlockNode Block(Interval interval, params CrawlSyntaxNode[] statements)
         {

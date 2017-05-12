@@ -79,7 +79,11 @@ namespace libcompiler.TypeChecker
         protected override CrawlSyntaxNode VisitVariable(VariableNode variable)
         {
             var expr = (VariableNode)base.VisitVariable(variable);
-            CrawlType resultType = expr.FindFirstScope().FindSymbol(variable.Name)?.FirstOrDefault()?.Type;
+            TypeInformation info = expr.FindFirstScope().FindSymbol(variable.Name)?.FirstOrDefault();
+            CrawlType resultType = info?.Type;
+
+            if (info != null)
+                expr.UniqueItemTracker.Item = info.Item;
 
             var result = expr.WithResultType(resultType ?? CrawlType.ErrorType);
             return result;
@@ -206,7 +210,7 @@ namespace libcompiler.TypeChecker
 
         IEnumerable<CrawlMethodType> GetMethodTypesFromTypeInformation(TypeInformation tif)
         {
-            if (tif.NeedsABetterNameType == NeedsABetterNameType.Class)
+            if (tif.DeclaredAs == DeclaredAs.Class)
             {
                 CrawlConstructedType ctype = (CrawlConstructedType) tif.Type;
                 TypeInformation[] constructors = ctype.FindSymbol(".ctor");

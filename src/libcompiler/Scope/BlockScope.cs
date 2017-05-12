@@ -27,7 +27,7 @@ namespace libcompiler.Scope
 
             string name = node.Identifier.Value;
             CrawlConstructedType type = new CrawlConstructedType(name, ns);
-            TypeInformation info = new TypeInformation(type, node.ProtectionLevel, node.Interval.a, declaringScope, NeedsABetterNameType.Class);
+            TypeInformation info = new TypeInformation(type, node.ProtectionLevel, node.Interval.a, new UniqueItem(),declaringScope, DeclaredAs.Class);
 
             //Update contents. If not existing add a new array (line 2)
             //Otherwise, linq to append to array
@@ -70,8 +70,10 @@ namespace libcompiler.Scope
                             new TypeInformation(
                                 variableNode.DeclerationType.ActualType,
                                 variableNode.ProtectionLevel,
-                                decleration.Interval.a,
+                                decleration.Interval.a,new UniqueItem(),
                                 declaringScope));
+
+                        decleration.Identifier.UniqueItemTracker.Item = new UniqueItem();
                     }
                 }
                 else if(child.Type == NodeType.MethodDecleration)
@@ -83,6 +85,7 @@ namespace libcompiler.Scope
                             methodNode.MethodSignature.ActualType,
                             methodNode.ProtectionLevel,
                             methodNode.Interval.a,
+                            new UniqueItem(),
                             declaringScope));
                 }
             }

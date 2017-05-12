@@ -11,7 +11,7 @@ namespace libcompiler.SyntaxTree
     /// functionality is located here. Rest is (at time of writing) in 
     /// <see cref="GreenListNode{T}"/> and <see cref="ExpressionNode"/>
     /// </summary>
-    public abstract partial class CrawlSyntaxNode
+    abstract partial class CrawlSyntaxNode
     {
         protected readonly GreenCrawlSyntaxNode Green;
         private CrawlSyntaxTree _owningTree;

@@ -4,8 +4,7 @@ using libcompiler.SyntaxTree;
 
 namespace libcompiler
 {
-    
-    public class PrettyPrintVisitor : SyntaxVisitor
+    class PrettyPrintVisitor : SyntaxVisitor
     {
         public StringBuilder BuildString = new StringBuilder();
 

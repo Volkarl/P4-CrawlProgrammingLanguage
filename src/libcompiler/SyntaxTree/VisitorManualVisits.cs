@@ -8,7 +8,7 @@ using Antlr4.Runtime.Tree.Xpath;
 
 namespace libcompiler.SyntaxTree
 {
-    public partial class SyntaxVisitor
+    public  partial class SyntaxVisitor
     {
         protected virtual void VisitList<T>(IEnumerable<T> list) where T : CrawlSyntaxNode
         {
@@ -105,6 +105,4 @@ namespace libcompiler.SyntaxTree
             return list.Update(list.Interval, newchildren);
         }
     }
-
-
 }

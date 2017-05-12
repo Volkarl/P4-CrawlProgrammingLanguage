@@ -3,7 +3,7 @@ using libcompiler.Scope;
 
 namespace libcompiler.SyntaxTree
 {
-    public partial class ClassTypeDeclerationNode : IScope
+    partial class ClassTypeDeclerationNode : IScope
     {
 
         //BUG: This looks in its Body(a child) which then looks in this. Infinite recursion -> StackOverflow

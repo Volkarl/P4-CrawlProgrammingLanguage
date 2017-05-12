@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Antlr4.Runtime.Misc;
+using libcompiler.Datatypes;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
 
@@ -23,29 +24,27 @@ namespace libcompiler.Scope
 
     public class TypeInformation
     {
-        public TypeInformation(CrawlType type, ProtectionLevel protectionLevel, int declarationLocation, DeclaringScope declaringScope = DeclaringScope.MethodLike, NeedsABetterNameType needsABetterNameType = NeedsABetterNameType.Variable)
+        public TypeInformation(CrawlType type, ProtectionLevel protectionLevel, int declarationLocation, UniqueItem item, DeclaringScope declaringScope = DeclaringScope.MethodLike, DeclaredAs declaredAs = DeclaredAs.Variable)
         {
             Type = type;
             ProtectionLevel = protectionLevel;
             DeclarationLocation = declarationLocation;
+            Item = item;
             DeclaringScope = declaringScope;
-            NeedsABetterNameType = needsABetterNameType;
+            DeclaredAs = declaredAs;
         }
 
         public int DeclarationLocation { get; }
         public CrawlType Type { get; }
         public ProtectionLevel ProtectionLevel { get; }
         public DeclaringScope DeclaringScope { get; }
+        public DeclaredAs DeclaredAs { get; }
+        public UniqueItem Item { get; }
 
-        //As the name says, it really needs a better name, but im simply unable to come up with anything that is both
-        //descriptive and less that 100 chars
-        //Both types and variables exists in scope. This value makes it possible to check if this is THE TYPE or just a
-        //variable declared as that type.
-        public NeedsABetterNameType NeedsABetterNameType { get; }
         //TODO Save place where it was declared
     }
 
-    public enum NeedsABetterNameType
+    public enum DeclaredAs
     {
         Variable,
         Class,

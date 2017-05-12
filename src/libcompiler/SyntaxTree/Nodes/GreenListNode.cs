@@ -5,7 +5,7 @@ using Antlr4.Runtime.Misc;
 
 namespace libcompiler.SyntaxTree
 {
-    public partial class CrawlSyntaxNode
+    partial class CrawlSyntaxNode
     {
         public class GreenListNode<T> : GreenCrawlSyntaxNode where T : CrawlSyntaxNode
         {

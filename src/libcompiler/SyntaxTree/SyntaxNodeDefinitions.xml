@@ -566,6 +566,10 @@
                     <name>Name</name>
                     <type>string</type>
                 </property>
+                <property>
+                    <name>UniqueItemTracker</name>
+                    <type>Reference'UniqueItem</type>
+                </property>
             </properties>
         </node>
     </nodes>

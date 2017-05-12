@@ -3,7 +3,7 @@ using libcompiler.SyntaxTree;
 
 namespace libcompiler.ExtensionMethods
 {
-    public static class CrawlSyntaxNodeExtensions
+    static class CrawlSyntaxNodeExtensions
     {
         public static NamespaceNode FindNameSpace(this CrawlSyntaxNode node)
         {

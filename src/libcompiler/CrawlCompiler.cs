@@ -38,7 +38,9 @@ namespace libcompiler
 
             try
             {
-                
+                //single line comments with /* */ are referering to a stage in general_archtechture.md
+
+
                 bool parallel = !configuration.ForceSingleThreaded;
 
                 //The ConcurrentBag is an unordered, thread safe, collection
@@ -49,18 +51,21 @@ namespace libcompiler
                         //_Could_ be hidden in ParsePipeline by making them properties instead....
 
                         //Get the starting transformaton
+                        /* Create parse tree */
                         Func<string, SideeffectHelper, ParseTreeData> parsePT = ParsePipeline.ReadFileToPt;
 
                         //Jump out if we are intrested in earlier stage.
                         if (configuration.TargetStage == TargetStage.ParseTree)
                             return parsePT.EndWith(output.WriteLine, helper);
 
+                        /* Create AST */
                         var parseASt = parsePT
                             .Then(ParsePipeline.CreateAst); //.Then adds another stage
 
                         if (configuration.TargetStage == TargetStage.AbstractSyntaxTree)
                             return parseASt.EndWith(output.WriteLine, helper);
 
+                        /* Collect types*/
                         var firstscopepass = parseASt.Then(SemanticAnalysisPipeline.CollectTypes);
 
                         //.EndWith collects it
@@ -70,7 +75,7 @@ namespace libcompiler
                 );
 
                 MaybeDie(sideeffectHelper);
-
+                /* Merge type tables */
                 foreach (AstData file in parsedFiles)
                 {
                     TranslationUnitNode node = (TranslationUnitNode) file.Tree.RootNode;
@@ -83,12 +88,16 @@ namespace libcompiler
                 ConcurrentBag<AstData> filesWithScope = Run<AstData, AstData>(parsedFiles, parallel, sideeffectHelper,
                     (destination, helper) =>
                     {
+                        /* Find visible namespace*/
                         //NamespaceDecorator is a hack to pass all namespaces in to the function that finds the relevant ones
                         Func<AstData, SideeffectHelper, AstData> first = new SemanticAnalysisPipeline.NamespaceDecorator(allNamespaces).AddExport;
 
                         return first
+                            /* Decorate TypeNode */
                             .Then(SemanticAnalysisPipeline.PutTypes)
+                            /* Collect remaining scope information */
                             .Then(SemanticAnalysisPipeline.SecondScopePass)
+                            /* Finish types */
                             .Then(SemanticAnalysisPipeline.FinishTypes)
                             .EndWith(destination.Add, helper);
 
@@ -101,6 +110,7 @@ namespace libcompiler
                 ConcurrentBag<AstData> decoratedAsts = Run<AstData, AstData>(filesWithScope, parallel, sideeffectHelper,
                     (destination, helper) =>
                     {
+                        /* scope check */
                         Func<AstData, SideeffectHelper, AstData> first = SemanticAnalysisPipeline.DeclerationOrderCheck;
                         var final = first
                             .Then(Rewriters.ReduceConstructs)

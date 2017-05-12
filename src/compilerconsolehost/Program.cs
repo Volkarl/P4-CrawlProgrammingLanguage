@@ -32,8 +32,8 @@ namespace compilerconsolehost
                 }
             }
             
-            Console.WriteLine("Press enter to exit...");
-            Console.ReadLine();
+//            Console.WriteLine("Press enter to exit...");
+//            Console.ReadLine();
         }
 
         private static bool ParseOptions(string[] args, out CrawlCompilerConfiguration crawlCompilerConfiguration)

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using libcompiler.Datatypes;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
 
@@ -13,6 +15,8 @@ namespace libcompiler.CodeGen.IL
     {
         private readonly ILGenerator _ilGenerator;
         private readonly MethodBuilder _builder;
+        private bool assigning = false;
+
 
         public ILGeneratorVisitor(MethodBuilder builder)
         {
@@ -53,6 +57,57 @@ namespace libcompiler.CodeGen.IL
             {
                 _ilGenerator.Emit(OpCodes.Pop);
             }
+        }
+
+        protected override void VisitVariable(VariableNode node)
+        {
+            UniqueItem item = node.UniqueItemTracker.Item;
+            if (item.FieldInfo != null)
+            {
+                if (item.FieldInfo.IsStatic)
+                {
+                    _ilGenerator.Emit(OpCodes.Ldsfld, item.FieldInfo);
+                }
+                else
+                {
+                    //TODO put this on stack
+                    throw new NotImplementedException();
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            //throw new NotImplementedException();
+        }
+
+        protected override void VisitAssignment(AssignmentNode node)
+        {
+            FieldInfo info;
+            OpCode opcode;
+
+            if (node.Target is VariableNode)
+            {
+                VariableNode target = (VariableNode) node.Target;
+                info = target.UniqueItemTracker.Item.FieldInfo;
+                if (target.UniqueItemTracker.Item.FieldInfo.IsStatic)
+                {
+                    opcode = OpCodes.Stsfld;
+                }
+                else
+                {
+                    //TODO put this on stack
+                    opcode = OpCodes.Stfld;
+                }
+            }
+            else throw new NotImplementedException();
+
+            Visit(node.Value);
+
+            _ilGenerator.Emit(opcode, info);
+
+            //base.VisitAssignment(node);
         }
 
         protected override void VisitIntegerLiteral(IntegerLiteralNode node)

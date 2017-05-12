@@ -59,6 +59,8 @@
     <Compile Include="CrawlCompilerConfiguration.cs" />
     <Compile Include="CodeGen\IL\CrawlIlGenerator.cs" />
     <Compile Include="Datatypes\ListDictionary.cs" />
+    <Compile Include="Datatypes\Reference.cs" />
+    <Compile Include="Datatypes\UniqueItem.cs" />
     <Compile Include="ExtensionMethods\CodeGenHelpers.cs" />
     <Compile Include="ExtensionMethods\CrawlSyntaxNodeExtensions.cs" />
     <Compile Include="ExtensionMethods\IEnumerableHelpers.cs" />

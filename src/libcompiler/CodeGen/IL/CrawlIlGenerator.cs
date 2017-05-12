@@ -25,7 +25,7 @@ namespace libcompiler.CodeGen.IL
             
             AssemblyGenerator generator = new AssemblyGenerator(mainModule);
             
-            List<VariableDeclerationNode> freeVariables = new List<VariableDeclerationNode>();
+            List<SingleVariableDeclerationNode> freeVariables = new List<SingleVariableDeclerationNode>();
             List<MethodDeclerationNode> freeMethods = new List<MethodDeclerationNode>();
             List<ClassTypeDeclerationNode> types = new List<ClassTypeDeclerationNode>();
 
@@ -47,7 +47,7 @@ namespace libcompiler.CodeGen.IL
                             break;
 
                         case NodeType.VariableDecleration:
-                            freeVariables.Add((VariableDeclerationNode) tree);
+                            freeVariables.AddRange(((VariableDeclerationNode) tree).Declerations);
                             break;
 
                         default: throw new NotImplementedException();
@@ -68,15 +68,19 @@ namespace libcompiler.CodeGen.IL
                 }
             }
 
+
+            foreach (SingleVariableDeclerationNode node in freeVariables)
+            {
+                generator.EmitFreeVariable(node);
+            }
+
+
             foreach (MethodDeclerationNode node in freeMethods)
             {
                 generator.EmitFreeMethod(node);
             }
 
-            foreach (VariableDeclerationNode node in freeVariables)
-            {
-                generator.EmitFreeVariable(node);
-            }
+
 
             foreach (ClassTypeDeclerationNode type in types.Where(type => type != null))
             {

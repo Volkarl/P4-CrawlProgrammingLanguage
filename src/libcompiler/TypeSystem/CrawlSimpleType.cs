@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using libcompiler.Datatypes;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 
@@ -121,7 +122,7 @@ namespace libcompiler.TypeSystem
                 throw new NotImplementedException();
             }
             
-            return new KeyValuePair<string, TypeInformation>(member.Name, new TypeInformation(result, ProtectionLevel.Public, -1, DeclaringScope.ClassLike, NeedsABetterNameType.Member));
+            return new KeyValuePair<string, TypeInformation>(member.Name, new TypeInformation(result, ProtectionLevel.Public, -1, new UniqueItem(),DeclaringScope.ClassLike, DeclaredAs.Member));
         }
 
         public override bool IsAssignableTo(CrawlType target)

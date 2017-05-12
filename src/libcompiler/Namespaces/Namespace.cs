@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using libcompiler.Datatypes;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
@@ -17,12 +18,12 @@ namespace libcompiler.Namespaces
         {
             BuiltinNamespace = new Namespace("");
 
-            BuiltinNamespace._scope.TryAdd("tal", new[] { new TypeInformation(CrawlSimpleType.Tal, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
-            BuiltinNamespace._scope.TryAdd("tekst", new[] { new TypeInformation(CrawlSimpleType.Tekst, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
-            BuiltinNamespace._scope.TryAdd("tegn", new[] { new TypeInformation(CrawlSimpleType.Tegn, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
-            BuiltinNamespace._scope.TryAdd("kommatal", new[] { new TypeInformation(CrawlSimpleType.Kommatal, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
-            BuiltinNamespace._scope.TryAdd("bool", new[] {new TypeInformation(CrawlSimpleType.Bool, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
-            BuiltinNamespace._scope.TryAdd("ting", new[] { new TypeInformation(CrawlSimpleType.Ting, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
+            BuiltinNamespace._scope.TryAdd("tal", new[] { new TypeInformation(CrawlSimpleType.Tal, ProtectionLevel.Public, -1, new UniqueItem(), DeclaringScope.ClassLike) });
+            BuiltinNamespace._scope.TryAdd("tekst", new[] { new TypeInformation(CrawlSimpleType.Tekst, ProtectionLevel.Public, -1, new UniqueItem(),DeclaringScope.ClassLike) });
+            BuiltinNamespace._scope.TryAdd("tegn", new[] { new TypeInformation(CrawlSimpleType.Tegn, ProtectionLevel.Public, -1, new UniqueItem(),DeclaringScope.ClassLike) });
+            BuiltinNamespace._scope.TryAdd("kommatal", new[] { new TypeInformation(CrawlSimpleType.Kommatal, ProtectionLevel.Public, -1, new UniqueItem(),DeclaringScope.ClassLike) });
+            BuiltinNamespace._scope.TryAdd("bool", new[] {new TypeInformation(CrawlSimpleType.Bool, ProtectionLevel.Public, -1, new UniqueItem(),DeclaringScope.ClassLike) });
+            BuiltinNamespace._scope.TryAdd("ting", new[] { new TypeInformation(CrawlSimpleType.Ting, ProtectionLevel.Public, -1, new UniqueItem(),DeclaringScope.ClassLike) });
             //
         }
 
@@ -33,7 +34,7 @@ namespace libcompiler.Namespaces
         {
             foreach (CrawlType type in contents)
             {
-                _scope.TryAdd(type.Identifier, new[] {new TypeInformation(type, ProtectionLevel.Public, -1, DeclaringScope.ClassLike, NeedsABetterNameType.Class)});
+                _scope.TryAdd(type.Identifier, new[] {new TypeInformation(type, ProtectionLevel.Public, -1, new UniqueItem(), DeclaringScope.ClassLike, DeclaredAs.Class)});
             }
         }
 

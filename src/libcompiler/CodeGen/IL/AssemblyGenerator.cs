@@ -36,9 +36,9 @@ namespace libcompiler.CodeGen.IL
             }
         }
 
-        public void EmitFreeVariable(VariableDeclerationNode tree)
+        public void EmitFreeVariable(SingleVariableDeclerationNode variable)
         {
-
+            EmitFieldInternal(GetFreeStandingType(), variable, FieldAttributes.Static);
         }
 
         public bool EmitClassFirstPass(ClassTypeDeclerationNode type)
@@ -75,9 +75,23 @@ namespace libcompiler.CodeGen.IL
 
             new ILGeneratorVisitor(builder).EmitFor(method.Body);
 
-            
-
             return builder;
+        }
+
+        private void EmitFieldInternal(TypeBuilder containingType, SingleVariableDeclerationNode decl,
+            FieldAttributes extraAttributes)
+        {
+
+            VariableDeclerationNode declList = (VariableDeclerationNode) decl.Parent.Parent;
+
+
+            extraAttributes |= declList.GetFieldAttributes();
+            FieldBuilder builder = containingType.DefineField(decl.Identifier.Name, declList.DeclerationType.ActualType.ClrType,
+                extraAttributes);
+
+            decl.Identifier.UniqueItemTracker.Item.FieldInfo = builder;
+
+            //Probably most certainly needs to save this somewhere
         }
 
         public void SetWorkingNamespace(string ns)

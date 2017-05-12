@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using libcompiler.Datatypes;
 using libcompiler.Scope;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
@@ -29,7 +30,8 @@ namespace libcompiler.CompilerStage.SemanticAnalysis
                                 new TypeInformation(
                                     parameter.ParameterType.ActualType,
                                     ProtectionLevel.NotApplicable,
-                                    parameter.Interval.b
+                                    parameter.Interval.b,
+                                    new UniqueItem()
                                 )
                             )
                     )
@@ -61,6 +63,7 @@ namespace libcompiler.CompilerStage.SemanticAnalysis
                         forLoop.Loopvariable.ActualType,
                         ProtectionLevel.NotApplicable,
                         forLoop.LoopVariable.Interval.a,
+                        new UniqueItem(),
                         DeclaringScope.MethodLike)
                 ),
             });

@@ -1,0 +1,5 @@
+importer System;
+
+Console.Write("Enter some text\n>");
+tekst resultat = (Console.ReadLine());
+Console.WriteLine(resultat);

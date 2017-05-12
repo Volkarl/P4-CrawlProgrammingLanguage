@@ -1,0 +1,4 @@
+importer System;
+
+Console.Write("Enter some text\n>");
+Console.WriteLine(Console.ReadLine());
