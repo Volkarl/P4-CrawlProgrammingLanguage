@@ -5,11 +5,20 @@ using libcompiler.SyntaxTree;
 
 namespace libcompiler.Optimizations
 {
+    /// <summary>
+    /// Replaces expressionos that consists of only literal nodes with the result of those expressions.
+    /// This visitor must be called more than once, until no more optimizations were made.
+    /// That is 1+2*3==5 is eventually replaced with true.
+    /// </summary>
     public partial class ConstantFoldingVisitor : SyntaxRewriter
     {
         //warning:
         //In this visitor, nodes may be replaced by other nodes of a different type.
 
+        /// <summary>
+        /// Whether the tree has been changed by this visitor.
+        /// If changes were made, there may be more optimizations to do after it returns.
+        /// </summary>
         public bool OptimizationsWereMade = false;
 
 
@@ -37,7 +46,7 @@ namespace libcompiler.Optimizations
 
             LiteralNode lhs = binaryExpr.LeftHandSide as LiteralNode;
             LiteralNode rhs = binaryExpr.RightHandSide as LiteralNode;
-            if (lhs == null && rhs == null)
+            if (lhs == null || rhs == null)
                 return expr;
 
             OptimizationsWereMade = true;
@@ -51,7 +60,7 @@ namespace libcompiler.Optimizations
             if (multuExpr == null)
                 return expr;
 
-            if (multuExpr.ChildCount == 1)
+            if (multuExpr.Arguments.ChildCount == 1)
             {
                 OptimizationsWereMade = true;
                 return multuExpr.Arguments.First();

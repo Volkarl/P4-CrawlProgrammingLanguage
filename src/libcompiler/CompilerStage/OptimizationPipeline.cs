@@ -1,4 +1,5 @@
-﻿using libcompiler.Optimizations;
+﻿using System.Runtime.Remoting;
+using libcompiler.Optimizations;
 using libcompiler.SyntaxTree;
 
 namespace libcompiler.CompilerStage
@@ -7,14 +8,16 @@ namespace libcompiler.CompilerStage
     {
         internal static AstData FoldConstants(AstData astData, SideeffectHelper helper)
         {
-            var visitor = new ConstantFoldingVisitor();
+            var constantFoldingVisitor = new ConstantFoldingVisitor();
+            var operandSortingVisitor = new OperandSortingVisitor();
 
             var newTree = astData.Tree.RootNode;
             do
             {
-                visitor.OptimizationsWereMade = false;
-                 newTree = visitor.Visit(newTree);
-            } while (visitor.OptimizationsWereMade);
+                constantFoldingVisitor.OptimizationsWereMade = false;
+                newTree = operandSortingVisitor.Visit(newTree);
+                newTree = constantFoldingVisitor.Visit(newTree);
+            } while (constantFoldingVisitor.OptimizationsWereMade);
 
             return new AstData(astData.TokenStream, astData.Filename, newTree.OwningTree);
         }

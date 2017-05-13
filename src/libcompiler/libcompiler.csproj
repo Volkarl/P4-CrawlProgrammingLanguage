@@ -66,6 +66,7 @@
     <Compile Include="Namespaces\NamespaceLoader.cs" />
     <Compile Include="Optimizations\ConstantFoldingHelpPart.cs" />
     <Compile Include="Optimizations\ConstantFoldingVisitor.cs" />
+    <Compile Include="Optimizations\OperandSortingVisitor.cs" />
     <Compile Include="ParseTreeHelper.cs" />
     <Compile Include="PrettyPrintVisitor.cs" />
     <Compile Include="Scope\GenericScope.cs" />

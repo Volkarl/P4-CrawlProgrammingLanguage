@@ -1,6 +1,6 @@
 tal a=2, b=55, c=0;
 kommatal d=0, e=0.0001, f=1.1113;
-bool pigsfly = false;
+bool pigsfly = falsk;
 
 //And now for the good part:
 bool thegoodpart = 256 + a / d * 2 + 32 <= 0.5E3  og  a > b  og  22 > 33  og  pigsfly  og (2 ** 3.3 >= 44 eller a + b + 2 + 3 + 5 + d + 4 <= 44);
