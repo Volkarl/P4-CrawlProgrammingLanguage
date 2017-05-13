@@ -188,7 +188,11 @@ namespace libcompiler.CompilerStage.CodeGen
 
             string type = Visit(node.Target);
             string identifier = type.TrimEnd(lBracket, rBracket, comma);
-            int arrayIndex = identifier.Length;
+            int arrayIndex = identifier.Length; // Index where array definition starts
+
+            int dimensions = type.Substring(arrayIndex).Count(c => c == lBracket || c == comma);
+            if (dimensions != node.Arguments.Count())
+                throw new ArgumentException($"Argument count {node.Arguments.Count()} does not match array definition {type.Substring(arrayIndex)}, which requires {dimensions} arguments.");
 
             for (int argumentNr = 0; argumentNr < node.Arguments.Count();)
             {
@@ -211,7 +215,7 @@ namespace libcompiler.CompilerStage.CodeGen
 
             if (arrayIndex != type.Length)
                 throw new ArgumentException($"Argument count {node.Arguments.Count()} does not match array definition {type.Substring(arrayIndex)}");
-            
+
             // This method may be quite brittle, because it appears possible to get indexOutOfRangeExceptions everywhere. I'm leaving it 
             // as it is though, because it gets so much harder to read otherwise, and I'm not sure its even possible to invoke those errors.
 
