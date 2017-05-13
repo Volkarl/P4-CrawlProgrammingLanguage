@@ -92,11 +92,7 @@ namespace libcompiler.CompilerStage.CodeGen
                 string defaultValue = Visit(node.DefaultValue);
                 return $"{identifier} = {defaultValue},";
             }
-            else
-            {
-                return $"{identifier},";
-            }
-            return base.VisitSingleVariableDecleration(node);
+            return $"{identifier},";
         }
 
         protected override string VisitVariable(VariableNode node)
@@ -128,7 +124,7 @@ namespace libcompiler.CompilerStage.CodeGen
                     break;
                 case ExpressionType.Power:
                     return WritePowerExpression(node.Arguments.ToList());
-                default: return "OPERATOR_ERR ";
+                default: throw new ArgumentException("MultiChildExpression expressionType " + node.ExpressionType + " not supported");
             }
             return VisitAndAddDelimiters(node.Arguments, delimiter);
         }
@@ -252,6 +248,40 @@ namespace libcompiler.CompilerStage.CodeGen
                 case ExpressionType.Negate: return "-" + Visit(node.Target);
                 default: throw new ArgumentException("Weird unary expression type: " + node.ExpressionType);
             }
+        }
+
+        protected override string VisitBinaryExpression(BinaryExpressionNode node)
+        {
+            string delimiter;
+            switch (node.ExpressionType)
+            {
+                case ExpressionType.Greater:
+                    delimiter = ">";
+                    break;
+                case ExpressionType.GreaterEqual:
+                    delimiter = ">=";
+                    break;
+                case ExpressionType.Less:
+                    delimiter = "<";
+                    break;
+                case ExpressionType.LessEqual:
+                    delimiter = "<=";
+                    break;
+                case ExpressionType.Equal:
+                    delimiter = "==";
+                    break;
+                case ExpressionType.NotEqual:
+                    delimiter = "!=";
+                    break;
+                case ExpressionType.Add: // Can these two ever show up? They are in the BinaryExpressionDict, so I've included them here too.
+                    delimiter = "+";
+                    break;
+                case ExpressionType.Subtract:
+                    delimiter = "-";
+                    break;
+                default: throw new ArgumentException("BinaryExpression expressionType " + node.ExpressionType + " not supported");
+            }
+            return Visit(node.LeftHandSide) + delimiter + Visit(node.RightHandSide);
         }
     }
 }
