@@ -215,7 +215,7 @@ namespace libcompiler.CompilerStage.CodeGen
             // This method may be quite brittle, because it appears possible to get indexOutOfRangeExceptions everywhere. I'm leaving it 
             // as it is though, because it gets so much harder to read otherwise, and I'm not sure its even possible to invoke those errors.
 
-            return type;
+            return "new " + type;
         }
 
         protected override string VisitArgument(ArgumentNode node)
