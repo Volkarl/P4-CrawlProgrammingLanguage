@@ -243,5 +243,15 @@ namespace libcompiler.CompilerStage.CodeGen
             return $"{target}.{member}";
         }
         */
+
+        protected override string VisitUnaryExpression(UnaryExpressionNode node)
+        {
+            switch (node.ExpressionType)
+            {
+                case ExpressionType.Not: return "!" + Visit(node.Target);
+                case ExpressionType.Negate: return "-" + Visit(node.Target);
+                default: throw new ArgumentException("Weird unary expression type: " + node.ExpressionType);
+            }
+        }
     }
 }
