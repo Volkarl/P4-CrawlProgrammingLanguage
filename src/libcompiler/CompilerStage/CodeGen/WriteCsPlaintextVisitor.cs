@@ -287,11 +287,9 @@ namespace libcompiler.CompilerStage.CodeGen
 
         protected override string VisitWhile(WhileNode node)
         {
-            return $"while({Visit(node.Condition)})" +
-                   "\n{" +
-                   Visit(node.Statementes).Indent() +
-                   "\n}";
+            return $"while({Visit(node.Condition)})" + Visit(node.Statementes).Indent().SurroundWithBrackets();
         }
+
 
 
     }

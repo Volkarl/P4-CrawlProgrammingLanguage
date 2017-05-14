@@ -23,5 +23,12 @@ namespace libcompiler.ExtensionMethods
             var indent = new string(' ', indentAmount);
             return indent + textToIndent.Replace("\n", "\n" + indent);
         }
+
+        public static string SurroundWithBrackets(this string textToSurround, bool addNewLines = true)
+        {
+            if (addNewLines)
+                return "\n{" + textToSurround + "\n}";
+            return "{" + textToSurround + "}";
+        }
     }
 }
