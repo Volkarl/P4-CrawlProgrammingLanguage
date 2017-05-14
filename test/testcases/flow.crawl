@@ -2,3 +2,11 @@ mens(sandt == sandt)
     tal a = 1;
     tal b = 2;
     a = a + b * 3;
+
+tal[] mineTal = tal[](3);
+mineTal[0] = 1;
+mineTal[1] = 2;
+mineTal[2] = 3;
+
+for tal mitTal fra mineTal
+  mitTal = 0;

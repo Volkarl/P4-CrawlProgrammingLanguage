@@ -290,7 +290,9 @@ namespace libcompiler.CompilerStage.CodeGen
             return $"while({Visit(node.Condition)})" + Visit(node.Statementes).Indent().SurroundWithBrackets();
         }
 
-
-
+        protected override string VisitForLoop(ForLoopNode node)
+        {
+            return $"foreach({Visit(node.Loopvariable)} {Visit(node.LoopVariable)} in {Visit(node.Iterator)})" + Visit(node.Body).Indent().SurroundWithBrackets();
+        }
     }
 }
