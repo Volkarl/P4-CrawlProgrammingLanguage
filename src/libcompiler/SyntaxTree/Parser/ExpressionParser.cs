@@ -274,7 +274,14 @@ namespace libcompiler.SyntaxTree.Parser
                 case CrawlParser.RULE_integer_literal:
                     return CrawlSyntaxNode.IntegerLiteral(realLiteral.SourceInterval, CrawlType.UnspecifiedType, int.Parse(realLiteral.GetText()));
                 case CrawlParser.RULE_boolean_literal:
-                    return CrawlSyntaxNode.BooleanLiteral(realLiteral.SourceInterval,CrawlType.UnspecifiedType,  (realLiteral.GetText()) == "true");
+                {
+                    bool val;
+                    string txt = realLiteral.GetText();
+                    if (txt == "sandt") val = true;
+                    else if (txt == "falsk") val = false;
+                    else throw new ArgumentException("Weird boolean literal");
+                    return CrawlSyntaxNode.BooleanLiteral(realLiteral.SourceInterval,CrawlType.UnspecifiedType, val);
+                }
                 case CrawlParser.RULE_real_literal:
                     return CrawlSyntaxNode.RealLiteral(realLiteral.SourceInterval,CrawlType.UnspecifiedType,  double.Parse(realLiteral.GetText()));
                 default:

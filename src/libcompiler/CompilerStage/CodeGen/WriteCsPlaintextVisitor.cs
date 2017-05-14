@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Antlr4.Runtime;
+using libcompiler.ExtensionMethods;
 using libcompiler.Parser;
 using libcompiler.SyntaxTree;
 
@@ -283,5 +284,15 @@ namespace libcompiler.CompilerStage.CodeGen
             }
             return Visit(node.LeftHandSide) + delimiter + Visit(node.RightHandSide);
         }
+
+        protected override string VisitWhile(WhileNode node)
+        {
+            return $"while({Visit(node.Condition)})" +
+                   "\n{" +
+                   Visit(node.Statementes).Indent() +
+                   "\n}";
+        }
+
+
     }
 }

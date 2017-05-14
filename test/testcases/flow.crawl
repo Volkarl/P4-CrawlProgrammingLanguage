@@ -1,0 +1,7 @@
+bool bo = sandt;
+bool be = falsk;
+
+mens(sandt == sandt)
+    tal a = 1;
+    tal b = 2;
+    a = a + b * 3;

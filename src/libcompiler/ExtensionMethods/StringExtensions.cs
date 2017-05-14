@@ -17,5 +17,11 @@ namespace libcompiler.ExtensionMethods
             }
             return s.ToString();
         }
+
+        public static string Indent(this string textToIndent, int indentAmount = 4)
+        {
+            var indent = new string(' ', indentAmount);
+            return indent + textToIndent.Replace("\n", "\n" + indent);
+        }
     }
 }
