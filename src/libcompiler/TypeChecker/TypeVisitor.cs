@@ -85,6 +85,21 @@ namespace libcompiler.TypeChecker
             return result;
         }
 
+        protected override CrawlSyntaxNode VisitIndex(IndexNode index)
+        {
+            ExpressionNode inner = (ExpressionNode)Visit(index.Target);
+            ListNode<ArgumentNode> args = (ListNode<ArgumentNode>) Visit(index.Arguments);
+            if (inner.ResultType is CrawlArrayType)
+            {
+                CrawlArrayType array = (CrawlArrayType)inner.ResultType;
+                if(args.ChildCount == array.Rank)
+                    return index.Update(index.Interval, array.ElementType, inner, args);
+            }
+
+            //TODO: Better err msg
+            throw new Exception("Array error");
+        }
+
         protected override CrawlSyntaxNode VisitMemberAccess(MemberAccessNode memberAccess)
         {
             var expr = (MemberAccessNode) base.VisitMemberAccess(memberAccess);
@@ -222,8 +237,6 @@ namespace libcompiler.TypeChecker
 
 
         #endregion
-
-
 
         protected override CrawlSyntaxNode VisitCall(CallNode call)
         {

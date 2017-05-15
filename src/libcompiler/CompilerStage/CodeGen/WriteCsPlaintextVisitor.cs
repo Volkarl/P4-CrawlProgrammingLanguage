@@ -7,6 +7,7 @@ using Antlr4.Runtime;
 using libcompiler.ExtensionMethods;
 using libcompiler.Parser;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.CompilerStage.CodeGen
 {
@@ -104,6 +105,40 @@ namespace libcompiler.CompilerStage.CodeGen
         protected override string VisitIntegerLiteral(IntegerLiteralNode node)
         {
             return node.Value.ToString();
+        }
+
+        protected override string VisitMethodDecleration(MethodDeclerationNode node)
+        {
+            StringBuilder sb = new StringBuilder();
+
+
+            sb.Append(node.ProtectionLevel.AsCSharpString());
+            sb.Append(" ");
+
+            CrawlMethodType signature = node.MethodSignature.ActualType as CrawlMethodType;
+            if(signature == null) throw new Exception();
+
+            if (signature.ReturnType.Equals(CrawlSimpleType.Intet))
+                sb.Append("void");
+            else
+                sb.Append(signature.ReturnType.FullName);
+            sb.Append(" ");
+
+            sb.Append(node.Identifier.Value);
+            sb.Append(" (");
+
+            sb.Append(string.Join(", ",
+                node.Parameters.Select(
+                    x => $"{(x.Reference ? "ref" : "")}{x.ParameterType.ActualType.FullName} {x.Identifier.Value}")));
+            
+            sb.Append(")\n{");
+
+
+            sb.Append(Visit(node.Body));
+
+            sb.Append("}\n");
+
+            return sb.ToString();
         }
 
         protected override string VisitMultiChildExpression(MultiChildExpressionNode node)

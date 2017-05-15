@@ -55,6 +55,7 @@
     <Compile Include="CrawlCompiler.cs" />
     <Compile Include="CrawlCompilerConfiguration.cs" />
     <Compile Include="Datatypes\ListDictionary.cs" />
+    <Compile Include="ExtensionMethods\CodeGenHelper.cs" />
     <Compile Include="ExtensionMethods\CrawlSyntaxNodeExtensions.cs" />
     <Compile Include="ExtensionMethods\IEnumerableHelpers.cs" />
     <Compile Include="ExtensionMethods\IParseTreeExtensions.cs" />

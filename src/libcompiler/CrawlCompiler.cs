@@ -122,12 +122,8 @@ namespace libcompiler
                 ConcurrentBag<string> generatedCode = Run<string, AstData>(decoratedAsts, parallel, sideeffectHelper,
                     (destination, helper) =>
                     {
-                        Func<AstData, SideeffectHelper, AstData> first = SemanticAnalysisPipeline.DeclerationOrderCheck;
-                        var final = first
-                            .Then(CodeGenPipeline.GenerateCode)
-                            .EndWith(destination.Add, helper);  //Typechecker would be added here or line above
-
-                        return final;
+                        Func<AstData, SideeffectHelper, string> first = CodeGenPipeline.GenerateCode;
+                        return first.EndWith(destination.Add, helper);
                     }
                 );
 
