@@ -208,7 +208,7 @@ namespace libcompiler.Optimizations
             }
             if (rea1 != null)
             {
-                double result = rea1.Value + int1.Value;
+                double result = rea1.Value + int2.Value;
                 return CrawlSyntaxNode.RealLiteral(interval, CrawlSimpleType.Kommatal, result);
             }
             if (rea2 != null)
