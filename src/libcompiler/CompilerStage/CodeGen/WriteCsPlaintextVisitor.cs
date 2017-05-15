@@ -233,17 +233,16 @@ namespace libcompiler.CompilerStage.CodeGen
         }
 
         //Gør brug af InsertVisitsRecursivelyUntilTwoRemain
-        /*protected override string VisitMemberAccess(MemberAccessNode node)
+        protected override string VisitMemberAccess(MemberAccessNode node)
         {
             string target = Visit(node.Target);
             string member = Visit(node.Member);
             return $"{target}.{member}";
-<<<<<<< HEAD
-        }1111*/
-        
-=======
+
         }
-        */
+        
+        
+        
 
         protected override string VisitUnaryExpression(UnaryExpressionNode node)
         {
@@ -298,6 +297,5 @@ namespace libcompiler.CompilerStage.CodeGen
         {
             return $"foreach({Visit(node.Loopvariable)} {Visit(node.LoopVariable)} in {Visit(node.Iterator)})" + Visit(node.Body).Indent().SurroundWithBrackets();
         }
->>>>>>> origin/feature/demoCodegen
     }
 }
