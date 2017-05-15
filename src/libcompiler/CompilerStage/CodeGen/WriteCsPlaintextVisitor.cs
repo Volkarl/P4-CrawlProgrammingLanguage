@@ -238,10 +238,6 @@ namespace libcompiler.CompilerStage.CodeGen
             string target = Visit(node.Target);
             string member = Visit(node.Member);
             return $"{target}.{member}";
-<<<<<<< HEAD
-        }1111*/
-        
-=======
         }
         */
 
@@ -298,6 +294,5 @@ namespace libcompiler.CompilerStage.CodeGen
         {
             return $"foreach({Visit(node.Loopvariable)} {Visit(node.LoopVariable)} in {Visit(node.Iterator)})" + Visit(node.Body).Indent().SurroundWithBrackets();
         }
->>>>>>> origin/feature/demoCodegen
     }
 }
