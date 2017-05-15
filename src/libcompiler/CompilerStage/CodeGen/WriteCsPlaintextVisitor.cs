@@ -36,11 +36,28 @@ namespace libcompiler.CompilerStage.CodeGen
             }
 
 
-            sb.Append(base.VisitTranslationUnit(node));
+            sb.Append(Visit(node.Code));
 
             if (hasNamespace)
                 sb.Append("}");
 
+            return sb.ToString();
+        }
+
+        protected override string VisitClassTypeDecleration(ClassTypeDeclerationNode node)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(node.ProtectionLevel.AsCSharpString());
+            sb.Append(" class ");
+            sb.Append(node.Identifier.Value);
+
+            sb.Append(" ");
+            sb.Append(node.ClassType.FullName);
+
+            sb.Append("{");
+            sb.Append(Visit(node.Body));
+            sb.Append("}");
+            
             return sb.ToString();
         }
 
@@ -68,8 +85,7 @@ namespace libcompiler.CompilerStage.CodeGen
                 node.Parameters.Select(
                     x => $"{(x.Reference ? "ref" : "")}{x.ParameterType.ActualType.FullName} {x.Identifier.Value}")));
 
-            sb.Append(")\n{");
-
+            sb.Append(")\n{\n");
 
             sb.Append(Visit(node.Body));
 
@@ -105,11 +121,12 @@ namespace libcompiler.CompilerStage.CodeGen
         protected override string VisitBlock(BlockNode block)
         {
             StringBuilder sb = new StringBuilder();
-
+            
             foreach (string child in block.Select(Visit))
             {
-                sb.Append($"\n{child}\n");
+                sb.Append($"{child}\n");
             }
+            
             return sb.ToString();
         }
 
@@ -130,12 +147,12 @@ namespace libcompiler.CompilerStage.CodeGen
 
         protected override string VisitType(TypeNode node)
         {
-            return node.ActualType.Identifier;
+            return "@" + node.ActualType.Identifier;
         }
 
         protected override string VisitIdentifier(IdentifierNode node)
         {
-            return node.Value;
+            return "@" +  node.Value;
         }
 
         protected override string VisitBooleanLiteral(BooleanLiteralNode node)
@@ -307,14 +324,10 @@ namespace libcompiler.CompilerStage.CodeGen
             return $"{target} = {val};";
         }
 
-        //Gør brug af InsertVisitsRecursivelyUntilTwoRemain
-        /*protected override string VisitMemberAccess(MemberAccessNode node)
+        protected override string VisitMemberAccess(MemberAccessNode node)
         {
-            string target = Visit(node.Target);
-            string member = Visit(node.Member);
-            return $"{target}.{member}";
+            return $"{ Visit(node.Target)}.@{node.Member.Value}";
         }
-        */
 
         protected override string VisitUnaryExpression(UnaryExpressionNode node)
         {
