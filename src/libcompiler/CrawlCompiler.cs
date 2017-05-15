@@ -113,7 +113,9 @@ namespace libcompiler
                     (destination, helper) =>
                     {
                         Func<AstData, SideeffectHelper, AstData> first = OptimizationPipeline.FoldConstants;
-                        var final = first.EndWith(destination.Add, helper);
+                        var final = first
+                            .Then(OptimizationPipeline.RefWherePossible)
+                            .EndWith(destination.Add, helper);
 
                         return final;
                     }

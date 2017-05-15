@@ -395,6 +395,10 @@
                     <name>Reference</name>
                     <type>bool</type>
                 </property>
+                <property>
+                    <name>SideEffects</name>
+                    <type>bool</type>
+                </property>
             </properties>
             <children>
                 <child>

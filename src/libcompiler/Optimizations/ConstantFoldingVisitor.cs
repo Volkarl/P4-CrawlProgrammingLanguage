@@ -34,7 +34,7 @@ namespace libcompiler.Optimizations
 
             ExpressionNode tar = unaryExpr.Target;
 
-            return _foldUnary(tar, unaryExpression.ExpressionType);
+            return FoldUnary(tar, unaryExpression.ExpressionType);
         }
 
         protected override CrawlSyntaxNode VisitBinaryExpression(BinaryExpressionNode binaryExpression)
@@ -50,7 +50,7 @@ namespace libcompiler.Optimizations
                 return expr;
 
             OptimizationsWereMade = true;
-            return _foldBinary(lhs, binaryExpr.ExpressionType, rhs);
+            return FoldBinary(lhs, binaryExpr.ExpressionType, rhs);
         }
 
         protected override CrawlSyntaxNode VisitMultiChildExpression(MultiChildExpressionNode multiChildExpression)
@@ -93,7 +93,7 @@ namespace libcompiler.Optimizations
                     LiteralNode next = arguments[i + 1] as LiteralNode;
                     if (next != null)
                     {
-                        newArguments.Add(_foldMultuPair(current, multuExpr.ExpressionType, next));
+                        newArguments.Add(FoldMultuPair(current, multuExpr.ExpressionType, next));
                         OptimizationsWereMade = true;
                         i += 2;
                     }

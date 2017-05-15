@@ -21,5 +21,16 @@ namespace libcompiler.CompilerStage
 
             return new AstData(astData.TokenStream, astData.Filename, newTree.OwningTree);
         }
+
+        /// <summary>
+        /// Changes parameters to ref where possible to avoid deep cloning.
+        /// </summary>
+        internal static AstData RefWherePossible(AstData astData, SideeffectHelper helper)
+        {
+            var visitor = new RefParametersVisitor();
+            var newTree = visitor.Visit(astData.Tree.RootNode).OwningTree;
+
+            return new AstData(astData.TokenStream, astData.Filename, newTree);
+        }
     }
 }

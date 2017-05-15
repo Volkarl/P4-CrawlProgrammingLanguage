@@ -12,7 +12,7 @@ namespace libcompiler.Optimizations
     {
         //Lot of swithces here. You want to have an editor that can collapse stuff.
 
-        private static double _getNumber(LiteralNode node)
+        private static double GetNumber(LiteralNode node)
         {
 
             switch (node.Type)
@@ -27,7 +27,7 @@ namespace libcompiler.Optimizations
         }
 
 
-        private LiteralNode _foldUnary(ExpressionNode target, ExpressionType expressionType)
+        private LiteralNode FoldUnary(ExpressionNode target, ExpressionType expressionType)
         {
             if (expressionType == ExpressionType.Negate)
             {
@@ -53,10 +53,10 @@ namespace libcompiler.Optimizations
         }
 
 
-        private static LiteralNode _foldBinary(LiteralNode op1, ExpressionType expressionType, LiteralNode op2)
+        private static LiteralNode FoldBinary(LiteralNode op1, ExpressionType expressionType, LiteralNode op2)
         {
-            var val1 = _getNumber(op1);
-            var val2 = _getNumber(op2);
+            var val1 = GetNumber(op1);
+            var val2 = GetNumber(op2);
 
             bool result;
             switch (expressionType)
@@ -88,10 +88,10 @@ namespace libcompiler.Optimizations
             return CrawlSyntaxNode.BooleanLiteral(interval, CrawlSimpleType.Bool, result);
         }
 
-        private static LiteralNode _foldMultuPair(LiteralNode op1, ExpressionType expressionType, LiteralNode op2)
+        private static LiteralNode FoldMultuPair(LiteralNode op1, ExpressionType expressionType, LiteralNode op2)
         {
             if (expressionType == ExpressionType.Add)
-                return _foldTheDreadedAddition(op1, op2);
+                return FoldTheDreadedAddition(op1, op2);
 
             Interval interval = new Interval(op1.Interval.a, op2.Interval.b);
 
@@ -142,8 +142,8 @@ namespace libcompiler.Optimizations
             }
 
             //Else one or both operands are kommatal, so both are casted to that.
-            double rea1 = _getNumber(op1);
-            double rea2 = _getNumber(op2);
+            double rea1 = GetNumber(op1);
+            double rea2 = GetNumber(op2);
             double res;
             switch (expressionType)
             {
@@ -167,7 +167,7 @@ namespace libcompiler.Optimizations
         }
 
 
-        private static LiteralNode _foldTheDreadedAddition(LiteralNode op1, LiteralNode op2)
+        private static LiteralNode FoldTheDreadedAddition(LiteralNode op1, LiteralNode op2)
         {
             Interval interval = new Interval(op1.Interval.a, op2.Interval.b);
 

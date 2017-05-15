@@ -64,6 +64,8 @@
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="Namespaces\Namespace.cs" />
     <Compile Include="Namespaces\NamespaceLoader.cs" />
+    <Compile Include="Optimizations\CheckSideEffectsOfSingleParameterVisitor.cs" />
+    <Compile Include="Optimizations\RefParametersVisitor.cs" />
     <Compile Include="Optimizations\ConstantFoldingHelpPart.cs" />
     <Compile Include="Optimizations\ConstantFoldingVisitor.cs" />
     <Compile Include="Optimizations\OperandSortingVisitor.cs" />

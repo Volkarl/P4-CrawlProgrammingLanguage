@@ -303,6 +303,7 @@ namespace libcompiler.SyntaxTree.Parser
                         CrawlSyntaxNode.Parameter(
                             parameter.SourceInterval,
                             isReference,
+                            true,
                             ParseType(
                                 (CrawlParser.TypeContext) parameter.GetChild(startat + 0)
                             ),
