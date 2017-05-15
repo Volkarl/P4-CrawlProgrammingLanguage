@@ -329,6 +329,7 @@ namespace libcompiler.CompilerStage.CodeGen
             return $"{ Visit(node.Target)}.@{node.Member.Value}";
         }
 
+
         protected override string VisitUnaryExpression(UnaryExpressionNode node)
         {
             switch (node.ExpressionType)
