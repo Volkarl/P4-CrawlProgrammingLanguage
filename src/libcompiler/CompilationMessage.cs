@@ -134,6 +134,8 @@ namespace libcompiler
         GenericTypeError = (1 << 16) * 2,
         TypeNotFound,
         NamespaceNotFound,
+        NotMethod,
+        InvalidParameterCount,
 
         OtherError = (1 << 16) * 3,
         FileNotFound,

@@ -123,6 +123,13 @@ namespace libcompiler.CompilerStage.CodeGen
                 case ExpressionType.Multiply:
                     delimiter = " * ";
                     break;
+                case ExpressionType.ShortCircuitOr:
+                    delimiter = " || ";
+                    break;
+                case ExpressionType.ShortCircuitAnd:
+                    delimiter = " && ";
+                    break;
+                
                 case ExpressionType.Power:
                     return WritePowerExpression(node.Arguments.ToList());
                 default: throw new ArgumentException("MultiChildExpression expressionType " + node.ExpressionType + " not supported");
@@ -256,6 +263,9 @@ namespace libcompiler.CompilerStage.CodeGen
             string delimiter;
             switch (node.ExpressionType)
             {
+                case ExpressionType.Range:
+                    return $"System.Enumerable.Range({Visit(node.LeftHandSide)},{Visit(node.RightHandSide)})";
+
                 case ExpressionType.Greater:
                     delimiter = ">";
                     break;

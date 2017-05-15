@@ -186,9 +186,9 @@ method_body			: INDENT statements DEDENT;
 
 //Decleartion of a class. A class starts with 'class' (well, translated) then its name,
 //then plausibly a list of things to inherit from.
-class_declaration		: CLASS IDENTIFIER (INHERITANCE_OPERATOR inheritances)? generic_parameters? ASSIGNMENT_SYMBOL class_body;
-inheritances			: inheritance (ITEM_SEPARATOR inheritance)* ;
-inheritance				: IDENTIFIER;
+class_declaration		: CLASS IDENTIFIER inheritances? generic_parameters? ASSIGNMENT_SYMBOL class_body;
+inheritances			: INHERITANCE_OPERATOR IDENTIFIER (ITEM_SEPARATOR IDENTIFIER)* ;
+
 //The class body only allows decleartions, not the broader statements, we don't want to define wth happens with general computation in a class body
 class_body				: INDENT declaration* DEDENT;
 
@@ -279,7 +279,8 @@ PLUS					: '+' ;
 literal					: boolean_literal
 						| integer_literal
 						| real_literal
-						| string_literal;
+						| string_literal
+						| null_literal;
 
 //Boolean is true or false.
 boolean_literal			: TRUE | FALSE ;
@@ -289,6 +290,7 @@ integer_literal			: NUMBER;
 real_literal			: POINT_REAL | EXPONENT_REAL;
 //And finally, a string is a string...
 string_literal			: STRING_LITERAL ;
+null_literal            : NULL;
 
 
 POINT_REAL				: NUMBER? DOT NUMBER;
@@ -296,6 +298,7 @@ EXPONENT_REAL			: ( NUMBER | POINT_REAL ) EXPONENT_END ;
 STRING_LITERAL			: '"' ( STRING_ESCAPE_SEQ | ~[\\\r\n"] )* '"' ;
 TRUE					: 'sandt' ;
 FALSE					: 'falsk' ;
+NULL                    : 'tom' ;
 
 ///////////////////////////////////////////////////////////////////////////////
 //Protection levels

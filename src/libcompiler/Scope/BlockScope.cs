@@ -13,38 +13,31 @@ namespace libcompiler.Scope
         readonly ConcurrentDictionary<string, TypeInformation[]> _scopeDictionary = new ConcurrentDictionary<string, TypeInformation[]>();
         readonly List<CrawlConstructedType> _classes = new List<CrawlConstructedType>();
 
-        //checks if the blockNode is a variable, class or method decleration and adds them to the scopeDictionary    
-        public BlockScope(BlockNode node)
+        public BlockScope()
+        { }
+
+        public CrawlConstructedType AddClass(ClassTypeDeclerationNode node, string ns)
         {
-
-            string ns = node.FindNameSpace()?.Module ?? "";
-
             DeclaringScope declaringScope = DeclaringScope.MethodLike;
-            
-            if (node.Parent is ClassTypeDeclerationNode)
-            {
-                declaringScope = DeclaringScope.ClassLike;
 
-            }
-            ListDictionary<string, TypeInformation> scope = new ListDictionary<string, TypeInformation>();
-            foreach (var child in node)
+            if (node.Parent is ClassTypeDeclerationNode || node.Parent is TranslationUnitNode)
             {
-                if(child.Type == NodeType.ClassTypeDecleration)
-                {
-                    ClassTypeDeclerationNode classNode = (ClassTypeDeclerationNode) child;
-                    string name = classNode.Identifier.Value;
-                    CrawlConstructedType type = new CrawlConstructedType(name, ns);
-                    scope.Add(name, new TypeInformation(type, classNode.ProtectionLevel, classNode.Interval.a, declaringScope, NeedsABetterNameType.Class));
-                    _classes.Add(type);
-
-                }
+                declaringScope = DeclaringScope.ClassLike; //Workingish, parrent == TranslationUnit probably going to require a little special handling
             }
 
-            foreach (KeyValuePair<string,List<TypeInformation>> pair in scope)
-            {
-                //TODO: This will fail silently if 2 classes with same name exists (i think)
-                _scopeDictionary.TryAdd(pair.Key, pair.Value.ToArray());
-            }
+            string name = node.Identifier.Value;
+            CrawlConstructedType type = new CrawlConstructedType(name, ns);
+            TypeInformation info = new TypeInformation(type, node.ProtectionLevel, node.Interval.a, declaringScope, NeedsABetterNameType.Class);
+
+            //Update contents. If not existing add a new array (line 2)
+            //Otherwise, linq to append to array
+            _scopeDictionary.AddOrUpdate(
+                name, 
+                new[] {info},
+                (s, informations) => informations.Concat(info.AsSingleIEnumerable()).ToArray()
+            );
+            _classes.Add(type);
+            return type;
         }
 
         private BlockScope(

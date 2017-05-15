@@ -22,7 +22,7 @@ namespace libcompiler.Namespaces
             BuiltinNamespace._scope.TryAdd("tegn", new[] { new TypeInformation(CrawlSimpleType.Tegn, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
             BuiltinNamespace._scope.TryAdd("kommatal", new[] { new TypeInformation(CrawlSimpleType.Kommatal, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
             BuiltinNamespace._scope.TryAdd("bool", new[] {new TypeInformation(CrawlSimpleType.Bool, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
-
+            BuiltinNamespace._scope.TryAdd("ting", new[] { new TypeInformation(CrawlSimpleType.Ting, ProtectionLevel.Public, -1, DeclaringScope.ClassLike) });
             //
         }
 

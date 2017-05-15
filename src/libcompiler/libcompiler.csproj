@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="CompilerStage\CodeGenPipeline.cs" />
     <Compile Include="CompilerStage\CodeGen\WriteCsPlaintextVisitor.cs" />
+    <Compile Include="CompilerStage\FirstScopePassVisitor.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\CheckDeclerationOrderVisitor.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\NamespaceNotFoundException.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\PutTypeVisitor.cs" />
@@ -86,7 +87,6 @@
     <Compile Include="SyntaxTree\Nodes\Partials\ForLoopNode.cs" />
     <Compile Include="SyntaxTree\Nodes\Partials\TranslationUnitNode.cs" />
     <Compile Include="TypeSystem\CrawlSimpleTypesBuiltIn.cs" />
-    <Compile Include="TypeSystem\FutureType.cs" />
     <Compile Include="SyntaxTree\VisitorManualVisits.cs" />
     <Compile Include="TypeChecker\ExpressionEvaluator.cs" />
     <Compile Include="TypeChecker\TypeVisitor.cs" />
@@ -94,7 +94,6 @@
     <Compile Include="TypeSystem\CrawlConstructedType.cs" />
     <Compile Include="TypeSystem\CrawlMethodType.cs" />
     <Compile Include="TypeSystem\CrawlSimpleType.cs" />
-    <Compile Include="TypeSystem\CrawlStatusType.cs" />
     <Compile Include="TypeSystem\CrawlType.cs" />
     <Compile Include="$(GeneratedRedSyntaxNodes)" />
     <Compile Include="$(GeneratedGreenSyntaxNodes)" />
@@ -110,7 +109,8 @@
     <Compile Include="TraceListners.cs" />
     <Compile Include="Scope\BlockScope.cs" />
     <Compile Include="Scope\IScope.cs" />
-    <Compile Include="Scope\MethodScope.cs" />
+    <Compile Include="TypeSystem\CrawlStatusType.cs" />
+    <Compile Include="TypeSystem\TypeNotFoundException.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
