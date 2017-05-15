@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Antlr4.Runtime;
+using libcompiler.ExtensionMethods;
+using libcompiler.Parser;
 using libcompiler.SyntaxTree;
 
 namespace libcompiler.CompilerStage.CodeGen
@@ -90,11 +93,7 @@ namespace libcompiler.CompilerStage.CodeGen
                 string defaultValue = Visit(node.DefaultValue);
                 return $"{identifier} = {defaultValue},";
             }
-            else
-            {
-                return $"{identifier},";
-            }
-            return base.VisitSingleVariableDecleration(node);
+            return $"{identifier},";
         }
 
         protected override string VisitVariable(VariableNode node)
@@ -126,7 +125,7 @@ namespace libcompiler.CompilerStage.CodeGen
                     break;
                 case ExpressionType.Power:
                     return WritePowerExpression(node.Arguments.ToList());
-                default: return "OPERATOR_ERR ";
+                default: throw new ArgumentException("MultiChildExpression expressionType " + node.ExpressionType + " not supported");
             }
             return VisitAndAddDelimiters(node.Arguments, delimiter);
         }
@@ -178,9 +177,52 @@ namespace libcompiler.CompilerStage.CodeGen
 
         protected override string VisitArrayConstructor(ArrayConstructorNode node)
         {
-            //string type = node.Target.ActualType.
-            
-            return "new {type} " + "{ ARGUMENTS }";
+            // Gets the type and writes all arguments into the array, for example:
+            // Array tal[,,][][,] and arguments (1,2,3,4,5,6) becomes new tal[1,2,3][4][5,6];
+            char lBracket = '[';
+            char rBracket = ']';
+            char comma = ',';
+
+            string type = Visit(node.Target);
+            string identifier = type.TrimEnd(lBracket, rBracket, comma);
+            int arrayIndex = identifier.Length; // Index where array definition starts
+
+            int dimensions = type.Substring(arrayIndex).Count(c => c == lBracket || c == comma);
+            if (dimensions != node.Arguments.Count())
+                throw new ArgumentException($"Argument count {node.Arguments.Count()} does not match array definition {type.Substring(arrayIndex)}, which requires {dimensions} arguments.");
+
+            for (int argumentNr = 0; argumentNr < node.Arguments.Count();)
+            {
+                if (type[arrayIndex] != lBracket)
+                    throw new ArgumentException("Expected: " + lBracket);
+                string argLBracket = Visit(node.Arguments[argumentNr++]);
+                type = type.Insert(++arrayIndex, argLBracket);
+                arrayIndex += argLBracket.Length;
+
+                while (type[arrayIndex] == comma)
+                {
+                    string argComma = Visit(node.Arguments[argumentNr++]);
+                    type = type.Insert(++arrayIndex, argComma);
+                    arrayIndex += argComma.Length;
+                }
+
+                if (type[arrayIndex++] != rBracket)
+                    throw new ArgumentException($"Expected {rBracket}, found {type[arrayIndex]}");
+            }
+
+            if (arrayIndex != type.Length)
+                throw new ArgumentException($"Argument count {node.Arguments.Count()} does not match array definition {type.Substring(arrayIndex)}");
+
+            // This method may be quite brittle, because it appears possible to get indexOutOfRangeExceptions everywhere. I'm leaving it 
+            // as it is though, because it gets so much harder to read otherwise, and I'm not sure its even possible to invoke those errors.
+
+            return "new " + type;
+        }
+
+        protected override string VisitArgument(ArgumentNode node)
+        {
+            string sref = node.Refence ? "ref" : String.Empty;
+            return $"{sref} {Visit(node.Value)}";
         }
 
         protected override string VisitAssignment(AssignmentNode node)
@@ -196,7 +238,66 @@ namespace libcompiler.CompilerStage.CodeGen
             string target = Visit(node.Target);
             string member = Visit(node.Member);
             return $"{target}.{member}";
+<<<<<<< HEAD
         }1111*/
         
+=======
+        }
+        */
+
+        protected override string VisitUnaryExpression(UnaryExpressionNode node)
+        {
+            switch (node.ExpressionType)
+            {
+                case ExpressionType.Not: return "!" + Visit(node.Target);
+                case ExpressionType.Negate: return "-" + Visit(node.Target);
+                default: throw new ArgumentException("Weird unary expression type: " + node.ExpressionType);
+            }
+        }
+
+        protected override string VisitBinaryExpression(BinaryExpressionNode node)
+        {
+            string delimiter;
+            switch (node.ExpressionType)
+            {
+                case ExpressionType.Greater:
+                    delimiter = ">";
+                    break;
+                case ExpressionType.GreaterEqual:
+                    delimiter = ">=";
+                    break;
+                case ExpressionType.Less:
+                    delimiter = "<";
+                    break;
+                case ExpressionType.LessEqual:
+                    delimiter = "<=";
+                    break;
+                case ExpressionType.Equal:
+                    delimiter = "==";
+                    break;
+                case ExpressionType.NotEqual:
+                    delimiter = "!=";
+                    break;
+                case ExpressionType.Add: // Can these two ever show up? They are in the BinaryExpressionDict, so I've included them here too.
+                    delimiter = "+";
+                    break;
+                case ExpressionType.Subtract:
+                    delimiter = "-";
+                    break;
+                default: throw new ArgumentException("BinaryExpression expressionType " + node.ExpressionType + " not supported");
+            }
+            return Visit(node.LeftHandSide) + delimiter + Visit(node.RightHandSide);
+        }
+
+        protected override string VisitWhile(WhileNode node)
+        {
+            return $"while({Visit(node.Condition)})" + Visit(node.Statementes).Indent().SurroundWithBrackets();
+        }
+
+        protected override string VisitForLoop(ForLoopNode node)
+        {
+            return $"foreach({Visit(node.Loopvariable)} {Visit(node.LoopVariable)} in {Visit(node.Iterator)})" + Visit(node.Body).Indent().SurroundWithBrackets();
+        }
+>>>>>>> origin/feature/demoCodegen
     }
 }

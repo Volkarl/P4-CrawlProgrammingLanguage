@@ -17,5 +17,18 @@ namespace libcompiler.ExtensionMethods
             }
             return s.ToString();
         }
+
+        public static string Indent(this string textToIndent, int indentAmount = 4)
+        {
+            var indent = new string(' ', indentAmount);
+            return indent + textToIndent.Replace("\n", "\n" + indent);
+        }
+
+        public static string SurroundWithBrackets(this string textToSurround, bool addNewLines = true)
+        {
+            if (addNewLines)
+                return "\n{" + textToSurround + "\n}";
+            return "{" + textToSurround + "}";
+        }
     }
 }

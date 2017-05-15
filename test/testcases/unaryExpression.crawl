@@ -1,0 +1,4 @@
+tal a = -1;
+tal b = 1, c = a, d = -a, e = -a, f = -a * -4;
+bool g = sandt;
+bool h = ikke g;

@@ -79,11 +79,17 @@ namespace libcompiler.SyntaxTree.Parser
             // An array initialization is the call of a typeNode's constructor
 
             TypeNode type = ParseTreeParser.ParseType((CrawlParser.TypeContext)rule.GetChild(0));
-            ArrayConstructorNode typeConstructor = CrawlSyntaxNode.ArrayConstructor(type.Interval,CrawlType.UnspecifiedType,  type);
             // TypeConstructorNode is an ExpressionNode that corresponds to a TypeNode
+            // TODO: UNSPECIFIED TYPE
 
-            IEnumerable<ArgumentNode> arguments = ParseCallTail((RuleContext)rule.GetChild(1)).Select(x => CrawlSyntaxNode.Argument(x.Interval, false, x));
-            return CrawlSyntaxNode.Call(rule.SourceInterval, CrawlType.UnspecifiedType, typeConstructor, arguments);
+            List<IEnumerable<ArgumentNode>> argumentsLists = new ArrayList<IEnumerable<ArgumentNode>>();
+            int i = 1;
+            do
+            {
+                argumentsLists.Add(ParseCallTail((RuleContext)rule.GetChild(i)).Select(x => CrawlSyntaxNode.Argument(x.Interval, false, x)));
+            } while (++i < rule.ChildCount);
+
+            return CrawlSyntaxNode.ArrayConstructor(type.Interval, CrawlType.UnspecifiedType, type, argumentsLists.SelectMany(x => x) /*Flattens the lists down into one*/);
         }
 
         private static ExpressionNode ParseMultu(RuleContext rule)
@@ -268,7 +274,14 @@ namespace libcompiler.SyntaxTree.Parser
                 case CrawlParser.RULE_integer_literal:
                     return CrawlSyntaxNode.IntegerLiteral(realLiteral.SourceInterval, CrawlType.UnspecifiedType, int.Parse(realLiteral.GetText()));
                 case CrawlParser.RULE_boolean_literal:
-                    return CrawlSyntaxNode.BooleanLiteral(realLiteral.SourceInterval,CrawlType.UnspecifiedType,  (realLiteral.GetText()) == "true");
+                {
+                    bool val;
+                    string txt = realLiteral.GetText();
+                    if (txt == "sandt") val = true;
+                    else if (txt == "falsk") val = false;
+                    else throw new ArgumentException("Weird boolean literal");
+                    return CrawlSyntaxNode.BooleanLiteral(realLiteral.SourceInterval,CrawlType.UnspecifiedType, val);
+                }
                 case CrawlParser.RULE_real_literal:
                     return CrawlSyntaxNode.RealLiteral(realLiteral.SourceInterval,CrawlType.UnspecifiedType,  double.Parse(realLiteral.GetText()));
                 default:

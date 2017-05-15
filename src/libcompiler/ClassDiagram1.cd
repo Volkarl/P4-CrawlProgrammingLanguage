@@ -205,13 +205,6 @@
       <FileName>ExtensionMethods\ListExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="libcompiler.ExtensionMethods.StringExtensions" Collapsed="true">
-    <Position X="82.5" Y="4.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAA=</HashCode>
-      <FileName>ExtensionMethods\StringExtensions.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="libcompiler.Parser.CrawlBaseListener" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="84.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
@@ -554,14 +547,14 @@
   <Class Name="libcompiler.SyntaxTree.TypeNode" Collapsed="true">
     <Position X="42" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQAAgIAAAAAAAAEAAAgACAAAAAABBAAAAAAIAAAAAA=</HashCode>
+      <HashCode>AAQAAAIAAAAAAAAEAAAgACAAAAAABBAAAAAAAAAAAAA=</HashCode>
       <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="libcompiler.SyntaxTree.ArrayConstructorNode" Collapsed="true">
     <Position X="8.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAAAAAAAEAAAgACAAQAAAAIAAAAAAAACAAAA=</HashCode>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgACAAQACAAIAAYAAAAACAAAA=</HashCode>
       <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -610,7 +603,7 @@
   <Class Name="libcompiler.SyntaxTree.SimpleSyntaxVisitor&lt;T&gt;" Collapsed="true">
     <Position X="9.75" Y="11.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAgAAEJDQIAQIAgAAAAEAAAAQABAABCGRAAgAAAA=</HashCode>
+      <HashCode>AAAAAgAAEJDQIAQIAgAAAAEAAAIQABAABCGRAAgAAAA=</HashCode>
       <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Visitors.Generated.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -631,7 +624,7 @@
   <Class Name="libcompiler.SyntaxTree.Parser.ParseTreeParser" Collapsed="true">
     <Position X="77.25" Y="4.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AEEBAQAAMCgAEAABJAQAAgABAMACAAoAAAAEIABABAA=</HashCode>
+      <HashCode>AEEBAQAAMCgAEAABIAQAAgABAMACAAoABAAEIABABAA=</HashCode>
       <FileName>SyntaxTree\Parser\ParseTreeParser.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -745,8 +738,15 @@
   <Class Name="libcompiler.CompilerStage.CodeGen.WriteCsPlaintextVisitor" Collapsed="true">
     <Position X="79" Y="5.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAQAAAIAAIAAIAAABAAAAIQIAAFABhAABAAAACRA=</HashCode>
+      <HashCode>ACAAAQAAAIAAIAAIAAABAAAAIQoAAFABhAABAAAACRA=</HashCode>
       <FileName>CompilerStage\CodeGen\WriteCsPlaintextVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.ExtensionMethods.StringExtensions" Collapsed="true">
+    <Position X="82.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAA=</HashCode>
+      <FileName>ExtensionMethods\StringExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="libcompiler.Parser.ICrawlListener" Collapsed="true">
