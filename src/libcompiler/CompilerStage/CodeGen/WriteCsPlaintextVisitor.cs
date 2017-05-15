@@ -13,6 +13,73 @@ namespace libcompiler.CompilerStage.CodeGen
 {
     public class WriteCsPlaintextVisitor : SimpleSyntaxVisitor<string>
     {
+        protected override string VisitTranslationUnit(TranslationUnitNode node)
+        {
+            bool hasNamespace = !string.IsNullOrWhiteSpace(node.Namespace?.Module);
+            StringBuilder sb = new StringBuilder();
+
+            foreach (ImportNode import in node.Imports)
+            {
+                //Don't generate import for the implicit module
+                if(string.IsNullOrWhiteSpace(import.Module)) continue;
+                
+                sb.Append("using ");
+                sb.Append(import.Module);
+                sb.Append(";\n");
+            }
+
+            if (hasNamespace)
+            {
+                sb.Append("namespace ");
+                sb.Append(node.Namespace.Module);
+                sb.Append("\n{");
+            }
+
+
+            sb.Append(base.VisitTranslationUnit(node));
+
+            if (hasNamespace)
+                sb.Append("}");
+
+            return sb.ToString();
+        }
+
+        protected override string VisitMethodDecleration(MethodDeclerationNode node)
+        {
+            StringBuilder sb = new StringBuilder();
+
+
+            sb.Append(node.ProtectionLevel.AsCSharpString());
+            sb.Append(" ");
+
+            CrawlMethodType signature = node.MethodSignature.ActualType as CrawlMethodType;
+            if (signature == null) throw new Exception();
+
+            if (signature.ReturnType.Equals(CrawlSimpleType.Intet))
+                sb.Append("void");
+            else
+                sb.Append(signature.ReturnType.FullName);
+            sb.Append(" ");
+
+            sb.Append(node.Identifier.Value);
+            sb.Append(" (");
+
+            sb.Append(string.Join(", ",
+                node.Parameters.Select(
+                    x => $"{(x.Reference ? "ref" : "")}{x.ParameterType.ActualType.FullName} {x.Identifier.Value}")));
+
+            sb.Append(")\n{");
+
+
+            sb.Append(Visit(node.Body));
+
+            sb.Append("}\n");
+
+            return sb.ToString();
+        }
+
+
+
         string VisitAndAddDelimiters<T>(ListNode<T> arguments, string delimiter) where T : CrawlSyntaxNode
         {
             var sb = new StringBuilder();
@@ -105,40 +172,6 @@ namespace libcompiler.CompilerStage.CodeGen
         protected override string VisitIntegerLiteral(IntegerLiteralNode node)
         {
             return node.Value.ToString();
-        }
-
-        protected override string VisitMethodDecleration(MethodDeclerationNode node)
-        {
-            StringBuilder sb = new StringBuilder();
-
-
-            sb.Append(node.ProtectionLevel.AsCSharpString());
-            sb.Append(" ");
-
-            CrawlMethodType signature = node.MethodSignature.ActualType as CrawlMethodType;
-            if(signature == null) throw new Exception();
-
-            if (signature.ReturnType.Equals(CrawlSimpleType.Intet))
-                sb.Append("void");
-            else
-                sb.Append(signature.ReturnType.FullName);
-            sb.Append(" ");
-
-            sb.Append(node.Identifier.Value);
-            sb.Append(" (");
-
-            sb.Append(string.Join(", ",
-                node.Parameters.Select(
-                    x => $"{(x.Reference ? "ref" : "")}{x.ParameterType.ActualType.FullName} {x.Identifier.Value}")));
-            
-            sb.Append(")\n{");
-
-
-            sb.Append(Visit(node.Body));
-
-            sb.Append("}\n");
-
-            return sb.ToString();
         }
 
         protected override string VisitMultiChildExpression(MultiChildExpressionNode node)
