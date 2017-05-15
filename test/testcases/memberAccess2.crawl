@@ -1,9 +1,26 @@
-klasse TestPerson =
-  Person person = ny Person();
+offentlig klasse forskelligeTal =
+  offentlig tal a = 5;
+  offentlig tal b = 10;
+  offentligtal c;
 
-  foo(person) =
-  person.age = 50;
+  offentlig tal(tal a, tal b, tal c) talFunction =
+    A = a;
+    B = b;
+    C = c;
+    C = A + B;
+    returner C;
 
-offentlig klasse Person =
-  offentlig tal age;
-  offentlig tal name;
+offentlig forskelligeTal superTest = forskelligeTal();
+superTest.c = 30;
+
+
+
+//klasse TestPerson =
+//  Person person = ny Person();
+
+//  foo(person) =
+//  person.age = 50;
+
+//offentlig klasse Person =
+//  offentlig tal age;
+//  offentlig tal name;

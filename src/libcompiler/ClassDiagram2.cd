@@ -1,0 +1,837 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="libcompiler.Antlr.CompilationMessageErrorListner" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="80.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAQAAAAAAACAAAAAAAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>Antlr\CompilationMessageErrorListner.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="libcompiler.CompilationMessage" Collapsed="true">
+    <Position X="79" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAwAAAAAAAAIAAEEAEAABAAAAAEAEAAAQAAAAwIEQA=</HashCode>
+      <FileName>CompilationMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilationResult" Collapsed="true">
+    <Position X="82.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>CompilationResult.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CrawlCompiler" Collapsed="true">
+    <Position X="73.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAACAAAAAAEI=</HashCode>
+      <FileName>CrawlCompiler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.ExitCompilationException" Collapsed="true">
+    <Position X="75.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CrawlCompiler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.ExitStageException" Collapsed="true">
+    <Position X="77.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CrawlCompiler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CrawlCompilerConfiguration" Collapsed="true">
+    <Position X="75.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAgAAACAAAAAAABAAoIAAAAAEAIAACAAAAEAAAAAIA=</HashCode>
+      <FileName>CrawlCompilerConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CrawlImpossibleStateException" Collapsed="true">
+    <Position X="0.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CrawlImpossibleStateException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CrawlSyntaxException" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>CrawlSyntaxException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.ParseTreeHelper" Collapsed="true">
+    <Position X="75.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ParseTreeHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.PrettyPrintVisitor" Collapsed="true">
+    <Position X="12.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAkIAQABABBQAAAAAAAAEAAAAAAAAABShA=</HashCode>
+      <FileName>PrettyPrintVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SideeffectHelper" Collapsed="true">
+    <Position X="80.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SideeffectHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TraceListners" Collapsed="true">
+    <Position X="84.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TraceListners.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.Utils" Collapsed="true">
+    <Position X="77.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAECAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>Utils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilerStage.AstData" Collapsed="true">
+    <Position X="73.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAACAQAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CompilerStage\AstData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilerStage.CodeGenPipeline" Collapsed="true">
+    <Position X="77.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CompilerStage\CodeGenPipeline.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilerStage.ParsePipeline" Collapsed="true">
+    <Position X="84.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIBAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CompilerStage\ParsePipeline.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilerStage.ParseTreeData" Collapsed="true">
+    <Position X="73.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAABAAAAQAAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CompilerStage\ParseTreeData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilerStage.SemanticAnalysisPipeline" Collapsed="true">
+    <Position X="79" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAQAAAAAAAAAgAAAAAEEgAAAA=</HashCode>
+      <FileName>CompilerStage\SemanticAnalysisPipeline.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilerStage.FirstScopePassVisitor" Collapsed="true">
+    <Position X="0.75" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQA=</HashCode>
+      <FileName>CompilerStage\SemanticAnalysisPipeline.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilerStage.CodeGen.WriteCsPlaintextVisitor" Collapsed="true">
+    <Position X="79" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAIAAIAAIAAABAAAAIQoAAFABhAABAAgACRA=</HashCode>
+      <FileName>CompilerStage\CodeGen\WriteCsPlaintextVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilerStage.SemanticAnalysis.AddScopeVisitor" Collapsed="true">
+    <Position X="3" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAAAAgAAAAEAAAAAAAAAACAAAAAAAQA=</HashCode>
+      <FileName>CompilerStage\SemanticAnalysis\AddScopeVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilerStage.SemanticAnalysis.CheckDeclerationOrderVisitor" Collapsed="true">
+    <Position X="15" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAABAAAAAQAAAAAAAAAAAAAAAAAkAAAAAAAAAA=</HashCode>
+      <FileName>CompilerStage\SemanticAnalysis\CheckDeclerationOrderVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilerStage.SemanticAnalysis.NamespaceNotFoundException" Collapsed="true">
+    <Position X="82.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CompilerStage\SemanticAnalysis\NamespaceNotFoundException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.CompilerStage.SemanticAnalysis.PutTypeVisitor" Collapsed="true">
+    <Position X="7.5" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAQAAAAAEAAAAAAAEAA=</HashCode>
+      <FileName>CompilerStage\SemanticAnalysis\PutTypeVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.Datatypes.ListDictionary&lt;TKey, TValue&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="73.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAABAAAAAABAACAAAAAQAAAAAAAAEAAAAAAAEAAA=</HashCode>
+      <FileName>Datatypes\ListDictionary.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="libcompiler.ExtensionMethods.CrawlSyntaxNodeExtensions" Collapsed="true">
+    <Position X="82.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ExtensionMethods\CrawlSyntaxNodeExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.ExtensionMethods.EnumerableHelpers" Collapsed="true">
+    <Position X="73.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ExtensionMethods\IEnumerableHelpers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.ExtensionMethods.IParseTreeExtensions" Collapsed="true">
+    <Position X="84.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAIAAAAAAAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>ExtensionMethods\IParseTreeExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.ExtensionMethods.ListExtensions" Collapsed="true">
+    <Position X="75.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>ExtensionMethods\ListExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.ExtensionMethods.StringExtensions" Collapsed="true">
+    <Position X="82.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAA=</HashCode>
+      <FileName>ExtensionMethods\StringExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.Parser.CrawlBaseListener" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="84.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>Eg0NpJIFosVBLKaABYTF5MDDH8TZIQAI63IMACoHJYI=</HashCode>
+      <FileName>GeneratedParser\CrawlBaseListener.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="libcompiler.Parser.CrawlLexer" Collapsed="true">
+    <Position X="77.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UQNGXExWuP4IoIAIQECeiBAWUFsIADsRQICCSASMAAQ=</HashCode>
+      <FileName>GeneratedParser\CrawlLexer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.Parser.CrawlParser" Collapsed="true">
+    <Position X="79" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>YYH+Tdw2vv5IqZJi5kL2TFMXWFspCRsReriESAXOpM4=</HashCode>
+      <FileName>GeneratedParser\CrawlParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.Namespaces.Namespace" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="79" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAgAAAAAAAAQAAAAAAQAACAAAAAIAAAA=</HashCode>
+      <FileName>Namespaces\Namespace.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="libcompiler.Namespaces.NamespaceLoader" Collapsed="true">
+    <Position X="80.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAIAAAAAAAAIAAAAABAAACAAAAIAAAAE=</HashCode>
+      <FileName>Namespaces\NamespaceLoader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.Scope.BlockScope" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="75.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAEAAgAAAAAAAAAAABAAAAAAAAAAAAIIAAA=</HashCode>
+      <FileName>Scope\BlockScope.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="libcompiler.Scope.GenericScope" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="82.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAgAEAAAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Scope\GenericScope.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="libcompiler.Scope.TypeInformation" Collapsed="true">
+    <Position X="73.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAIAAAAAQAAAAAAAAgQAAAAAAAAA=</HashCode>
+      <FileName>Scope\IScope.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.Scope.MethodScope" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="77.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgAAgAAAAAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Scope\MethodScope.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.CrawlSyntaxNodeExtensions" Collapsed="true">
+    <Position X="80.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\CrawlSyntaxNodeExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.CrawlSyntaxTree" Collapsed="true">
+    <Position X="84.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEQAAAAAAAAQAAAAAAAAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\CrawlSyntaxTree.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.BlockNode" Collapsed="true">
+    <Position X="62.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAiAEAQAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>SyntaxTree\Nodes\BlockNode.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.CrawlSyntaxNode" Collapsed="true">
+    <Position X="37.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AKAEQGBAASAoCoAEMJAhRYIDAQBSIAQxIQUAQBAQAEA=</HashCode>
+      <FileName>SyntaxTree\Nodes\CrawlSyntaxNode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.ListNode&lt;T&gt;" Collapsed="true">
+    <Position X="62.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAEAAAAAAABAECAAgAABAAABAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\Nodes\ListNode.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.CallableDeclarationNode" Collapsed="true">
+    <Position X="65.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAoAEAiAEAYAhAAIAAAAQAAAAEIAAAAIAEAA=</HashCode>
+      <FileName>SyntaxTree\Nodes\Partials\CallableDeclerationNode.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.ClassTypeDeclerationNode" Collapsed="true">
+    <Position X="69" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEAAAAgAAAgEEAAghgEAAAAIAAAAAEEAAQAMAEAA=</HashCode>
+      <FileName>SyntaxTree\Nodes\Partials\ClassTypeDeclerationNode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.ForLoopNode" Collapsed="true">
+    <Position X="35.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAACAAAgBAAiAEAQAhAAEAAQBAAAAACAAAAAoAEAA=</HashCode>
+      <FileName>SyntaxTree\Nodes\Partials\ForLoopNode.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.TranslationUnitNode" Collapsed="true">
+    <Position X="44.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQgCAAAAAAAAgAkAAIkAAAAAQAAYAAAAAAAAAMgCAA=</HashCode>
+      <FileName>SyntaxTree\Nodes\Partials\TranslationUnitNode.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.SuperPrettyPrintVisitor" Collapsed="true">
+    <Position X="17.25" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAQQECAQAQkQGAAAAAABAAAACAACAAKAAAAAACAA=</HashCode>
+      <FileName>SyntaxTree\SuperPrettyPrintVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.AssignmentNode" Collapsed="true">
+    <Position X="53.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABQAAAAAAAAAAAAEAAAgACIAQAAAAIAAAAAgAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.ArgumentNode" Collapsed="true">
+    <Position X="55.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABQAAAAIAAAAAAAEAAAgAAIAAAAAAAAACAAgAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.BinaryExpressionNode" Collapsed="true">
+    <Position X="26.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAQAAAAAAAAAAAAkAAAgAAAAQAAAIAAAAAAAAASAACA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.MemberAccessNode" Collapsed="true">
+    <Position X="30.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQQAAAAAAAAAAAEAAAgACAAQAAIAoAAAAAAAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.GenericsUnpackNode" Collapsed="true">
+    <Position X="33" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgACAAQACAAIAAYAAAAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.CallNode" Collapsed="true">
+    <Position X="3.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgACAAQACAAIAAYAAAAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.CastExpressionNode" Collapsed="true">
+    <Position X="6" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAQAAAAAAAAAAkAAAgACIAQAAAAIAACAAAAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.NamespaceNode" Collapsed="true">
+    <Position X="48.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgAAAAAAAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.LiteralNode" Collapsed="true">
+    <Position X="14" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.RealLiteralNode" Collapsed="true">
+    <Position X="10.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgAAIAAAAAAAAAAAAgAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.StringLiteralNode" Collapsed="true">
+    <Position X="12.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgAAIAAAAAAAAAAAAgAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.IntegerLiteralNode" Collapsed="true">
+    <Position X="15" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgAAIAAAAAAAAAAAAgAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.BooleanLiteralNode" Collapsed="true">
+    <Position X="17.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgAAIAAAAAAAAAAAAgAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.IndexNode" Collapsed="true">
+    <Position X="28.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgACAAQACAAIAAYAAAAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.ConstructorNode" Collapsed="true">
+    <Position X="66.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAoAAAAAEAQAgAAIAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.DeclerationNode" Collapsed="true">
+    <Position X="68" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.ExpressionNode" Collapsed="true">
+    <Position X="18.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.FlowNode" Collapsed="true">
+    <Position X="37.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.GenericParameterNode" Collapsed="true">
+    <Position X="46.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQCAAAAAAAAAAAEAAAgAAIAAAAAAAAAAAAAAAAAAAE=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.IdentifierNode" Collapsed="true">
+    <Position X="46.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgAAIAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.ImportNode" Collapsed="true">
+    <Position X="48.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgAAAAAAAAAAAAAAAACAAAAIA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.MethodDeclerationNode" Collapsed="true">
+    <Position X="64.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEAAAAoAAAAAEAQgggAIAAAIAAAAAEEAAQAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.MultiChildExpressionNode" Collapsed="true">
+    <Position X="21.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAkAAAgAAAAAACAAAAAYAAAAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.ParameterNode" Collapsed="true">
+    <Position X="57.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAEACAAABAAAAEAAAgiAAAAAAAAAACAEAAQAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.ReturnStatementNode" Collapsed="true">
+    <Position X="60" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABQAAAAAAAAAAAAEAAAgAAIAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.WhileNode" Collapsed="true">
+    <Position X="37.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAACAAAAEAAAgAgAAAggAAAABAAAAAAAQAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.IfNode" Collapsed="true">
+    <Position X="39.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAACAgAAEBAAgAAAAAAgAAgABAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.IfElseNode" Collapsed="true">
+    <Position X="39.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAAAAAAAAAAAEBAAgAAAEAAAAAAABAAAAIAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.TypeNode" Collapsed="true">
+    <Position X="42" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgIAAAAAAAAEAAAgACAAAAAABBAAAAAAIAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.ArrayConstructorNode" Collapsed="true">
+    <Position X="8.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgACAAQAAAAIAAAAAAAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.UnaryExpressionNode" Collapsed="true">
+    <Position X="19.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAkAAAgACAAQAAAAIAAAAAAAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.SingleVariableDeclerationNode" Collapsed="true">
+    <Position X="51" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAYAAAAAAAAAAAAEAAAggAAAAABAAAAAAEAAQAAAEAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.VariableDeclerationNode" Collapsed="true">
+    <Position X="71.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEQAAAAIACAAAAAEIAAgAAEAAAAEAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.VariableNode" Collapsed="true">
+    <Position X="24" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAEAAAgAAQAAAAAAAAAAAAAAACAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.SyntaxVisitor" Collapsed="true">
+    <Position X="15" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAwAQEpDQJEQIAgABAAEAIQIRCFAAhCGQAAgACRA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Visitors.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.SyntaxVisitor&lt;T&gt;" Collapsed="true">
+    <Position X="5.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAwAQEpDQJEQIAgABAAEAIQIRCFAAhCGQAAgACRA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Visitors.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.SimpleSyntaxVisitor&lt;T&gt;" Collapsed="true">
+    <Position X="9.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAEJDQIAQIAgAAAAEAAAAQABAABCGRAAgAAAA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Visitors.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.SyntaxRewriter" Collapsed="true">
+    <Position X="4.25" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAwAQEpDQJEQIAgABAAEAIQIRCFAAhCGQAAgACZA=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Visitors.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.Parser.ExpressionParser" Collapsed="true">
+    <Position X="80.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAiAAAQAAAAAIAIAgAEAJAAQAQIAAAICAAQIAAAAE=</HashCode>
+      <FileName>SyntaxTree\Parser\ExpressionParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.SyntaxTree.Parser.ParseTreeParser" Collapsed="true">
+    <Position X="77.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEEBAQAAMCgAEAABJAQAAgABAMACAAoAAAAEIABABAA=</HashCode>
+      <FileName>SyntaxTree\Parser\ParseTreeParser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeChecker.ExpressionEvaluator" Collapsed="true">
+    <Position X="79" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAQAAAAAAAAACgAAgAAgBAKAKAAAIAAAAEAAAAAQA=</HashCode>
+      <FileName>TypeChecker\ExpressionEvaluator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeChecker.TypeVisitor" Collapsed="true">
+    <Position X="5.25" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAIAAIAAABAAAAAAARAFAAgAAAAAgACBA=</HashCode>
+      <FileName>TypeChecker\TypeVisitor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeSystem.CrawlArrayType" Collapsed="true">
+    <Position X="3.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABBAAAAAAAAAAEAABAAACAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>TypeSystem\CrawlArrayType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeSystem.CrawlConstructedType" Collapsed="true">
+    <Position X="6" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAEAABAAAiAAAAAAAAAAAAAAAMAAAQ=</HashCode>
+      <FileName>TypeSystem\CrawlConstructedType.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="libcompiler.TypeSystem.CrawlMethodType" Collapsed="true">
+    <Position X="10.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAABAAACAAAAAAAAAAIAAAAAEAAQ=</HashCode>
+      <FileName>TypeSystem\CrawlMethodType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeSystem.CrawlSimpleType" Collapsed="true">
+    <Position X="17.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAkAABAAACAAAQAAAAAAgAgCAAAAAQ=</HashCode>
+      <FileName>TypeSystem\CrawlSimpleType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeSystem.CrawlTypeTal" Collapsed="true">
+    <Position X="19.5" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeSystem\CrawlSimpleTypesBuiltIn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeSystem.CrawlTypeKommatal" Collapsed="true">
+    <Position X="21.75" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>TypeSystem\CrawlSimpleTypesBuiltIn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeSystem.CrawlTypeBool" Collapsed="true">
+    <Position X="12.75" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeSystem\CrawlSimpleTypesBuiltIn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeSystem.CrawlTypeTegn" Collapsed="true">
+    <Position X="15" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>TypeSystem\CrawlSimpleTypesBuiltIn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeSystem.CrawlTypeTekst" Collapsed="true">
+    <Position X="17.25" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeSystem\CrawlSimpleTypesBuiltIn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeSystem.CrawlStatusType" Collapsed="true">
+    <Position X="1.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAACAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>TypeSystem\CrawlStatusType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeSystem.CrawlType" Collapsed="true">
+    <Position X="11.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAggEgABAABCAAAICIIAAAAAAQAIAAIQ=</HashCode>
+      <FileName>TypeSystem\CrawlType.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="libcompiler.TypeSystem.TypeNotFoundException" Collapsed="true">
+    <Position X="75.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>TypeSystem\CrawlType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="libcompiler.TypeSystem.FutureType" Collapsed="true">
+    <Position X="8.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAABAAACAAAAAAAAAAAAAAAAAAAQ=</HashCode>
+      <FileName>TypeSystem\FutureType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="libcompiler.Parser.ICrawlListener" Collapsed="true">
+    <Position X="73.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>Eg0NpJIFosVBLKaABYTF5MDDH8TZIQAI63IIACAHJYI=</HashCode>
+      <FileName>GeneratedParser\CrawlListener.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="libcompiler.Scope.IScope" Collapsed="true">
+    <Position X="77.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Scope\IScope.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="libcompiler.SyntaxTree.INodeThatTakesGenericParameters" Collapsed="true">
+    <Position X="75.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SyntaxTree\INodeThatTakesGenericParameters.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="libcompiler.MessageCode" Collapsed="true">
+    <Position X="79" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gIRAEAAAAACAAAAAAAAAAAAggAAQAAAAEACAAAAAAEA=</HashCode>
+      <FileName>CompilationMessage.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="libcompiler.MessageSeverity" Collapsed="true">
+    <Position X="80.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAABAAAAAAAAAAAAAAAEAEAAA=</HashCode>
+      <FileName>CompilationMessage.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="libcompiler.CompilationStatus" Collapsed="true">
+    <Position X="73.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAgAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>CompilationResult.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="libcompiler.TargetStage" Collapsed="true">
+    <Position X="75.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAAgAACAAAAAgACEA=</HashCode>
+      <FileName>CrawlCompilerConfiguration.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="libcompiler.Scope.NeedsABetterNameType" Collapsed="true">
+    <Position X="82.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAQAAAAAAAA=</HashCode>
+      <FileName>Scope\IScope.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="libcompiler.Scope.DeclaringScope" Collapsed="true">
+    <Position X="75.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Scope\IScope.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="libcompiler.SyntaxTree.ExpressionType" Collapsed="true">
+    <Position X="77.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACIAQECAAQAgCIAAgAADAoAAICAIAAQBQQUEAgUAAEA=</HashCode>
+      <FileName>SyntaxTree\ExpressionType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="libcompiler.SyntaxTree.ProtectionLevel" Collapsed="true">
+    <Position X="73.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAIEAAAAAEAAAAAAAAAAACAEAQAA=</HashCode>
+      <FileName>SyntaxTree\ProtectionLevel.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="libcompiler.SyntaxTree.NodeType" Collapsed="true">
+    <Position X="84.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AKQEQGBAAQAgCoAAMBABhYABAABWIAQQIQUAQAAQAEI=</HashCode>
+      <FileName>SyntaxTree\SyntaxNodeDefinitions.xml.Nodes.Generated.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

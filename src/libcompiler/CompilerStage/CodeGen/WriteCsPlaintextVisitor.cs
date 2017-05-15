@@ -189,14 +189,14 @@ namespace libcompiler.CompilerStage.CodeGen
             string val = Visit(node.Value);
             return $"{target} = {val};";
         }
-        /*    Der skal findes en måde hvorpå funktionen kan kaldes rekursivt siden man aldrig vil vide
-         *    hvor mange members der er.
-        protected override string VisitMemberAccess(MemberAccessNode node)
+
+        //Gør brug af InsertVisitsRecursivelyUntilTwoRemain
+        /*protected override string VisitMemberAccess(MemberAccessNode node)
         {
             string target = Visit(node.Target);
             string member = Visit(node.Member);
             return $"{target}.{member}";
-        }
-        */
+        }1111*/
+        
     }
 }
