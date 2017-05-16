@@ -156,11 +156,14 @@ namespace libcompiler.CompilerStage.CodeGen
 
         protected override string VisitBlock(BlockNode block)
         {
+            bool isNotClass = !(block.Parent is ClassTypeDeclerationNode);
             StringBuilder sb = new StringBuilder();
             
             foreach (string child in block.Select(Visit))
             {
-                sb.Append($"{child}\n");
+                sb.Append($"{child}");
+                if (isNotClass) sb.Append(";");
+                sb.Append("\n");
             }
             
             return sb.ToString();
@@ -193,7 +196,7 @@ namespace libcompiler.CompilerStage.CodeGen
 
         protected override string VisitBooleanLiteral(BooleanLiteralNode node)
         {
-            return node.Value.ToString();
+            return node.Value.ToString().ToLower();
         }
 
         protected override string VisitStringLiteral(StringLiteralNode node)
