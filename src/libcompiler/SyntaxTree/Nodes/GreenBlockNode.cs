@@ -16,16 +16,15 @@ namespace libcompiler.SyntaxTree
 
         public static BlockNode Block(Interval interval, IEnumerable<CrawlSyntaxNode> statements)
         {
-            GreenBlockNode greenBlock = new GreenBlockNode(NodeType.Block, interval, statements.Select(s => s.Green));
+            GreenBlockNode greenBlock = new GreenBlockNode(NodeType.Block, interval, statements.Select(s => s.Green), null);
             return (BlockNode) greenBlock.CreateRed(null, 0);
-
         }
 
         public class GreenBlockNode : GreenListNode<CrawlSyntaxNode>
         {
             internal BlockScope Scope { get; }
 
-            internal GreenBlockNode(NodeType type, Interval interval, IEnumerable<GreenCrawlSyntaxNode> children, BlockScope scope = null) : base(
+            internal GreenBlockNode(NodeType type, Interval interval, IEnumerable<GreenCrawlSyntaxNode> children, BlockScope scope) : base(
                 type, interval, children)
             {
                 Scope = scope;
@@ -44,7 +43,7 @@ namespace libcompiler.SyntaxTree
                 var newchildren = ChildCopy();
                 newchildren[index] = newChild;
 
-                return new GreenBlockNode(Type, Interval, newchildren);
+                return new GreenBlockNode(Type, Interval, newchildren, Scope);
 
             }
         }

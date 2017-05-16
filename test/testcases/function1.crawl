@@ -1,7 +1,10 @@
-int (int a, int b) add =
-	int (int z) stuff =
+klasse foo =
+  intet (tal a) print =
+    ;
+tal (tal a, tal b) add =
+	tal (tal z) stuff =
 		returner z + b * 2;
 	
-	int anumber = stuff(a) + stuff(b);
+	tal anumber = stuff(a) + stuff(b);
 
-print(add(4,2));
+foo.print(add(4,2));

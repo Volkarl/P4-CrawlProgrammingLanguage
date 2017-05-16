@@ -23,12 +23,14 @@
         StringLiteral,
         IntegerLiteral,
         BooleanLiteral,
+        NullLiteral,
         Variable,
         Negate,
         Not,
         Divide,
         Modulous,
         GenericsUnpack,
-        ArrayConstructor
+        ArrayConstructor,
+        Cast
     }
 }

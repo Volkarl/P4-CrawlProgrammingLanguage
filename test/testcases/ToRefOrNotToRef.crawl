@@ -1,0 +1,18 @@
+klasse foo =
+  tal a;
+  bar b;
+  intet (tal arg) LavRod =
+    a = 33;
+    b.a = 21;
+
+klasse bar =
+  kommatal a;
+
+foo (foo arg) AlleSideEfekterne =
+  arg.a = 0;
+  arg.LavRod();
+  returner arg;
+
+foo(foo arg) SmukOgRen =
+  tal a = arg.a + 55/2;
+  returner arg;

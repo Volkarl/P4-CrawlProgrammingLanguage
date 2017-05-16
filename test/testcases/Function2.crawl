@@ -1,18 +1,15 @@
-importer Consol;
+//TODO importer konsol
 
+frø tudse = frø();
+skriv(tudse.foo(8));
+skriv(tudse.foo(8));
+skriv(tudse.foo(8));
 
 offentlig klasse frø= 
 
 	tal resultat;
 
 	offentligt tal (tal heltal)foo=
-		resultat= resultat+heltal;
-	
+		resultat = resultat+heltal;
+		returner resultat;
 
-
-foo fii=foo(8);
-skriv(foo.resultat);
-
-	
-	
-	

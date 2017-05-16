@@ -1,1 +1,1 @@
-bool a = 2 + 3 + "foo" == "5foo" + "frø" + (-5)  og  " " == "kage"   eller   1  <=  2;
+bool a = -1 + 2 + 3 + 2.2E3 == 0 + 2 + (-5)  og  2.000002 == 1E0   eller   1  <=  2;

@@ -48,7 +48,8 @@ namespace libcompiler.Scope
     public enum NeedsABetterNameType
     {
         Variable,
-        Class
+        Class,
+        Member
     }
 
     public enum DeclaringScope

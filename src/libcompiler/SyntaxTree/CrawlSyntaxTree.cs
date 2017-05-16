@@ -2,6 +2,7 @@
 using Antlr4.Runtime;
 using libcompiler.Parser;
 using libcompiler.SyntaxTree.Parser;
+using libcompiler.TypeChecker;
 
 namespace libcompiler.SyntaxTree
 {

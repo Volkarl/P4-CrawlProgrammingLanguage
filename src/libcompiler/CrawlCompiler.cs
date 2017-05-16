@@ -9,6 +9,7 @@ using libcompiler.CompilerStage;
 using libcompiler.ExtensionMethods;
 using libcompiler.Namespaces;
 using libcompiler.SyntaxTree;
+using libcompiler.TypeChecker;
 
 namespace libcompiler
 {
@@ -110,18 +111,32 @@ namespace libcompiler
                     {
                         /* scope check */
                         Func<AstData, SideeffectHelper, AstData> first = SemanticAnalysisPipeline.DeclerationOrderCheck;
-                        var final = first.EndWith(destination.Add, helper);  //Typechecker would be added here or line above
+                        var final = first
+                            .Then(SemanticAnalysisPipeline.TypeCheck)
+                            .EndWith(destination.Add, helper);  //Typechecker would be added here or line above
 
                         return final;
                     }
                 );
 
+                ConcurrentBag<AstData> optimizedAsts = Run<AstData, AstData>(decoratedAsts, parallel, sideeffectHelper,
+                    (destination, helper) =>
+                    {
+                        Func<AstData, SideeffectHelper, AstData> first = OptimizationPipeline.FoldConstants;
+                        var final = first
+                            .Then(OptimizationPipeline.RefWherePossible)
+                            .EndWith(destination.Add, helper);
 
+                        return final;
+                    }
+                );
                 //TODO: Interpeter or code generation
 
                 //Until meaningfull end, print everything
 
                 Execute(decoratedAsts, output.WriteLine, parallel);
+                output.WriteLine("\n===Optimized To===>\n");
+                Execute(optimizedAsts, output.WriteLine, parallel);
 
                 if (sideeffectHelper.CompilationMessages.Count(message => message.Severity >= MessageSeverity.Error) > 0)
                     status = CompilationStatus.Failure;

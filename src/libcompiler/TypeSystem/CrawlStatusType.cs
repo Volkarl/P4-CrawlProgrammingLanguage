@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using libcompiler.Scope;
 
 namespace libcompiler.TypeSystem
 {
@@ -13,17 +15,27 @@ namespace libcompiler.TypeSystem
 
         public override bool IsAssignableTo(CrawlType target)
         {
-            throw new InvalidOperationException("Tried to use unspecified type.");
+            return false;
         }
 
         public override bool ImplicitlyCastableTo(CrawlType target)
         {
-            throw new InvalidOperationException("Tried to use unspecified type.");
+            return false;
         }
 
         public override bool CastableTo(CrawlType target)
         {
-            throw new InvalidOperationException("Tried to use unspecified type.");
+            return false;
+        }
+
+        public override IEnumerable<KeyValuePair<string, TypeInformation[]>> Members()
+        {
+            throw new InvalidOperationException("An error type has no members");
+        }
+
+        public override TypeInformation[] FindSymbol(string symbol)
+        {
+            throw new InvalidOperationException("An error type has no members");
         }
     }
 }

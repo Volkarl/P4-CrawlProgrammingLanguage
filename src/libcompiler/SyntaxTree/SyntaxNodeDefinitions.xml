@@ -13,7 +13,7 @@
         <with_replaced_child>WithReplacedChild</with_replaced_child>
         <new_child>newChild</new_child>
         <self>self</self>
-        <visit>Visit</visit>
+        <visit>Visit</visit> 
         <node>Node</node>
         <combine>Combine</combine>
         <update>Update</update>
@@ -23,7 +23,7 @@
             <name>CrawlSyntax</name>
             <properties>
                 <property>
-                    <name>Type</name>
+                    <name>Type</name> 
                     <type>NodeType</type>
                 </property>
                 <property>
@@ -124,6 +124,20 @@
             </children>
         </node>
         <node>
+            <name>CastExpression</name>
+            <baseclass>Expression</baseclass>
+            <children>
+                <child>
+                    <name>TypeToConvertTo</name>
+                    <type>Type</type>
+                </child>
+                <child>
+                    <name>Target</name>
+                    <type>Expression</type>
+                </child>
+            </children>
+        </node>
+        <node>
             <name>Namespace</name>
             <baseclass>Import</baseclass>
         </node>
@@ -173,6 +187,10 @@
             </properties>
         </node>
         <node>
+            <name>NullLiteral</name>
+            <baseclass>Literal</baseclass>
+        </node>
+        <node>
             <name>Index</name>
             <baseclass>Expression</baseclass>
             <children>
@@ -220,6 +238,10 @@
                     <type>Identifier</type>
                 </child>
                 <child>
+                    <name>BaseTypes</name>
+                    <type>List'Identifier</type>
+                </child>
+                <child>
                     <name>GenericParameters</name>
                     <type>List'GenericParameter</type>
                 </child>
@@ -230,8 +252,8 @@
             </children>
             <properties>
                 <property>
-                    <name>Ancestor</name>
-                    <type>CrawlType</type>
+                    <name>ClassType</name>
+                    <type>CrawlConstructedType</type>
                 </property>
             </properties>
         </node>
@@ -258,6 +280,10 @@
                 <property>
                     <name>ExpressionType</name>
                     <type>ExpressionType</type>
+                </property>
+                <property>
+                    <name>ResultType</name>
+                    <type>CrawlType</type>
                 </property>
             </properties>
         </node>
@@ -367,6 +393,10 @@
             <properties>
                 <property>
                     <name>Reference</name>
+                    <type>bool</type>
+                </property>
+                <property>
+                    <name>SideEffects</name>
                     <type>bool</type>
                 </property>
             </properties>

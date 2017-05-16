@@ -5,7 +5,9 @@ using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using libcompiler.ExtensionMethods;
 using libcompiler.Parser;
+using libcompiler.TypeSystem;
 
 namespace libcompiler.SyntaxTree.Parser
 {
@@ -23,7 +25,7 @@ namespace libcompiler.SyntaxTree.Parser
                 ITerminalNode tn = rule.GetChild(0) as ITerminalNode;
                 if (tn != null && tn.Symbol.Type == CrawlLexer.IDENTIFIER)
                 {
-                    return CrawlSyntaxNode.Variable(tn.SourceInterval, tn.GetText());
+                    return CrawlSyntaxNode.Variable(tn.SourceInterval, CrawlType.UnspecifiedType,  tn.GetText());
                 }
                 //Expression in parentheses. Parse only content, throw out parentheses.
                 else if (rule.ChildCount == 3)
@@ -52,6 +54,8 @@ namespace libcompiler.SyntaxTree.Parser
                 case CrawlParser.RULE_or_expression:
                 case CrawlParser.RULE_exponential_expression:
                     return ParseMultu(rule);
+                case CrawlParser.RULE_cast_expression:
+                    return ParseCast(rule);
                 case CrawlParser.RULE_unary_expression:
                     return ParseUnary(rule);
                 default:
@@ -62,13 +66,24 @@ namespace libcompiler.SyntaxTree.Parser
 
         private static ExpressionNode ParseUnary(RuleContext rule)
         {
-            RuleContext tar = (RuleContext) rule.GetChild(1);
-            ExpressionNode target = ParseExpression(tar);
+            //( INVERT | MINUS )* postfix_expression
+            RuleContext targetContext = (RuleContext) rule.LastChild();
 
-            ITerminalNode symbol = (ITerminalNode) rule.GetChild(0);
-            ExpressionType type = ParseUnaryOp(symbol);
+            List<ExpressionType> unaries = new List<ExpressionType>();
+            for (int i = rule.ChildCount-2; i >= 0; i--)
+            {
+                ITerminalNode symbol = (ITerminalNode) rule.GetChild(i);
+                unaries.Add(ParseUnaryOp(symbol));
+            }
 
-            return CrawlSyntaxNode.UnaryExpression(rule.SourceInterval, type, target);
+            ExpressionNode result = ParseExpression(targetContext);
+
+            foreach (ExpressionType unaryExpressionType in unaries)
+            {
+                result = CrawlSyntaxNode.UnaryExpression(rule.SourceInterval, unaryExpressionType, CrawlType.UnspecifiedType, result);
+            }
+
+            return result;
         }
 
         private static ExpressionNode ParseArrayInitialization(RuleContext rule)
@@ -76,11 +91,11 @@ namespace libcompiler.SyntaxTree.Parser
             // An array initialization is the call of a typeNode's constructor
 
             TypeNode type = ParseTreeParser.ParseType((CrawlParser.TypeContext)rule.GetChild(0));
-            ArrayConstructorNode typeConstructor = CrawlSyntaxNode.ArrayConstructor(type.Interval, type);
+            ArrayConstructorNode typeConstructor = CrawlSyntaxNode.ArrayConstructor(type.Interval,CrawlType.UnspecifiedType,  type);
             // TypeConstructorNode is an ExpressionNode that corresponds to a TypeNode
 
             IEnumerable<ArgumentNode> arguments = ParseCallTail((RuleContext)rule.GetChild(1)).Select(x => CrawlSyntaxNode.Argument(x.Interval, false, x));
-            return CrawlSyntaxNode.Call(rule.SourceInterval, typeConstructor, arguments);
+            return CrawlSyntaxNode.Call(rule.SourceInterval, CrawlType.UnspecifiedType, typeConstructor, arguments);
         }
 
         private static ExpressionNode ParseMultu(RuleContext rule)
@@ -99,7 +114,7 @@ namespace libcompiler.SyntaxTree.Parser
                 {
                     //TODO: Actually calculate the interval
                     //The expression contained multiple types of operations
-                    ExpressionNode newNode = CrawlSyntaxNode.MultiChildExpression(Interval.Invalid, type, sources);
+                    ExpressionNode newNode = CrawlSyntaxNode.MultiChildExpression(Interval.Invalid, type, CrawlType.UnspecifiedType, sources);
                     sources.Clear();
                     sources.Add(newNode);
                     type = newtype;
@@ -107,7 +122,35 @@ namespace libcompiler.SyntaxTree.Parser
                 }
             }
 
-            return CrawlSyntaxNode.MultiChildExpression(rule.SourceInterval, type, sources);
+            return CrawlSyntaxNode.MultiChildExpression(rule.SourceInterval, type, CrawlType.UnspecifiedType, sources);
+        }
+
+        private static ExpressionNode ParseCast(RuleContext expression)
+        {
+            //( LPARENTHESIS type RPARENTHESIS ) * unary_expression
+            var castExpression = (CrawlParser.Cast_expressionContext) expression;
+            List<TypeNode> targetTypes = new List<TypeNode>();
+
+            //Parse every part of the chain of casts. The for-loop works; Trust me.
+            for (int i = castExpression.ChildCount -3; i > 2; i-=3)
+            {
+                targetTypes.Add(ParseTreeParser.ParseType((CrawlParser.TypeContext)castExpression.GetChild(i)));
+            }
+
+            //Parse the rest of the expression.
+            ExpressionNode result = ParseExpression((RuleContext) castExpression.LastChild());
+
+            //Wrap the casts around the rest of the expression one at a time.
+            foreach (TypeNode type in targetTypes)
+            {
+                result = CrawlSyntaxNode.CastExpression(
+                    Interval.Invalid, ExpressionType.Cast, CrawlType.UnspecifiedType,
+                    type,
+                    result
+                );
+            }
+
+            return result;
         }
 
         private static ExpressionNode ParseBinary(RuleContext rule)
@@ -128,7 +171,7 @@ namespace libcompiler.SyntaxTree.Parser
             ExpressionType type = ParseBinaryOp(op);
             ExpressionNode rhsNode = ParseExpression(rhs);
             
-            return CrawlSyntaxNode.BinaryExpression(rule.SourceInterval, type, lhsNode, rhsNode);
+            return CrawlSyntaxNode.BinaryExpression(rule.SourceInterval, type, CrawlType.UnspecifiedType, lhsNode, rhsNode);
         }
 
         private static readonly Dictionary<string, ExpressionType> BinaryTypeMap = new Dictionary<string, ExpressionType>()
@@ -200,23 +243,23 @@ namespace libcompiler.SyntaxTree.Parser
                 RuleContext post = (RuleContext)rule.GetChild(i);
                 if (post.RuleIndex == CrawlParser.RULE_call_expression)
                 {
-                    node = CrawlSyntaxNode.Call(post.SourceInterval, node, ParseArgumentList(post));
+                    node = CrawlSyntaxNode.Call(post.SourceInterval, CrawlType.UnspecifiedType, node, ParseArgumentList(post));
                 }
                 else if (post.RuleIndex == CrawlParser.RULE_index_expression)
                 {
-                    node = CrawlSyntaxNode.Index(post.SourceInterval, node, ParseArgumentList(post));
+                    node = CrawlSyntaxNode.Index(post.SourceInterval, CrawlType.UnspecifiedType, node, ParseArgumentList(post));
                 }
                 else if(post.RuleIndex == CrawlParser.RULE_subfield_expression)
                 {
                     IdentifierNode sub = CrawlSyntaxNode.Identifier(post.GetChild(1).SourceInterval, post.GetChild(1).GetText());
-                    node = CrawlSyntaxNode.MemberAccess(post.SourceInterval, node, sub);
+                    node = CrawlSyntaxNode.MemberAccess(post.SourceInterval, CrawlType.UnspecifiedType,  node, sub);
                 }
                 else if (post.RuleIndex == CrawlParser.RULE_generic_unpack_expression)
                 {
                     List<TypeNode> generics = new List<TypeNode>();
                     for (int j = 1; j < post.ChildCount; j += 2)
                         generics.Add(ParseTreeParser.ParseType((CrawlParser.TypeContext) post.GetChild(j)));
-                    node = CrawlSyntaxNode.GenericsUnpack(post.SourceInterval, node, generics);
+                    node = CrawlSyntaxNode.GenericsUnpack(post.SourceInterval, CrawlType.UnspecifiedType, node, generics);
 
                 }
                 else throw new NotImplementedException("Strange postfix expression");
@@ -264,13 +307,15 @@ namespace libcompiler.SyntaxTree.Parser
             switch (realLiteral.RuleIndex)
             {
                 case CrawlParser.RULE_string_literal:
-                    return CrawlSyntaxNode.StringLiteral(realLiteral.SourceInterval, Unescape(rule.GetText()));
+                    return CrawlSyntaxNode.StringLiteral(realLiteral.SourceInterval, CrawlType.UnspecifiedType, Unescape(realLiteral.GetText()));
                 case CrawlParser.RULE_integer_literal:
-                    return CrawlSyntaxNode.IntegerLiteral(realLiteral.SourceInterval, int.Parse(realLiteral.GetText()));
+                    return CrawlSyntaxNode.IntegerLiteral(realLiteral.SourceInterval, CrawlType.UnspecifiedType, int.Parse(realLiteral.GetText()));
                 case CrawlParser.RULE_boolean_literal:
-                    return CrawlSyntaxNode.BooleanLiteral(realLiteral.SourceInterval, (realLiteral.GetText()) == "true");
+                    return CrawlSyntaxNode.BooleanLiteral(realLiteral.SourceInterval,CrawlType.UnspecifiedType,  (realLiteral.GetText()) == "true");
                 case CrawlParser.RULE_real_literal:
-                    return CrawlSyntaxNode.RealLiteral(realLiteral.SourceInterval, double.Parse(realLiteral.GetText()));
+                    return CrawlSyntaxNode.RealLiteral(realLiteral.SourceInterval,CrawlType.UnspecifiedType,  double.Parse(realLiteral.GetText()));
+                case CrawlParser.RULE_null_literal:
+                    return CrawlSyntaxNode.NullLiteral(realLiteral.SourceInterval, CrawlSimpleType.Tom);
                 default:
                     throw new NotImplementedException("Strange literal type");
             }
@@ -289,7 +334,7 @@ namespace libcompiler.SyntaxTree.Parser
             List<ArgumentNode> args = ParseArgumentList(invocation).ToList();
             ExpressionNode target = ParseExpression(toCall);
 
-            return CrawlSyntaxNode.Call(rule.SourceInterval, target, args);
+            return CrawlSyntaxNode.Call(rule.SourceInterval, CrawlType.UnspecifiedType, target, args);
         }
 
         public static List<ExpressionNode> ParseCallTail(RuleContext rule)
