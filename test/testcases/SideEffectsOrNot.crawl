@@ -1,0 +1,25 @@
+klasse foo =
+  tal a;
+  bar b;
+  intet () LavRod =
+    a = 33;
+    b.a = 21;
+
+klasse bar =
+  kommatal a;
+
+intet(reference foo arg) LavRod =
+  arg.a = 34;
+  arg.b.a = 22;
+
+intet (foo arg) Tildeling =
+  arg.a = 0;
+
+intet (foo arg) Metodekald =
+  arg.LavRod();
+
+intet (foo arg) VidereSomRef =
+  LavRod(reference arg);
+
+intet(foo arg) SmukOgRen1 =
+  tal a = arg.a + 55/2;

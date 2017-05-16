@@ -17,9 +17,10 @@ namespace libcompiler.Optimizations
         public string ParameterName { get; }
 
 
-        //Four potential side-effects exist:
+        //Five potential side-effects exist:
+        // - The parameter is used passed as reference in a method call. (fun(ref foo); )
         // - The parameter is the innermost variable
-        //    of a chain of memberacceses that end in a method call. (foo.bar.fun(); )
+        //    of a chain of member-acceses that end in a method call. (foo.bar.fun(); )
         // - The parameter itself is the target of an assignment. (foo = value)
         // - The parameter is the innermost variable of
         //    a chain of memberacceses that are the target of an assignment. (foo.bar.baz = value; )
@@ -35,10 +36,20 @@ namespace libcompiler.Optimizations
             return result;
         }
 
+        protected override bool VisitParameter(ParameterNode node)
+        {
+            if (base.VisitParameter(node)) //Save us the trouble if a side-effect has already been discovered.
+                return true;
+
+            return node.Reference && node.Identifier.Value == ParameterName;
+
+
+        }
+
 
         protected override bool VisitCall(CallNode node)
         {
-            if (base.VisitCall(node)) //Save us the trouble if a side-effect has already been discovered.
+            if (base.VisitCall(node))
                 return true;
 
             if (TargetIsOrBelongsToParameter(node.Target))

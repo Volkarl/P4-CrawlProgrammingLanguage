@@ -12,16 +12,19 @@ namespace libcompiler.Optimizations
             List<ParameterNode> newParams = new List<ParameterNode>();
             foreach (ParameterNode param in decl.Parameters)
             {
-                if(param.Reference)    //If it's a reference, don't mess with it.
-                    newParams.Add(param);
-
-                //If there is any risk of side-effects affecting non-ref parameter, don't optimize to ref.
-                var visitor = new CheckSideEffectsOfSingleParameterVisitor(param.Identifier.Value);
-                if (visitor.Visit(methodDecleration.Body))
+                if (param.Reference) //If it's a reference, don't mess with it.
                     newParams.Add(param);
                 else
-                    newParams.Add(CrawlSyntaxNode.Parameter(param.Interval, param.Reference,
-                        false, param.ParameterType, param.Identifier));
+                {
+
+                    //If there is any risk of side-effects affecting non-ref parameter, don't optimize to ref.
+                    var visitor = new CheckSideEffectsOfSingleParameterVisitor(param.Identifier.Value);
+                    if (visitor.Visit(methodDecleration.Body))
+                        newParams.Add(param);
+                    else
+                        newParams.Add(CrawlSyntaxNode.Parameter(param.Interval, param.Reference,
+                            false, param.ParameterType, param.Identifier));
+                }
             }
 
             return CrawlSyntaxNode.MethodDecleration(decl.Interval, decl.ProtectionLevel, decl.Scope, decl.MethodSignature,
