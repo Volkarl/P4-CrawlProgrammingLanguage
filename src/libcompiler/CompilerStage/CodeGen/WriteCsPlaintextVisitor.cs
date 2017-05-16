@@ -52,12 +52,9 @@ namespace libcompiler.CompilerStage.CodeGen
             sb.Append(node.Identifier.Value);
 
             sb.Append(" ");
-            sb.Append(node.ClassType.FullName);
 
-            sb.Append("{");
-            sb.Append(Visit(node.Body));
-            sb.Append("}");
-            
+            sb.Append(Visit(node.Body).Indent().SurroundWithBrackets());
+
             return sb.ToString();
         }
 
@@ -85,16 +82,16 @@ namespace libcompiler.CompilerStage.CodeGen
                 node.Parameters.Select(
                     x => $"{(x.Reference ? "ref" : "")}{x.ParameterType.ActualType.FullName} {x.Identifier.Value}")));
 
-            sb.Append(")\n{\n");
+            sb.Append(Visit(node.Body).Indent().SurroundWithBrackets());
 
-            sb.Append(Visit(node.Body));
-
-            sb.Append("}\n");
 
             return sb.ToString();
         }
 
-
+        protected override string VisitIndex(IndexNode node)
+        {
+            return $"{Visit(node.Target)}[{VisitAndAddDelimiters(node.Arguments, ", ")}]";
+        }
 
         string VisitAndAddDelimiters<T>(ListNode<T> arguments, string delimiter) where T : CrawlSyntaxNode
         {
