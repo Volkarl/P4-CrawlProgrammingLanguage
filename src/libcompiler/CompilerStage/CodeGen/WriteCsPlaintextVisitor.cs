@@ -82,6 +82,8 @@ namespace libcompiler.CompilerStage.CodeGen
                 node.Parameters.Select(
                     x => $"{(x.Reference ? "ref" : "")}{x.ParameterType.ActualType.FullName} {x.Identifier.Value}")));
 
+            sb.Append(")");
+
             sb.Append(Visit(node.Body).Indent().SurroundWithBrackets());
 
 
