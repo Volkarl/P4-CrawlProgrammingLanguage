@@ -43,6 +43,7 @@
     <Compile Include="CompilerStage\CodeGenPipeline.cs" />
     <Compile Include="CompilerStage\CodeGen\WriteCsPlaintextVisitor.cs" />
     <Compile Include="CompilerStage\FirstScopePassVisitor.cs" />
+    <Compile Include="CompilerStage\MakeMethodContainer.cs" />
     <Compile Include="CompilerStage\Rewriters.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\CheckDeclerationOrderVisitor.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\NamespaceNotFoundException.cs" />

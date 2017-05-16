@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using Antlr4.Runtime;
 using libcompiler.ExtensionMethods;
@@ -26,7 +28,19 @@ namespace libcompiler.CompilerStage.CodeGen
                 sb.Append("using ");
                 sb.Append(import.Module);
                 sb.Append(";\n");
+
+                //TODO: Needs way to check if module contains crawlCode or just C#
             }
+
+            sb.Append("using static ");
+            if (hasNamespace)
+            {
+                sb.Append(node.Namespace?.Module);
+                sb.Append(".");
+            }
+            sb.AppendLine("__CRAWL_STATIC;");
+
+
 
             if (hasNamespace)
             {
@@ -36,7 +50,30 @@ namespace libcompiler.CompilerStage.CodeGen
             }
 
 
-            sb.Append(Visit(node.Code));
+
+            List<CrawlSyntaxNode> methods = new List<CrawlSyntaxNode>();
+            foreach (CrawlSyntaxNode methodOrClass in node.Code)
+            {
+                if (methodOrClass is ClassTypeDeclerationNode)
+                {
+                    sb.Append(Visit(methodOrClass));
+                }
+                else if(methodOrClass is CallableDeclarationNode)
+                    methods.Add(methodOrClass);
+                else throw new InvalidEnumArgumentException("Should not have anything but classes or methods remaining");
+            }
+
+
+            sb.Append("public static partial class __CRAWL_STATIC\n{");
+
+            foreach (CrawlSyntaxNode method in methods)
+            {
+                sb.Append("static ");
+                sb.Append(Visit(method));
+            }
+
+            sb.Append("}");
+
 
             if (hasNamespace)
                 sb.Append("}");
@@ -167,6 +204,11 @@ namespace libcompiler.CompilerStage.CodeGen
         protected override string VisitRealLiteral(RealLiteralNode node)
         {
             return node.Value.ToString(CultureInfo.GetCultureInfo("en-GB"));
+        }
+
+        protected override string VisitReturnStatement(ReturnStatementNode node)
+        {
+            return $"return {Visit(node.Value)};";
         }
 
         protected override string VisitSingleVariableDecleration(SingleVariableDeclerationNode node)

@@ -10,5 +10,14 @@
                 new MoveDeclerationsRewriter().Visit(arg1.Tree.RootNode).OwningTree
             );
         }
+
+        public static AstData MakeClassForStaticMethods(AstData arg1, SideeffectHelper arg2)
+        {
+            return new AstData(
+                arg1.TokenStream,
+                arg1.Filename,
+                new MakeMethodContainer().Visit(arg1.Tree.RootNode).OwningTree
+            );
+        }
     }
 }

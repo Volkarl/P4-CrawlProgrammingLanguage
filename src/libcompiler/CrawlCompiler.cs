@@ -11,6 +11,7 @@ using libcompiler.Namespaces;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeChecker;
 
+
 namespace libcompiler
 {
     public static class CrawlCompiler
@@ -114,6 +115,7 @@ namespace libcompiler
                         var final = first
                             .Then(Rewriters.MoveDeclerations)
                             .Then(SemanticAnalysisPipeline.TypeCheck)
+                            //.Then(Rewriters.MakeClassForStaticMethods)
                             .EndWith(destination.Add, helper);  //Typechecker would be added here or line above
 
                         return final;
@@ -214,6 +216,11 @@ namespace libcompiler
 
     public class ExitStageException : Exception
     {
+    }
+
+    public static partial class Foo
+    {
+        public static int Baf() => 4;
     }
 }
  
