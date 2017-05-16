@@ -1,6 +1,6 @@
 importer System;
 
-for int i fra 1 til 100
+for tal i fra 1 til 100
   hvis i%3 == 0
     Console.Write("FIZZ");
   hvis i%5 == 0

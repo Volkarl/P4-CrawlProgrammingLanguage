@@ -46,7 +46,7 @@ namespace libcompiler.Optimizations
 
             LiteralNode lhs = binaryExpr.LeftHandSide as LiteralNode;
             LiteralNode rhs = binaryExpr.RightHandSide as LiteralNode;
-            if (lhs == null || rhs == null)
+            if (lhs == null || rhs == null || binaryExpr.ExpressionType == ExpressionType.Range)
                 return expr;
 
             OptimizationsWereMade = true;

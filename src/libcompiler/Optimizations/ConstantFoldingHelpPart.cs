@@ -114,8 +114,6 @@ namespace libcompiler.Optimizations
                     case ExpressionType.Power:
                         result = (int)Math.Pow(int1.Value, int2.Value);
                         break;
-                    case ExpressionType.Range:
-                        throw new NotImplementedException();
                     default:
                         throw new Exception("Operator and/or type entirely unexpected!");
                 }
