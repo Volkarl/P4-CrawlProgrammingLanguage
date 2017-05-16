@@ -1,0 +1,10 @@
+importer System;
+
+for int i fra 1 til 100
+  hvis i%3 == 0
+    Console.Write("FIZZ");
+  hvis i%5 == 0
+    Console.Write("BUZZ");
+  hvis i%3 != 0 og i%5 != 0
+    Console.Write(i);
+  Console.WriteLine();

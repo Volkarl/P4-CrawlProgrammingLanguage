@@ -1,0 +1,12 @@
+importer MidiGremlin;
+
+tal midiDeviceId = 0; //Most computers will only have one
+tal beatsPerSecond = 60; //Speed of the music
+IMidiOut output = WinmmOut(midiDeviceId, beatsPerSecond);
+Orchestra orchestra = Orchestra(output);
+
+Instrument piano = orchestra.AddInstrument(InstrumentType.BrightAcousticPiano);
+
+//Play a single sound
+piano.Play(Tone.C, 1);
+orchestra.WaitForFinished();

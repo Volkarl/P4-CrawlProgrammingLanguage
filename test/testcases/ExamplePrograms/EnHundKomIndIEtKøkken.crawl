@@ -1,0 +1,11 @@
+importer System;
+//Fremprovokerer stack overflow, men ikke før den har skrevet et par vers.
+
+EnHundKomIndIEtKøkken();
+
+intet() EnHundKomIndIEtKøkken=
+  Console.WriteLine("En hund kom ind i et køkken og stjal et stykke kød,");
+  Console.WriteLine("men så kom kokken med øksen, og det blev hundens død.");
+  Console.WriteLine("En gammel dame der så det, hun gravede hunden ned, ");
+  Console.WriteLine("og på dens gravsten så stod der:");
+  EnHundKomIndIEtKøkken();
