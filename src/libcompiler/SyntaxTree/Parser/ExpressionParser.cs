@@ -305,7 +305,6 @@ namespace libcompiler.SyntaxTree.Parser
         private static ExpressionNode ParseLiteral(RuleContext rule)
         {
             RuleContext realLiteral = (RuleContext) rule.GetChild(0);
-            string tmp = realLiteral.GetText();
 
             switch (realLiteral.RuleIndex)
             {

@@ -433,9 +433,12 @@ namespace libcompiler.CompilerStage.CodeGen
 
         protected override string VisitIf(IfNode node)
         {
-            int[,][,] s = new int[1,2][,];
+            return $"if({Visit(node.Condition)})" + Visit(node.TrueBlock).Indent().SurroundWithBrackets();
+        }
 
-            return base.VisitIf(node);
+        protected override string VisitIfElse(IfElseNode node)
+        {
+            return $"if({Visit(node.Condition)})" + Visit(node.TrueBlock).Indent().SurroundWithBrackets() + "else " + Visit(node.FalseBlock).Indent().SurroundWithBrackets();
         }
     }
 }

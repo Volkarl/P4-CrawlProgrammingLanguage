@@ -27,8 +27,8 @@ namespace libcompiler.ExtensionMethods
         public static string SurroundWithBrackets(this string textToSurround, bool addNewLines = true)
         {
             if (addNewLines)
-                return "\n{" + textToSurround + "\n}";
-            return "{" + textToSurround + "}";
+                return "\n{" + textToSurround + "\n}\n";
+            return "{" + textToSurround + "}\n";
         }
     }
 }
