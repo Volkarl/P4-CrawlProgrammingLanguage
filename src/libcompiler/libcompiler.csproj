@@ -43,6 +43,7 @@
     <Compile Include="CompilerStage\CodeGenPipeline.cs" />
     <Compile Include="CompilerStage\CodeGen\WriteCsPlaintextVisitor.cs" />
     <Compile Include="CompilerStage\FirstScopePassVisitor.cs" />
+    <Compile Include="CompilerStage\Rewriters.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\CheckDeclerationOrderVisitor.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\NamespaceNotFoundException.cs" />
     <Compile Include="CompilerStage\SemanticAnalysis\PutTypeVisitor.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="Antlr\CompilationMessageErrorListner.cs" />
     <Compile Include="CompilationResult.cs" />
     <Compile Include="CompilerStage\SemanticAnalysisPipeline.cs" />
+    <Compile Include="CompilerStage\MoveDeclerationsRewriter.cs" />
     <Compile Include="CrawlCompiler.cs" />
     <Compile Include="CrawlCompilerConfiguration.cs" />
     <Compile Include="Datatypes\ListDictionary.cs" />

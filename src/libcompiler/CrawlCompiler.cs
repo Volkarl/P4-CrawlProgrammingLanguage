@@ -112,6 +112,7 @@ namespace libcompiler
                         /* scope check */
                         Func<AstData, SideeffectHelper, AstData> first = SemanticAnalysisPipeline.DeclerationOrderCheck;
                         var final = first
+                            .Then(Rewriters.MoveDeclerations)
                             .Then(SemanticAnalysisPipeline.TypeCheck)
                             .EndWith(destination.Add, helper);  //Typechecker would be added here or line above
 
