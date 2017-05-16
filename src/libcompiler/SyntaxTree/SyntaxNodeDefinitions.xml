@@ -122,6 +122,12 @@
                     <type>List'Argument</type>
                 </child>
             </children>
+            <properties>
+                <property>
+                    <name>CalleeType</name>
+                    <type>CrawlMethodType</type>
+                </property>
+            </properties>
         </node>
         <node>
             <name>CastExpression</name>
@@ -187,6 +193,10 @@
             </properties>
         </node>
         <node>
+            <name>NullLiteral</name>
+            <baseclass>Literal</baseclass>
+        </node>
+        <node>
             <name>Index</name>
             <baseclass>Expression</baseclass>
             <children>
@@ -234,6 +244,10 @@
                     <type>Identifier</type>
                 </child>
                 <child>
+                    <name>BaseTypes</name>
+                    <type>List'Identifier</type>
+                </child>
+                <child>
                     <name>GenericParameters</name>
                     <type>List'GenericParameter</type>
                 </child>
@@ -244,8 +258,8 @@
             </children>
             <properties>
                 <property>
-                    <name>Ancestor</name>
-                    <type>CrawlType</type>
+                    <name>ClassType</name>
+                    <type>CrawlConstructedType</type>
                 </property>
             </properties>
         </node>

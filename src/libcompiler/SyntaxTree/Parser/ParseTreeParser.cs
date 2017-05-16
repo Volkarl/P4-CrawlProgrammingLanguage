@@ -410,6 +410,13 @@ namespace libcompiler.SyntaxTree.Parser
             throw new NotImplementedException("Variable declared in strange way");
         }
 
+        private static IEnumerable<IdentifierNode> ParseInheritances(CrawlParser.InheritancesContext inheritances)
+        {
+            for (int i = 1; i < inheritances.ChildCount; i+= 2)
+            {
+                yield return ParseIdentifier((ITerminalNode) inheritances.GetChild(i));
+            }
+        }
 
         private static DeclerationNode ParseClassDecleration(RuleContext classPart, ProtectionLevel protectionLevel, Interval interval)
         {
@@ -419,6 +426,10 @@ namespace libcompiler.SyntaxTree.Parser
             ITerminalNode tn1 = (ITerminalNode)classPart.GetChild(0);
 
             ITerminalNode tn2 = (ITerminalNode)classPart.GetChild(1);
+
+            CrawlParser.InheritancesContext baseTypes = classPart.GetChild(2) as CrawlParser.InheritancesContext;
+
+            IEnumerable<IdentifierNode> inheritances = baseTypes == null ? new List<IdentifierNode>() : ParseInheritances(baseTypes);
 
             CrawlParser.Generic_parametersContext genericParametersContext =
                 classPart.GetChild(genericParametersIndex) as CrawlParser.Generic_parametersContext;
@@ -434,7 +445,7 @@ namespace libcompiler.SyntaxTree.Parser
 
             BlockNode bodyBlock = ParseBlockNode(body);
 
-            return CrawlSyntaxNode.ClassTypeDecleration(interval, protectionLevel, null, ParseIdentifier(tn2), genericParameters, bodyBlock);
+            return CrawlSyntaxNode.ClassTypeDecleration(interval, protectionLevel, null, ParseIdentifier(tn2), inheritances, genericParameters, bodyBlock);
         }
 
         #endregion
