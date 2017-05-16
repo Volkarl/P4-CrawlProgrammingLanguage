@@ -308,7 +308,7 @@ namespace libcompiler.SyntaxTree.Parser
             switch (realLiteral.RuleIndex)
             {
                 case CrawlParser.RULE_string_literal:
-                    return CrawlSyntaxNode.StringLiteral(realLiteral.SourceInterval, CrawlType.UnspecifiedType, Unescape(rule.GetText()));
+                    return CrawlSyntaxNode.StringLiteral(realLiteral.SourceInterval, CrawlType.UnspecifiedType, /*Unescape*/(rule.GetText()));
                 case CrawlParser.RULE_integer_literal:
                     return CrawlSyntaxNode.IntegerLiteral(realLiteral.SourceInterval, CrawlType.UnspecifiedType, int.Parse(realLiteral.GetText()));
                 case CrawlParser.RULE_boolean_literal:
