@@ -294,5 +294,12 @@ namespace libcompiler.CompilerStage.CodeGen
         {
             return $"foreach({Visit(node.Loopvariable)} {Visit(node.LoopVariable)} in {Visit(node.Iterator)})" + Visit(node.Body).Indent().SurroundWithBrackets();
         }
+
+        protected override string VisitIf(IfNode node)
+        {
+            int[,][,] s = new int[1,2][,];
+
+            return base.VisitIf(node);
+        }
     }
 }

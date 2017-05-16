@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
@@ -266,6 +267,7 @@ namespace libcompiler.SyntaxTree.Parser
         private static ExpressionNode ParseLiteral(RuleContext rule)
         {
             RuleContext realLiteral = (RuleContext) rule.GetChild(0);
+            string tmp = realLiteral.GetText();
 
             switch (realLiteral.RuleIndex)
             {
@@ -283,7 +285,8 @@ namespace libcompiler.SyntaxTree.Parser
                     return CrawlSyntaxNode.BooleanLiteral(realLiteral.SourceInterval,CrawlType.UnspecifiedType, val);
                 }
                 case CrawlParser.RULE_real_literal:
-                    return CrawlSyntaxNode.RealLiteral(realLiteral.SourceInterval,CrawlType.UnspecifiedType,  double.Parse(realLiteral.GetText()));
+                    double decimalNr = double.Parse(realLiteral.GetText(), new CultureInfo("en-GB").NumberFormat);
+                    return CrawlSyntaxNode.RealLiteral(realLiteral.SourceInterval, CrawlType.UnspecifiedType, decimalNr);
                 default:
                     throw new NotImplementedException("Strange literal type");
             }

@@ -1,5 +1,6 @@
 tal[,,][][,] a = tal[,,][][,](1, 2, 3) (4) (5, 6);
 
+// Hvad sker der hvis vi kalder denne inde i et metodekald?
 
 //heltal[] a1 = heltal[](10);
 //heltal[,] a2 = heltal[,](10, 5);
