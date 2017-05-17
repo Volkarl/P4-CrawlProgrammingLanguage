@@ -30,7 +30,7 @@ namespace CodeGeneratorDriver
         public SyntaxNode CreateVisitor(string name)
         {
             SyntaxNode bailIfNull = Generator.IfStatement(
-                Generator.ValueEqualsExpression(Generator.IdentifierName(Options.Node.AsParameter()),
+                Generator.ValueEqualsExpression(Generator.IdentifierName(Options.Node.StartingWithLowercase()),
                     Generator.LiteralExpression(null)),
                 new[]
                 {
@@ -42,7 +42,7 @@ namespace CodeGeneratorDriver
                 Options.Visit,
                 new[]
                 {
-                    Generator.ParameterDeclaration(Options.Node.AsParameter(), Options.RedBase())
+                    Generator.ParameterDeclaration(Options.Node.StartingWithLowercase(), Options.RedBase())
                 },
                 null,
                 ReturnType(),
@@ -52,7 +52,7 @@ namespace CodeGeneratorDriver
                 {
                     bailIfNull,
                     Generator.SwitchStatement(
-                        Generator.MemberAccessExpression(Generator.IdentifierName(Options.Node.AsParameter()), "Type"),
+                        Generator.MemberAccessExpression(Generator.IdentifierName(Options.Node.StartingWithLowercase()), "Type"),
                         Model.Nodes.Where(x => x.Abstract == false).Select(SwitchSectionVoid)
                     ),
                     Generator.ThrowStatement(
@@ -108,7 +108,7 @@ namespace CodeGeneratorDriver
         {
             return Generator.CastExpression(
                 arg.GetRepresentation(TypeClassContext.NotList | TypeClassContext.Red),
-                Generator.IdentifierName(Options.Node.AsParameter()));
+                Generator.IdentifierName(Options.Node.StartingWithLowercase()));
         }
 
         protected virtual IEnumerable<SyntaxNode> ExtraMembers()
@@ -131,7 +131,7 @@ namespace CodeGeneratorDriver
             return Generator.MethodDeclaration(Options.Visit + node.Name,
                 new[]
                 {
-                    Generator.ParameterDeclaration(Options.Node.AsParameter(),
+                    Generator.ParameterDeclaration(Options.Node.StartingWithLowercase(),
                         SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)))
                 },
                 null, null,
@@ -142,7 +142,7 @@ namespace CodeGeneratorDriver
                             Generator.InvocationExpression(
                                 Generator.IdentifierName(Options.Visit),
                                 Generator.MemberAccessExpression(
-                                    Generator.IdentifierName(Options.Node.AsParameter()),
+                                    Generator.IdentifierName(Options.Node.StartingWithLowercase()),
                                     x.Name))));
         }
 
@@ -178,7 +178,7 @@ namespace CodeGeneratorDriver
                 return Generator.MethodDeclaration(Options.Visit + node.Name,
                     new[]
                     {
-                        Generator.ParameterDeclaration(Options.Node.AsParameter(),
+                        Generator.ParameterDeclaration(Options.Node.StartingWithLowercase(),
                             SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)))
                     },
                     null, ReturnType(),
@@ -193,7 +193,7 @@ namespace CodeGeneratorDriver
                 return Generator.MethodDeclaration(Options.Visit + node.Name,
                     new[]
                     {
-                        Generator.ParameterDeclaration(Options.Node.AsParameter(),
+                        Generator.ParameterDeclaration(Options.Node.StartingWithLowercase(),
                             SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)))
                     },
                     null, ReturnType(),
@@ -203,7 +203,7 @@ namespace CodeGeneratorDriver
                         Generator.ReturnStatement(Generator.InvocationExpression(
                                 Generator.IdentifierName(Options.Visit),
                                 Generator.MemberAccessExpression(
-                                    Generator.IdentifierName(Options.Node.AsParameter()),
+                                    Generator.IdentifierName(Options.Node.StartingWithLowercase()),
                                     node.AllChildren().First().Name)))
                     });
             }
@@ -212,7 +212,7 @@ namespace CodeGeneratorDriver
                 return Generator.MethodDeclaration(Options.Visit + node.Name,
                     new[]
                     {
-                        Generator.ParameterDeclaration(Options.Node.AsParameter(),
+                        Generator.ParameterDeclaration(Options.Node.StartingWithLowercase(),
                             SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)))
                     },
                     null, ReturnType(),
@@ -240,7 +240,7 @@ namespace CodeGeneratorDriver
             return Generator.MethodDeclaration(Options.Visit + node.Name,
                 new[]
                 {
-                    Generator.ParameterDeclaration(Options.Node.AsParameter(),
+                    Generator.ParameterDeclaration(Options.Node.StartingWithLowercase(),
                         SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)))
                 },
                 null, ReturnType(),
@@ -254,7 +254,7 @@ namespace CodeGeneratorDriver
                                 x =>
                                     Generator.InvocationExpression(Generator.IdentifierName(Options.Visit),
                                         Generator.MemberAccessExpression(
-                                            Generator.IdentifierName(Options.Node.AsParameter()), x.Name)))
+                                            Generator.IdentifierName(Options.Node.StartingWithLowercase()), x.Name)))
 
                     ))
                 });
@@ -292,7 +292,7 @@ namespace CodeGeneratorDriver
 
         protected override SyntaxNode VisitMethod(Node node)
         {
-            string parametername = node.Name.AsParameter();
+            string parametername = node.Name.StartingWithLowercase();
 
             //Visits, in order
             List<SyntaxNode> statements = node.AllMembers.Where(member => member.IsNode)

@@ -8,7 +8,7 @@ klasse foo =
 klasse bar =
   kommatal a;
 
-intet(reference foo arg) LavRod =
+intet(reference foo arg) LavMereRod =
   arg.a = 34;
   arg.b.a = 22;
 

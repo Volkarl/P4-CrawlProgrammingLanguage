@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.Isam.Esent.Interop;
+using static CodeGeneratorDriver.SharedGeneratorion;
 
 namespace CodeGeneratorDriver
 {
@@ -31,8 +32,8 @@ namespace CodeGeneratorDriver
                 node.Children.Select(    //For every child
                     x =>
                         generator.FieldDeclaration(        //We create a field declaration node
-                            "_" + x.Name.AsParameter(),    //With this name
-                            SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(x.Type)),    //Of this type
+                            "_" + x.Name.StartingWithLowercase(),    //With this name
+                            SyntaxFactory.ParseTypeName(RedNodeName(x.Type)),    //Of this type
                             Accessibility.Private          //And it's private.
                         )
                 )
@@ -45,7 +46,7 @@ namespace CodeGeneratorDriver
                 node.Children.Select(
                     (x, i) => generator.PropertyDeclaration(
                             x.Name,
-                            SyntaxFactory.ParseTypeName( SharedGeneratorion.RedNodeName(x.Type) ),
+                            SyntaxFactory.ParseTypeName( RedNodeName(x.Type) ),
                             Accessibility.Public,
                             DeclarationModifiers.ReadOnly,
                             CreateGetter( generator, x, i, parentChildCount, options )
@@ -55,7 +56,7 @@ namespace CodeGeneratorDriver
 
             //Public get-only properties for the non-child properties.
             members.AddRange(node.Properties.Select(
-                x => SharedGeneratorion.GetOnlyAccessor(
+                x => GetOnlyAccessor(
                     x.Name,
                     SyntaxFactory.ParseTypeName(x.Type)
                     )
@@ -80,11 +81,11 @@ namespace CodeGeneratorDriver
 
 
             return generator.ClassDeclaration(
-                SharedGeneratorion.RedNodeName(node.Name),
+                RedNodeName(node.Name),
                 null,
                 Accessibility.Public,
                 DeclarationModifiers.Partial.WithIsAbstract(node.Abstract),
-                SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.BaseClass)),
+                SyntaxFactory.ParseTypeName(RedNodeName(node.BaseClass)),
                 null,
                 members
             );
@@ -217,7 +218,7 @@ namespace CodeGeneratorDriver
                             m.ParameterName(),
                             m.GetRepresentation(TypeClassContext.Red))),
                 null,
-                SyntaxFactory.ParseTypeName(SharedGeneratorion.RedNodeName(node.Name)),
+                SyntaxFactory.ParseTypeName(RedNodeName(node.Name)),
                 Accessibility.Public,
                 DeclarationModifiers.None,
                 new []
@@ -241,7 +242,7 @@ namespace CodeGeneratorDriver
         private static SyntaxNode CreateComparison(SyntaxGenerator generator, string item)
         {
             return generator.ValueNotEqualsExpression(generator.IdentifierName(item),
-                generator.IdentifierName(item.AsParameter()));
+                generator.IdentifierName(item.StartingWithLowercase()));
         }
 
         private static SyntaxNode CreateGetChildAt(SyntaxGenerator generator, Node node, Options options)
@@ -291,7 +292,7 @@ namespace CodeGeneratorDriver
                 new[]
                 {
                     generator.ParameterDeclaration(options.Parent, options.RedBase()),
-                    generator.ParameterDeclaration(options.Self, SyntaxFactory.ParseTypeName(SharedGeneratorion.GreenNodeName(node.Name))),
+                    generator.ParameterDeclaration(options.Self, SyntaxFactory.ParseTypeName(GreenNodeName(node.Name))),
                     generator.ParameterDeclaration(options.IndexInParent,
                         generator.TypeExpression(SpecialType.System_Int32))
                 },
@@ -316,7 +317,7 @@ namespace CodeGeneratorDriver
         {
             yield return
                 generator.ReturnStatement(generator.InvocationExpression(generator.IdentifierName(options.GetRed),
-                    generator.Argument(RefKind.Ref, generator.IdentifierName("_" + child.Name.AsParameter())),
+                    generator.Argument(RefKind.Ref, generator.IdentifierName("_" + child.Name.StartingWithLowercase())),
                     generator.Argument(generator.LiteralExpression(index+parrentChildCount))));
         }
     }

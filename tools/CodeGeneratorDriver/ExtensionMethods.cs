@@ -33,7 +33,7 @@ namespace CodeGeneratorDriver
             return node.BaseNode.AllChildren().Concat(node.Children);
         }
 
-        public static string AsParameter(this string s)
+        public static string StartingWithLowercase(this string s)
         {
             if (string.IsNullOrEmpty(s)) return s;
 
