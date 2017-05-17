@@ -57,7 +57,7 @@
             </properties>
             <children>
                 <child>
-                    <name>Value</name>
+                    <name>Value</name> 
                     <type>Expression</type>
                 </child>
             </children>

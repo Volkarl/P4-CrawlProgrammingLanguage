@@ -6,6 +6,7 @@ using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
 using System.Collections.Generic;
 using libcompiler.SyntaxTree;
+using System.Linq;
 
 namespace libcompiler.TypeChecker
 {
@@ -208,16 +209,53 @@ namespace libcompiler.TypeChecker
 #endregion Subtract
 
              };
+    
 
-      /*  private static Tuple<CrawlType, CrawlType, ExpressionType> _MultipleOperator(ExpressionType eType)
-        {
-            if (true)
+        private static Dictionary<Tuple<CrawlType, CrawlType, ExpressionType>, CrawlType> _MultipleOperator
+            = new Dictionary<Tuple<CrawlType, CrawlType, ExpressionType>, CrawlType>
             {
+         
+                
+            };
+      
 
-            }
+
+        public static CrawlType Evaluate(CrawlType leftSide, ExpressionType oprator, CrawlType rightSide)
+        {
+            var firstCombi = new Tuple<CrawlType, CrawlType, ExpressionType >(leftSide, rightSide, oprator);
+            if (_MultipleOperator.ContainsKey(firstCombi))
+                {
+                    return _MultipleOperator[firstCombi];
+                }
+
+             var secondCombi = new Tuple<CrawlType, CrawlType, ExpressionType>(rightSide, leftSide, oprator);
+            if (_MultipleOperator.ContainsKey(secondCombi))
+                {
+                     return _MultipleOperator[secondCombi];
+                }
+            else
+                     return CrawlType.ErrorType;
             
-            //return new Tuple<CrawlType, CrawlType, ExpressionType>(CrawlSimpleType.Tal, CrawlSimpleType.Tal, eType);
-        }*/
+        }
+
+        public static CrawlType EvaluateMultiExpression(ExpressionType expressionType, List<CrawlType> operands)
+        {
+           
+            #region 2 possible soulution 
+            CrawlType resultingType = Evaluate(operands[0], expressionType, operands[1]);
+            
+            for (var i=2; i<operands.Count; i+=2)
+             {
+                 resultingType= Evaluate(resultingType, expressionType, operands[i]);
+
+             }
+            return resultingType;
+            
+            #endregion
+
+        }
+
+
 
         // The different combinations with the specific binary Expression
         private static Tuple<CrawlType, CrawlType, ExpressionType> _talTal(ExpressionType eType)

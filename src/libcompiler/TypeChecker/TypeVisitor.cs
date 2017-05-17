@@ -100,5 +100,15 @@ namespace libcompiler.TypeChecker
             else
                 return castExp.WithResultType(CrawlType.ErrorType);
         }
+
+        protected override CrawlSyntaxNode VisitMultiChildExpression(MultiChildExpressionNode multiChildExpression)
+        {
+            MultiChildExpressionNode newMultichildNode = (MultiChildExpressionNode)(base.VisitMultiChildExpression(multiChildExpression));
+            List<CrawlType> operandsTypes = newMultichildNode.Arguments.Select(a => a.ResultType).ToList();
+
+            CrawlType newType = ExpressionEvaluator.EvaluateMultiExpression(newMultichildNode.ExpressionType, operandsTypes);
+
+            return newMultichildNode.WithResultType(newType); 
+        }
     }
 }
