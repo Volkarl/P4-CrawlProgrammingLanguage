@@ -5,6 +5,8 @@ using libcompiler.Parser;
 using libcompiler.SyntaxTree;
 using libcompiler.TypeSystem;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using libcompiler.SyntaxTree;
 using System.Linq;
 
@@ -34,12 +36,74 @@ namespace libcompiler.TypeChecker
             return result;
         }
 
-        public static CrawlType Call(CrawlMethodType methodSignature, params CrawlType[] givenParameters)
+        public static CrawlType Call(CrawlMethodType methodSignature, IEnumerable<CrawlType> actualParameters)
         {
-                if (!ParameterMatch(methodSignature, givenParameters))
+                if (!ParameterMatch(methodSignature, actualParameters.ToArray()))
                     return CrawlType.ErrorType;
                 else
                     return methodSignature.ReturnType;
+        }
+
+        /// <summary>
+        /// Counts the number of the actual parameters' types that are Equal to those of the formal parameters.
+        /// </summary>
+        public static int DirectParameterMatches(CrawlMethodType methodSignature, List<CrawlType> actualParameters)
+        {
+            if(actualParameters.Count != methodSignature.Parameters.Count)
+                throw new ArgumentException("Number of actual parameters does not match number required for given method signature.");
+
+            int result = 0;
+            List<CrawlType> formalParameters = methodSignature.Parameters;
+
+            for (var i = 0; i < actualParameters.Count; i++)
+            {
+                if (actualParameters[i].Equals(formalParameters[i]))
+                    result++;
+            }
+
+            return result;
+        }
+
+        public static CrawlType BestParameterMatch(List<CrawlMethodType> candidates, List<CrawlType> actualParameters)
+        {
+            //Only candidate(s) where actual parameters are assignable to formal.
+            candidates = candidates.Where(x =>
+                ExpressionEvaluator.CallParametersAreValid(x, actualParameters)
+            ).ToList();
+
+            if (candidates.Count == 1)
+                return candidates.First();
+
+            if (candidates.Count > 1)
+            {
+                //Only candidate(s) with highest number of matches.
+                int highestNumberOfMatches = candidates.Max(x =>
+                    ExpressionEvaluator.DirectParameterMatches(x, actualParameters)
+                );
+                candidates = candidates.FindAll(x =>
+                    ExpressionEvaluator.DirectParameterMatches(x, actualParameters)
+                    == highestNumberOfMatches
+                );
+
+                if (candidates.Count == 1)
+                    return candidates.First();
+                if(candidates.Count > 1)
+                    return CrawlType.ErrorType;
+                //if(candidates.Count < 1)
+                    return CrawlType.ErrorType;
+            }
+
+            //if(candidates.Count<1)
+            return CrawlType.ErrorType;
+        }
+
+        /// <summary>
+        /// Whether actual parameters can be used for calling method of given signature.
+        /// </summary>
+        public static bool CallParametersAreValid(CrawlMethodType methodSignature, List<CrawlType> actualParameters)
+        {
+            return ! Call(methodSignature, actualParameters)
+                .Equals(CrawlType.ErrorType);
         }
 
 

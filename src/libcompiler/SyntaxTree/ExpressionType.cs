@@ -23,6 +23,7 @@
         StringLiteral,
         IntegerLiteral,
         BooleanLiteral,
+        NullLiteral,
         Variable,
         Negate,
         Not,

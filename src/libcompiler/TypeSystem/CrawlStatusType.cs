@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using libcompiler.Scope;
 
 namespace libcompiler.TypeSystem
 {
@@ -24,6 +26,16 @@ namespace libcompiler.TypeSystem
         public override bool CastableTo(CrawlType target)
         {
             return false;
+        }
+
+        public override IEnumerable<KeyValuePair<string, TypeInformation[]>> Members()
+        {
+            throw new InvalidOperationException("An error type has no members");
+        }
+
+        public override TypeInformation[] FindSymbol(string symbol)
+        {
+            throw new InvalidOperationException("An error type has no members");
         }
     }
 }

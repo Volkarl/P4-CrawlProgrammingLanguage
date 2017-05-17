@@ -74,4 +74,32 @@ namespace libcompiler.TypeSystem
         {
         }
     }
+
+
+    public class CrawlTypeNull: CrawlSimpleType
+    {
+        public CrawlTypeNull() : base(typeof(void))
+        {
+        }
+
+        public override bool CastableTo(CrawlType target)
+        {
+            return !(target is CrawlSimpleType);
+        }
+
+        public override bool ImplicitlyCastableTo(CrawlType target)
+        {
+            return !(target is CrawlSimpleType);
+        }
+
+        public override bool IsAssignableTo(CrawlType target)
+        {
+            return !(target is CrawlSimpleType);
+        }
+
+        public override string ToString()
+        {
+            return "Null";
+        }
+    }
 }
