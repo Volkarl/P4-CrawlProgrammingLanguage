@@ -60,6 +60,8 @@ namespace libcompiler.CompilerStage.CodeGen
                 }
                 else if(methodOrClass is CallableDeclarationNode)
                     methods.Add(methodOrClass);
+                else if(methodOrClass is VariableDeclerationNode)
+                    methods.Add(methodOrClass);
                 else throw new InvalidEnumArgumentException("Should not have anything but classes or methods remaining");
             }
 
@@ -252,6 +254,9 @@ namespace libcompiler.CompilerStage.CodeGen
                 case ExpressionType.Multiply:
                     delimiter = " * ";
                     break;
+                case ExpressionType.Modulous:
+                    delimiter = " % ";
+                    break;
                 case ExpressionType.ShortCircuitOr:
                     delimiter = " || ";
                     break;
@@ -260,7 +265,7 @@ namespace libcompiler.CompilerStage.CodeGen
                     break;
                 
                 case ExpressionType.Power:
-                    return WritePowerExpression(node.Arguments.ToList());
+                    return WritePowerExpression(node.Arguments.ToList()); //TODO: CAST TIL SAMME TYPE SOM VI STARTEDE MED, FOR POW RETURNERER NEMLIG DOUBLE
                 default: throw new ArgumentException("MultiChildExpression expressionType " + node.ExpressionType + " not supported");
             }
             return VisitAndAddDelimiters(node.Arguments, delimiter);

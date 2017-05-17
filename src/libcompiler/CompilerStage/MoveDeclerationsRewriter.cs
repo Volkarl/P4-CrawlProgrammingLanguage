@@ -39,12 +39,17 @@ namespace libcompiler.CompilerStage
                         CreateLocalInMain((VariableDeclerationNode) node, newcontents, implicitMain);
                         break;
 
+                    case NodeType.Assignment:
+                    case NodeType.While:
+                    case NodeType.ForLoop:
+                    case NodeType.If:
+                    case NodeType.IfElse:
                     case NodeType.Call:
                         implicitMain.Add(node);
                         break;
 
                     default:
-                        throw new NotImplementedException();
+                        throw new NotImplementedException(node.Type.ToString());
                 }
             }
 

@@ -1,7 +1,7 @@
 mens(sandt == sandt)
-    tal a = 1;
-    tal b = 2;
-    a = a + b * 3;
+  tal a = 1;
+  tal b = 2;
+  a = a + b * 3;
 
 tal[] mineTal = tal[](3);
 mineTal[0] = 1;
@@ -10,3 +10,12 @@ mineTal[2] = 3;
 
 for tal mitTal fra mineTal
   mitTal = 0;
+
+bool c = sandt;
+bool d = sandt;
+hvis(c)
+  hvis(d == falsk)
+    c = falsk;
+ellers
+  hvis(d == sandt)
+    d = ikke d;
